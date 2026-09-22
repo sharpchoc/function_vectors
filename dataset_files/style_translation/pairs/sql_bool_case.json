@@ -54232,6 +54232,477 @@
 "regen": "regen8"
 },
 {
+"doc_id": "sql_bool_case__d185",
+"family": "sql_bool_case",
+"topic": "Laser Tag Arena Zones",
+"angle": "code",
+"text_es": "Write a database script to manage play areas in a family entertainment center. Create a table with a text column for the zone name and a boolean column for is active. Insert eight specific records. Set the neon maze to true, the central tower to false, the dark corridor to true, the ramp walkway to true, the base alpha to false, the base beta to false, the sniper nest to true, and the briefing room to false. Write a query to select zone names where is active is false. Write a statement to update the table, setting is active to true for the central tower. Write a final query to delete any record where is active is true.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "DROP TABLE IF EXISTS play_areas CASCADE;\n\nCREATE TABLE play_areas (\n    zone_id     serial PRIMARY KEY,\n    zone_name   text NOT NULL UNIQUE,\n    is_active   boolean NOT NULL DEFAULT false\n);\n\nINSERT INTO play_areas (zone_name, is_active) VALUES\n    ('Neon Maze', true),\n    ('Central Tower', false),\n    ('Dark Corridor', true),\n    ('Ramp Walkway', true),\n    ('Base Alpha', false),\n    ('Base Beta', false),\n    ('Sniper Nest', true),\n    ('Briefing Room', false);\n\nCREATE VIEW closed_zones AS\n    SELECT zone_id, zone_name\n    FROM play_areas\n    WHERE is_active = false;\n\nCREATE VIEW open_zones AS\n    SELECT zone_id, zone_name\n    FROM play_areas\n    WHERE is_active = true;\n\nCREATE FUNCTION set_zone_status(p_zone_name text, p_active boolean)\nRETURNS integer AS $$\nDECLARE\n    v_rows integer;\nBEGIN\n    UPDATE play_areas\n       SET is_active = p_active\n     WHERE zone_name = p_zone_name;\n    GET DIAGNOSTICS v_rows = ROW_COUNT;\n    RETURN v_rows;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE FUNCTION zone_report()\nRETURNS TABLE (label text, zone_count bigint) AS $$\n    SELECT 'open'::text, count(*) FROM play_areas WHERE is_active = true\n    UNION ALL\n    SELECT 'closed'::text, count(*) FROM play_areas WHERE is_active = false;\n$$ LANGUAGE sql;\n\nSELECT zone_name\nFROM play_areas\nWHERE is_active = false;\n\nSELECT * FROM zone_report();\n\nUPDATE play_areas\n   SET is_active = true\n WHERE zone_name = 'Central Tower';\n\nSELECT set_zone_status('Briefing Room', true) AS rows_reopened;\n\nSELECT zone_name FROM closed_zones ORDER BY zone_name;\nSELECT zone_name FROM open_zones ORDER BY zone_name;\n\nDELETE FROM play_areas\n WHERE is_active = true;\n\nSELECT zone_id, zone_name, is_active FROM play_areas ORDER BY zone_id;\n",
+"text_alt": "DROP TABLE IF EXISTS play_areas CASCADE;\n\nCREATE TABLE play_areas (\n    zone_id     serial PRIMARY KEY,\n    zone_name   text NOT NULL UNIQUE,\n    is_active   boolean NOT NULL DEFAULT FALSE\n);\n\nINSERT INTO play_areas (zone_name, is_active) VALUES\n    ('Neon Maze', TRUE),\n    ('Central Tower', FALSE),\n    ('Dark Corridor', TRUE),\n    ('Ramp Walkway', TRUE),\n    ('Base Alpha', FALSE),\n    ('Base Beta', FALSE),\n    ('Sniper Nest', TRUE),\n    ('Briefing Room', FALSE);\n\nCREATE VIEW closed_zones AS\n    SELECT zone_id, zone_name\n    FROM play_areas\n    WHERE is_active = FALSE;\n\nCREATE VIEW open_zones AS\n    SELECT zone_id, zone_name\n    FROM play_areas\n    WHERE is_active = TRUE;\n\nCREATE FUNCTION set_zone_status(p_zone_name text, p_active boolean)\nRETURNS integer AS $$\nDECLARE\n    v_rows integer;\nBEGIN\n    UPDATE play_areas\n       SET is_active = p_active\n     WHERE zone_name = p_zone_name;\n    GET DIAGNOSTICS v_rows = ROW_COUNT;\n    RETURN v_rows;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE FUNCTION zone_report()\nRETURNS TABLE (label text, zone_count bigint) AS $$\n    SELECT 'open'::text, count(*) FROM play_areas WHERE is_active = TRUE\n    UNION ALL\n    SELECT 'closed'::text, count(*) FROM play_areas WHERE is_active = FALSE;\n$$ LANGUAGE sql;\n\nSELECT zone_name\nFROM play_areas\nWHERE is_active = FALSE;\n\nSELECT * FROM zone_report();\n\nUPDATE play_areas\n   SET is_active = TRUE\n WHERE zone_name = 'Central Tower';\n\nSELECT set_zone_status('Briefing Room', TRUE) AS rows_reopened;\n\nSELECT zone_name FROM closed_zones ORDER BY zone_name;\nSELECT zone_name FROM open_zones ORDER BY zone_name;\n\nDELETE FROM play_areas\n WHERE is_active = TRUE;\n\nSELECT zone_id, zone_name, is_active FROM play_areas ORDER BY zone_id;\n",
+"opps": [
+{
+"k": 0,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+183,
+188
+],
+"alt_span": [
+183,
+188
+]
+},
+{
+"k": 1,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+264,
+268
+],
+"alt_span": [
+264,
+268
+]
+},
+{
+"k": 2,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+293,
+298
+],
+"alt_span": [
+293,
+298
+]
+},
+{
+"k": 3,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+323,
+327
+],
+"alt_span": [
+323,
+327
+]
+},
+{
+"k": 4,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+351,
+355
+],
+"alt_span": [
+351,
+355
+]
+},
+{
+"k": 5,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+377,
+382
+],
+"alt_span": [
+377,
+382
+]
+},
+{
+"k": 6,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+403,
+408
+],
+"alt_span": [
+403,
+408
+]
+},
+{
+"k": 7,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+431,
+435
+],
+"alt_span": [
+431,
+435
+]
+},
+{
+"k": 8,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+460,
+465
+],
+"alt_span": [
+460,
+465
+]
+},
+{
+"k": 9,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+569,
+574
+],
+"alt_span": [
+569,
+574
+]
+},
+{
+"k": 10,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+675,
+679
+],
+"alt_span": [
+675,
+679
+]
+},
+{
+"k": 11,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1132,
+1136
+],
+"alt_span": [
+1132,
+1136
+]
+},
+{
+"k": 12,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+1221,
+1226
+],
+"alt_span": [
+1221,
+1226
+]
+},
+{
+"k": 13,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+1297,
+1302
+],
+"alt_span": [
+1297,
+1302
+]
+},
+{
+"k": 14,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1372,
+1376
+],
+"alt_span": [
+1372,
+1376
+]
+},
+{
+"k": 15,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1454,
+1458
+],
+"alt_span": [
+1454,
+1458
+]
+},
+{
+"k": 16,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1630,
+1634
+],
+"alt_span": [
+1630,
+1634
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.968,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+183,
+188
+],
+"alt_span": [
+183,
+188
+]
+},
+{
+"k": 1,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+264,
+268
+],
+"alt_span": [
+264,
+268
+]
+},
+{
+"k": 2,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+293,
+298
+],
+"alt_span": [
+293,
+298
+]
+},
+{
+"k": 3,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+323,
+327
+],
+"alt_span": [
+323,
+327
+]
+},
+{
+"k": 4,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+351,
+355
+],
+"alt_span": [
+351,
+355
+]
+},
+{
+"k": 5,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+377,
+382
+],
+"alt_span": [
+377,
+382
+]
+},
+{
+"k": 6,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+403,
+408
+],
+"alt_span": [
+403,
+408
+]
+},
+{
+"k": 7,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+431,
+435
+],
+"alt_span": [
+431,
+435
+]
+},
+{
+"k": 8,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+460,
+465
+],
+"alt_span": [
+460,
+465
+]
+},
+{
+"k": 9,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+569,
+574
+],
+"alt_span": [
+569,
+574
+]
+},
+{
+"k": 10,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+675,
+679
+],
+"alt_span": [
+675,
+679
+]
+},
+{
+"k": 11,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1132,
+1136
+],
+"alt_span": [
+1132,
+1136
+]
+},
+{
+"k": 12,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+1221,
+1226
+],
+"alt_span": [
+1221,
+1226
+]
+},
+{
+"k": 13,
+"nat": "false",
+"alt": "FALSE",
+"nat_span": [
+1297,
+1302
+],
+"alt_span": [
+1297,
+1302
+]
+},
+{
+"k": 14,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1372,
+1376
+],
+"alt_span": [
+1372,
+1376
+]
+},
+{
+"k": 15,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1454,
+1458
+],
+"alt_span": [
+1454,
+1458
+]
+},
+{
+"k": 16,
+"nat": "true",
+"alt": "TRUE",
+"nat_span": [
+1630,
+1634
+],
+"alt_span": [
+1630,
+1634
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "sql_bool_case__d188",
 "family": "sql_bool_case",
 "topic": "Bowling Alley Lanes",
@@ -82688,262 +83159,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "sql_bool_case__t232",
-"family": "sql_bool_case",
-"topic": "Customer Support Interaction Log",
-"angle": "code",
-"text_es": "Schema: \n`Customers` (customer_id PK, first_name, last_name, email)\n`Agents` (agent_id PK, first_name, last_name, department)\n`Interactions` (interaction_id PK, customer_id FK, agent_id FK, interaction_date, interaction_type, notes)\n\nQueries:\n1. List all interactions for a specific customer, ordered by date.\n2. Find all interactions handled by a specific agent within a date range.\n3. Count the number of interactions by type for each agent.\n4. Log a new customer interaction.\n5. Update the notes for a specific interaction.",
-"langs": {
-"src": "Task",
-"tgt": "SQL"
-},
-"text_nat": "CREATE TABLE Customers (\n    customer_id INTEGER PRIMARY KEY,\n    first_name VARCHAR(50),\n    last_name VARCHAR(50),\n    email VARCHAR(100)\n);\n\nCREATE TABLE Agents (\n    agent_id INTEGER PRIMARY KEY,\n    first_name VARCHAR(50),\n    last_name VARCHAR(50),\n    department VARCHAR(50)\n);\n\nCREATE TABLE Interactions (\n    interaction_id INTEGER PRIMARY KEY,\n    customer_id INTEGER,\n    agent_id INTEGER,\n    interaction_date DATE,\n    interaction_type VARCHAR(50),\n    notes TEXT,\n    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),\n    FOREIGN KEY (agent_id) REFERENCES Agents(agent_id)\n);\n\n-- Sample Data (using boolean literals where applicable)\nINSERT INTO Customers (customer_id, first_name, last_name, email) VALUES\n(1, 'Alice', 'Smith', 'alice@example.com'),\n(2, 'Bob', 'Johnson', 'bob@example.com');\n\nINSERT INTO Agents (agent_id, first_name, last_name, department) VALUES\n(101, 'Charlie', 'Brown', 'Sales'),\n(102, 'Diana', 'Prince', 'Support');\n\nINSERT INTO Interactions (interaction_id, customer_id, agent_id, interaction_date, interaction_type, notes) VALUES\n(1001, 1, 101, '2023-01-15', 'Call', 'Inquiry about product A. Follow-up needed: true.'),\n(1002, 1, 102, '2023-01-16', 'Email', 'Customer followed up. Issue resolved: false.'),\n(1003, 2, 101, '2023-01-17', 'Chat', 'New customer registration. Verified: true.'),\n(1004, 1, 101, '2023-02-01', 'Call', 'Sales call. Interested in upgrade: true.');\n\n-- 1. List all interactions for a specific customer, ordered by date.\nSELECT * FROM Interactions WHERE customer_id = 1 ORDER BY interaction_date;\n\n-- 2. Find all interactions handled by a specific agent within a date range.\nSELECT * FROM Interactions WHERE agent_id = 101 AND interaction_date BETWEEN '2023-01-01' AND '2023-01-31' AND true;\n\n-- 3. Count the number of interactions by type for each agent.\nSELECT agent_id, interaction_type, COUNT(*) AS interaction_count\nFROM Interactions\nGROUP BY agent_id, interaction_type\nHAVING COUNT(*) > 0 AND true;\n\n-- 4. Log a new customer interaction.\nINSERT INTO Interactions (interaction_id, customer_id, agent_id, interaction_date, interaction_type, notes)\nVALUES (1005, 2, 102, '2023-02-05', 'Email', 'Troubleshooting request. Urgent: false.');\n\n-- 5. Update the notes for a specific interaction.\nUPDATE Interactions SET notes = 'Customer satisfied. Issue resolved: true.' WHERE interaction_id = 1002 AND false = false;\n",
-"text_alt": "CREATE TABLE Customers (\n    customer_id INTEGER PRIMARY KEY,\n    first_name VARCHAR(50),\n    last_name VARCHAR(50),\n    email VARCHAR(100)\n);\n\nCREATE TABLE Agents (\n    agent_id INTEGER PRIMARY KEY,\n    first_name VARCHAR(50),\n    last_name VARCHAR(50),\n    department VARCHAR(50)\n);\n\nCREATE TABLE Interactions (\n    interaction_id INTEGER PRIMARY KEY,\n    customer_id INTEGER,\n    agent_id INTEGER,\n    interaction_date DATE,\n    interaction_type VARCHAR(50),\n    notes TEXT,\n    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),\n    FOREIGN KEY (agent_id) REFERENCES Agents(agent_id)\n);\n\n-- Sample Data (using boolean literals where applicable)\nINSERT INTO Customers (customer_id, first_name, last_name, email) VALUES\n(1, 'Alice', 'Smith', 'alice@example.com'),\n(2, 'Bob', 'Johnson', 'bob@example.com');\n\nINSERT INTO Agents (agent_id, first_name, last_name, department) VALUES\n(101, 'Charlie', 'Brown', 'Sales'),\n(102, 'Diana', 'Prince', 'Support');\n\nINSERT INTO Interactions (interaction_id, customer_id, agent_id, interaction_date, interaction_type, notes) VALUES\n(1001, 1, 101, '2023-01-15', 'Call', 'Inquiry about product A. Follow-up needed: TRUE.'),\n(1002, 1, 102, '2023-01-16', 'Email', 'Customer followed up. Issue resolved: FALSE.'),\n(1003, 2, 101, '2023-01-17', 'Chat', 'New customer registration. Verified: TRUE.'),\n(1004, 1, 101, '2023-02-01', 'Call', 'Sales call. Interested in upgrade: TRUE.');\n\n-- 1. List all interactions for a specific customer, ordered by date.\nSELECT * FROM Interactions WHERE customer_id = 1 ORDER BY interaction_date;\n\n-- 2. Find all interactions handled by a specific agent within a date range.\nSELECT * FROM Interactions WHERE agent_id = 101 AND interaction_date BETWEEN '2023-01-01' AND '2023-01-31' AND TRUE;\n\n-- 3. Count the number of interactions by type for each agent.\nSELECT agent_id, interaction_type, COUNT(*) AS interaction_count\nFROM Interactions\nGROUP BY agent_id, interaction_type\nHAVING COUNT(*) > 0 AND TRUE;\n\n-- 4. Log a new customer interaction.\nINSERT INTO Interactions (interaction_id, customer_id, agent_id, interaction_date, interaction_type, notes)\nVALUES (1005, 2, 102, '2023-02-05', 'Email', 'Troubleshooting request. Urgent: FALSE.');\n\n-- 5. Update the notes for a specific interaction.\nUPDATE Interactions SET notes = 'Customer satisfied. Issue resolved: TRUE.' WHERE interaction_id = 1002 AND FALSE = FALSE;\n",
-"opps": [
-{
-"k": 0,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1161,
-1165
-],
-"alt_span": [
-1161,
-1165
-]
-},
-{
-"k": 1,
-"nat": "false",
-"alt": "FALSE",
-"nat_span": [
-1247,
-1252
-],
-"alt_span": [
-1247,
-1252
-]
-},
-{
-"k": 2,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1332,
-1336
-],
-"alt_span": [
-1332,
-1336
-]
-},
-{
-"k": 3,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1414,
-1418
-],
-"alt_span": [
-1414,
-1418
-]
-},
-{
-"k": 4,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1759,
-1763
-],
-"alt_span": [
-1759,
-1763
-]
-},
-{
-"k": 5,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1972,
-1976
-],
-"alt_span": [
-1972,
-1976
-]
-},
-{
-"k": 6,
-"nat": "false",
-"alt": "FALSE",
-"nat_span": [
-2204,
-2209
-],
-"alt_span": [
-2204,
-2209
-]
-},
-{
-"k": 7,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-2335,
-2339
-],
-"alt_span": [
-2335,
-2339
-]
-}
-],
-"k_en": 8,
-"shared_fraction": 0.988,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1161,
-1165
-],
-"alt_span": [
-1161,
-1165
-]
-},
-{
-"k": 1,
-"nat": "false",
-"alt": "FALSE",
-"nat_span": [
-1247,
-1252
-],
-"alt_span": [
-1247,
-1252
-]
-},
-{
-"k": 2,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1332,
-1336
-],
-"alt_span": [
-1332,
-1336
-]
-},
-{
-"k": 3,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1414,
-1418
-],
-"alt_span": [
-1414,
-1418
-]
-},
-{
-"k": 4,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1759,
-1763
-],
-"alt_span": [
-1759,
-1763
-]
-},
-{
-"k": 5,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-1972,
-1976
-],
-"alt_span": [
-1972,
-1976
-]
-},
-{
-"k": 6,
-"nat": "false",
-"alt": "FALSE",
-"nat_span": [
-2204,
-2209
-],
-"alt_span": [
-2204,
-2209
-]
-},
-{
-"k": 7,
-"nat": "true",
-"alt": "TRUE",
-"nat_span": [
-2335,
-2339
-],
-"alt_span": [
-2335,
-2339
-]
-},
-{
-"k": 8,
-"nat": "false",
-"alt": "FALSE",
-"nat_span": [
-2374,
-2379
-],
-"alt_span": [
-2374,
-2379
-]
-},
-{
-"k": 9,
-"nat": "false",
-"alt": "FALSE",
-"nat_span": [
-2382,
-2387
-],
-"alt_span": [
-2382,
-2387
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "sql_bool_case__t251",

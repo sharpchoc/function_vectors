@@ -2146,5 +2146,306 @@
   "spec": "Implement `assess(rods)` to evaluate the safety status of a power plant. The input is a list of mechanical control rods, each given as a list containing the current insertion depth in centimeters, the baseline neutron absorption cross section, and the surrounding primary coolant temperature in Celsius. The effective moderation factor for a rod is calculated by multiplying its current insertion depth by its baseline neutron absorption cross section. However, if the surrounding primary coolant temperature exceeds three hundred degrees, the effective moderation factor is reduced by fifteen percent due to physical thermal expansion of the graphite lattice. Sum the effective moderation factors across all rods to find the total core moderation value. If this total core moderation value is strictly less than five thousand, return false to trigger an immediate emergency scram; otherwise, return true. Example: [[100, 20, 250], [100, 20, 350]] yields false.",
   "designed_by": "google/gemini-3.1-pro-preview",
   "v2": true
+ },
+ {
+  "id": "d310",
+  "title": "Curling Stone Sweep Path",
+  "spec": "`sweep(stones)`\nThe input is an array of arrays where each inner array contains a player name, a release velocity, and a broom friction level. A stone needs at least a release velocity of ten and a broom friction level below five to reach the house. If the release velocity is over twenty, it overshoots regardless of friction. If the broom friction level is exactly two, the stone glides an extra distance, reducing the required velocity to eight. The function should compute which players successfully place their stone in the house. It returns an array of player names who succeeded. Example: given [[\"Alice\", 12, 3], [\"Bob\", 22, 1]], return [\"Alice\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d311",
+  "title": "Skateboard Trick Combo Multiplier",
+  "spec": "`score(tricks)`\nThe input is an array of arrays representing a combo sequence, where each inner array holds a trick name, base points, and a difficulty rating from one to ten. The total score starts at zero. For each trick, multiply the base points by the difficulty rating and add it to the total. If a trick is followed immediately by another trick with a higher difficulty rating, add a combo bonus of fifty points to the running total. If a trick name equals the string kickflip, double the base points for that specific trick before applying the multiplier. Calculate and return the final integer score. Example: given [[\"ollie\", 10, 2], [\"kickflip\", 20, 5]], return 270.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d312",
+  "title": "Zipline Cable Tension",
+  "spec": "`tension(riders, cable)`\nThe first input is an array of arrays containing a rider name, a body weight, and an equipment weight. The second input is an array with a maximum weight capacity, a baseline tension, and an ambient temperature. Each rider's total load is their body weight plus equipment weight plus five for the safety harness. If the ambient temperature is over thirty degrees, the baseline tension drops by ten percent. If it is under zero degrees, the baseline tension increases by fifteen percent. A rider can safely cross if their total load is less than the maximum weight capacity and the adjusted tension is above fifty. Return an array of names of riders who can safely ride. Example: given [[\"Charlie\", 80, 10]] and [150, 60, 20], return [\"Charlie\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d313",
+  "title": "Water Slide Friction Coefficient",
+  "spec": "`slide(sections, water)`\nThe first input is an array of arrays containing a section length, a drop angle, and a plastic wear level. The second input is an array with a flow volume and a pump pressure. The initial speed is zero. For each section, add the drop angle multiplied by two to the speed. Then subtract the plastic wear level. If the flow volume exceeds one hundred, reduce the plastic wear penalty by half for all sections. If the pump pressure is below fifty, subtract an additional three from the speed per section due to dry spots. The ride is safe if the final speed at the end of all sections is between ten and forty. Return the final speed if safe, or negative one if unsafe. Example: given [[10, 5, 2]] and [90, 60], return 8.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d314",
+  "title": "Pole Vault Bend Elasticity",
+  "spec": "`vault(athletes, pole)`\nThe first input is an array of arrays, each containing an athlete name, a sprint speed, and a body mass. The second input is an array with a base stiffness, a material rating, and a pole length. To clear the bar, an athlete generates kinetic energy equal to the sprint speed squared multiplied by the body mass. The energy returned by the pole is this kinetic energy multiplied by the material rating, minus the base stiffness. If the energy returned is greater than the pole length times ten, the athlete clears the bar. Return an array of names of athletes who succeed. Example: given [[\"Dave\", 8, 70]] and [50, 0.8, 40], return [\"Dave\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d315",
+  "title": "Gymnastics Uneven Bars Release",
+  "spec": "`dismount(swings)`\nThe input is an array of arrays where each holds a forward momentum, a backward swing arc, and a chalk grip level. To safely dismount, a gymnast needs an accumulated momentum. Start with zero accumulated momentum. For each swing, add the forward momentum. If the backward swing arc is greater than ninety, add a ten point momentum bonus. However, if the chalk grip level drops below three, deduct five momentum points due to slipping. The dismount is successful if the final accumulated momentum after all swings is over fifty, and no single swing had a chalk grip level of exactly zero. Return one for success, zero for failure. Example: given [[20, 80, 4], [30, 95, 5]], return 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d316",
+  "title": "High Jump Bar Clearance",
+  "spec": "`jump(attempts)`\nThe input is an array of arrays containing an athlete name, an approach velocity, a takeoff angle, and a center of mass height. An athlete clears the bar if their peak height exceeds the target height of two hundred. Peak height is calculated as the center of mass height plus the approach velocity multiplied by the takeoff angle. If the takeoff angle is above forty five, subtract ten from the peak height due to poor form. If the approach velocity is less than five, the jump fails automatically regardless of the math. Return an array of names of those who cleared the two hundred mark. Example: given [[\"Adam\", 8, 20, 50]], return [\"Adam\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d317",
+  "title": "Bobsled Team Weight Distribution",
+  "spec": "`bobsled(crew)`\nThe input is an array of arrays, each representing a member with their name, position index from one to four, and body weight. The sled has a maximum weight limit of four hundred. The ideal weight distribution requires the members at position one and position four to be the heaviest. First, check if the total body weight of all four members exceeds the limit. If it does, return an empty array. If the sum is within limits, check if the weights of the members in positions one and four are both strictly greater than the weights of the members in positions two and three. Return an array of the names of the crew ordered by their positions if the distribution is ideal, otherwise return an empty array. Example: given [[\"A\", 1, 100], [\"B\", 2, 80], [\"C\", 3, 80], [\"D\", 4, 95]], return [\"A\", \"B\", \"C\", \"D\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d318",
+  "title": "Dog Agility Course Penalties",
+  "spec": "`agility(runs)`\nThe input is an array of arrays containing a dog name, a base time, obstacle faults, and missed weaves. The standard course time is sixty seconds. The final score is the base time plus five seconds for each obstacle fault and two seconds for each missed weave. If the base time is less than the standard course time, subtract one second for each full second under the standard. If the base time is over the standard course time, add two penalty seconds for every full second over. Return an array of dog names whose final score is under seventy. Example: given [[\"Buster\", 55, 1, 0]], return [\"Buster\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d319",
+  "title": "Equestrian Show Jumping Faults",
+  "spec": "`jumping(rounds)`\nThe input is an array of arrays containing a horse name, a time taken, knocked rails, and water jumps cleared. The time allowed is eighty seconds. A round starts with zero total faults. Add four faults for every knocked rail. If the time taken is over the time allowed, add one fault for every started second over the limit. For every water jump cleared beyond two, deduct one fault from the total, but the total faults cannot go below zero. A clear round has exactly zero faults. Return an array of horse names that achieved a clear round. Example: given [[\"Shadow\", 81, 0, 3]], return [\"Shadow\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d320",
+  "title": "Bull Riding Duration Intensity",
+  "spec": "`ride(bulls)`\nThe input is an array of arrays containing a rider name, a time on bull, a bull spin speed, and a bucking kick height. A qualifying ride must last at least eight seconds. The total score is calculated only for qualifying rides. Add the bull spin speed to the bucking kick height to get the base score. If the time on bull is greater than nine seconds, add a ten point stamina bonus to the total score. If the bull spin speed is above fifty and the bucking kick height is above forty, add a fifteen point danger bonus. Return an array of rider names who scored eighty or above on a qualifying ride. Example: given [[\"Tex\", 8.5, 40, 45]], return [\"Tex\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d321",
+  "title": "Lasso Loop Diameter",
+  "spec": "`lasso(throws)`\nThe input is an array of arrays holding a cowboy name, a rope length, a spin speed, and a wrist flick angle. The calculated loop diameter is the spin speed multiplied by two plus the wrist flick angle. However, the loop diameter cannot exceed half of the total rope length. If the wrist flick angle is below ten, the loop collapses and the diameter becomes zero. If the spin speed exceeds sixty, the rope tangles and the diameter is also zero. Return an array of names of cowboys whose final loop diameter is strictly between twenty and fifty. Example: given [[\"Doc\", 100, 10, 20]], return [\"Doc\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d322",
+  "title": "Bocce Ball Proximity Scoring",
+  "spec": "`bocce(throws, pallino)`\nThe first input is an array of arrays containing a player team name, a throw distance, and a throw angle. The second input is an array with a pallino distance and a pallino angle. Calculate the separation between each throw and the pallino by taking the absolute difference in distance plus the absolute difference in angle. A throw is valid if the throw distance is less than fifty. Find the team with the smallest separation on a valid throw. That team scores one point. If multiple throws from that winning team are closer than any valid throw from other teams, they score an additional point for each. Return the name of the winning team and their total points as an array. Example: given [[\"red\", 10, 5], [\"blue\", 30, 20]] and [12, 5], return [\"red\", 1].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d323",
+  "title": "Canoe Paddle Stroke Efficiency",
+  "spec": "`canoe(strokes)`\nThe input is an array of arrays containing a stroke depth, a pull force, and a recovery time. A stroke is considered efficient if the stroke depth is between twenty and forty, the pull force is above fifty, and the recovery time is less than two. Start with zero forward momentum. For each efficient stroke, add the pull force to the forward momentum. For any stroke, if the stroke depth is over forty, subtract ten from the momentum due to drag. If the recovery time is over three, subtract five momentum points. Calculate and return the total forward momentum after all strokes. Example: given [[30, 60, 1.5], [45, 50, 1]], return 100.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d324",
+  "title": "Biathlon Target Hit Sequence",
+  "spec": "`biathlon(shooters)`\nThe input is an array of arrays holding an athlete name, a heart rate, a wind speed, and an array of five numbers where one is a hit and zero is a miss. The base shooting time is thirty seconds. For each missed shot, a penalty loop adds twenty five seconds to their total time. If the heart rate is over one hundred sixty, the total time increases by five seconds due to shaking. If the wind speed is over fifteen, add three seconds for environmental delay. Calculate the final time for each athlete. Return the name of the athlete with the lowest final time. Example: given [[\"Sven\", 150, 10, [1, 1, 1, 1, 1]]], return \"Sven\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d325",
+  "title": "Skeleton Sled Steering Drag",
+  "spec": "`skeleton(corners)`\nThe input is an array of arrays containing a corner angle, an ice temperature, and a shoulder shift intensity. Start with a sled speed of one hundred. For each corner, the shoulder shift intensity must match the corner angle within five units to steer cleanly. If it matches cleanly, subtract one from the sled speed for friction. If it does not match, subtract the absolute difference between the corner angle and the shoulder shift intensity from the sled speed due to wall collisions. If the ice temperature is below negative five, add two to the speed after each corner, but the speed cannot exceed one hundred twenty. Return the final sled speed. Example: given [[30, -10, 30]], return 101.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d326",
+  "title": "Lawn Bowls Weight Bias",
+  "spec": "`bowls(deliveries)`\nThe input is an array of arrays holding a player name, a release weight, a green dampness, and a bowl bias rating. The target resting distance is thirty. The actual distance traveled is the release weight minus the green dampness, plus half of the bowl bias rating. If the green dampness is over eight, subtract an additional two units due to heavy grass. If the actual distance traveled is within two units of the target resting distance, the delivery is marked as excellent. Return an array of player names who made an excellent delivery. Example: given [[\"Jack\", 35, 5, 4]], return [\"Jack\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d327",
+  "title": "Polo Mallet Swing Timing",
+  "spec": "`polo(swings, horse)`\nThe first input is an array of arrays containing a player name, a swing delay, and a mallet angle. The second input is an array with a horse speed and a bump impact. The ideal contact point is when the swing delay equals the horse speed divided by two. The base margin of error is plus or minus three. If the bump impact is over ten, the margin of error shrinks to plus or minus one. If the mallet angle is strictly between eighty and one hundred, it is a clean strike. If the swing delay is within the active margin of error around the ideal contact point and the strike is clean, the player hits the ball. Return an array of the names of players who hit the ball. Example: given [[\"Tom\", 10, 90]] and [20, 0], return [\"Tom\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d328",
+  "title": "Discus Spin Centrifugal Force",
+  "spec": "`discus(athletes)`\nThe input is an array of arrays containing an athlete name, spin rotations, an arm length, and a release angle. The centrifugal force generated is the spin rotations multiplied by the arm length. The base throw distance is the centrifugal force multiplied by two. If the release angle is between thirty and forty degrees, the throw gets a ten percent distance bonus added to the base. If the release angle is above forty five degrees, the throw loses fifteen percent of its distance. Any spin rotations above five cause dizziness, reducing the final calculated distance by twenty units. Return the name of the athlete with the longest final throw distance. Example: given [[\"Hector\", 4, 1.5, 35]], return \"Hector\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d329",
+  "title": "Javelin Flight Trajectory",
+  "spec": "`javelin(throws)`\nThe input is an array of arrays with a thrower name, a release velocity, a tip elevation, and a tail wind speed. The initial flight distance is the release velocity multiplied by three. If the tip elevation matches the tail wind speed exactly, the javelin glides perfectly, adding twenty units to the distance. If the tip elevation is greater than the tail wind speed plus ten, it catches air and drops, losing thirty units. If the release velocity is below twenty, it nose dives immediately and the total distance is halved after applying all other adjustments. Return an array of thrower names whose flight distance exceeds one hundred. Example: given [[\"Bob\", 40, 10, 10]], return [\"Bob\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d330",
+  "title": "Badminton Shuttlecock Aerodynamic Drag",
+  "spec": "`shuttlecock(smashes)`\nThe input is an array of arrays holding a player name, a racket speed, a feather condition from one to ten, and an altitude. The initial shuttle speed equals the racket speed. The drag deduction is ten minus the feather condition, multiplied by two. If the altitude is above one thousand, thinner air reduces the drag deduction by half. Subtract the final drag deduction from the initial shuttle speed. If the feather condition is below three, the shuttle wobbles, reducing the shuttle speed by an extra fifteen units. Return an array of names of players whose final shuttle speed remains strictly above fifty. Example: given [[\"Lin\", 80, 8, 0]], return [\"Lin\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d331",
+  "title": "Table Tennis Rally Speed",
+  "spec": "`rally(hits)`\nThe input is an array of arrays containing a paddle angle, a wrist snap speed, and a ball spin rotation. A rally starts with a base ball speed of twenty. For each hit sequentially, add the wrist snap speed to the current ball speed. If the paddle angle is closed, which means less than forty five, and the ball spin rotation is above fifty, it creates a topspin loop adding five to the speed. If the paddle angle is open, meaning above ninety, the ball pops up, resetting the current ball speed back to twenty regardless of previous hits. Return the maximum ball speed reached at any point after the first hit. Example: given [[40, 30, 60], [100, 10, 0]], return 55.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d332",
+  "title": "Luge Track Curve Velocity",
+  "spec": "`luge(curves, sled)`\nThe first input is an array of arrays containing a curve radius, a bank angle, and an ice smoothness. The second input is an array with an initial velocity and a blade sharpness. For each curve in order, if the current velocity is greater than the curve radius multiplied by two, the sled skids. When skidding, subtract five from the current velocity. If the bank angle is over ninety, gravity assists, adding three to the velocity. If the ice smoothness is exactly ten and blade sharpness is above seven, the velocity increases by two for that curve. Return the final velocity after processing all curves. Example: given [[30, 100, 10]] and [50, 8], return 55.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d333",
+  "title": "Metronome Tempo Matching",
+  "spec": "`metronome(beats)`\nThe input is an array of arrays containing a musician name, a tapping tempo, a metronome setting, and a patience level. A musician successfully synchronizes if their tapping tempo is within three beats per minute of the metronome setting. If the difference is greater than three but their patience level is above eight, they adjust and eventually synchronize. If the tapping tempo is exactly equal to the metronome setting, they lock in immediately and their patience level increases by two. If the absolute difference is over ten, they give up immediately and fail, regardless of patience level. Return an array of names of musicians who synchronize. Example: given [[\"Bach\", 120, 120, 5]], return [\"Bach\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d334",
+  "title": "Accordion Reed Tuning",
+  "spec": "`accordion(reeds)`\nThe input is an array of arrays containing a reed position, a current pitch frequency, a target pitch frequency, and a brass thickness. A reed is considered in tune if the absolute difference between the current pitch frequency and the target pitch frequency is less than zero point five. If the current pitch frequency is greater than the target pitch frequency, it needs filing at the base. Filing at the base once decreases the pitch by exactly the brass thickness. Return an array of reed positions that require filing at the base, but only include them if one single filing action does not cause the new pitch to drop strictly below the target pitch frequency. Example: given [[1, 445, 440, 2]], return [1].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d335",
+  "title": "Vintage Clock Pendulum Calibration",
+  "spec": "Write a function `calibrate(parameters)` that evaluates the performance of mechanical timepieces. The input is an array of daily readings, where each reading is an array containing the starting swing amplitude in degrees, the average room temperature, and the escapement wear percentage. For each day, determine the daily tick loss by multiplying the escapement wear by a base friction constant of five. Increase this tick loss by two for every degree the temperature falls below sixty. Calculate the effective swing arc by subtracting the total tick loss from the starting amplitude. Return an array of the final effective arcs. For example, an input of [[100, 58, 2]] should return [86].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d336",
+  "title": "Orchid Bloom Exhibition Scoring",
+  "spec": "Implement a function `judge(orchids)` to evaluate flowers in a botanical competition. The input is a list of entries, where each entry is a list containing the number of open flowers, a color vibrancy rating from one to ten, and the number of damaged leaves. The base score equals the number of open flowers multiplied by the color vibrancy rating. Deduct three points for every damaged leaf. If the total deductions exceed fifteen, apply an additional overall health penalty of ten points to that entry. Return a list of the final scores, replacing any negative scores with zero. An input of [[5, 8, 6]] should yield [12].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d337",
+  "title": "Rainwater Harvesting Cistern Sizing",
+  "spec": "Create a function `size(history)` to determine the capacity needs for a rainwater collection system. The input is an array of monthly data, where each month is represented by an array containing inches of rainfall, roof collection area in square feet, and daily household water usage in gallons. Calculate the monthly collection volume by multiplying the rainfall by the roof area and a conversion factor of zero point six two. Subtract the total monthly usage, which is the daily usage multiplied by thirty. Track the cumulative surplus or deficit across all months sequentially. Return an array containing exactly two values: the maximum accumulated surplus and the maximum accumulated deficit over the recorded period.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d338",
+  "title": "Earthship Home Thermal Mass Rating",
+  "spec": "Develop a function `evaluate(rooms)` that calculates the passive heating efficiency of an off grid house. The input is an array of room profiles, where each is an array containing the tire wall thickness in inches, the square footage of south facing glass, and the average ambient winter temperature. Compute the solar gain by multiplying the glass area by the ambient temperature. Determine the heat retention value by multiplying the tire wall thickness by a constant of four. The room comfort index is the sum of the solar gain and the heat retention value, divided by ten. Return an array of the comfort indices for all rooms. An input of [[24, 100, 30]] results in [309.6].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d339",
+  "title": "Custom Robot Arm Torque Calculator",
+  "spec": "Write a function `calculate(joints)` to determine the mechanical requirements for a robotic limb. The input is an array of arm segments from base to tip, each an array containing the segment weight in kilograms, segment length in meters, and the payload mass carried at the end. For each segment, the static torque is the segment weight multiplied by half of its length. Add the dynamic torque, which is the payload mass multiplied by the full segment length and a gravity constant of nine point eight. Sum these two values to find the required joint motor strength. Return a list of the required motor strengths for each segment.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d340",
+  "title": "Rare Stamp Auction Profitability",
+  "spec": "Implement a function `appraise(stamps)` to project the financial return on a philatelic collection. The input is a list of stamp lots, each an array containing the catalog base value, a rarity multiplier, and the auction house commission percentage. Find the expected hammer price by multiplying the catalog value by the rarity multiplier. Subtract the commission fee, which is the expected hammer price multiplied by the commission percentage divided by one hundred. If the rarity multiplier is strictly above five, add a premium collector bonus of fifty dollars. Return an array of the final expected seller payouts. For [[100, 6, 10]], it should return [590].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d341",
+  "title": "Skipped Stone Trajectory Estimator",
+  "spec": "Create a function `simulate(throws)` to predict the behavior of rocks skipped across a pond. The input is a list of throw profiles, each an array with initial velocity, spin rate in revolutions per minute, and angle of incidence. A successful throw requires a minimum velocity of ten and a spin rate above fifty; throws failing this return zero skips. For successful throws, calculate the base skip count by dividing the velocity by the angle of incidence. Add one additional skip for every full hundred revolutions of spin. Round the final sum down to the nearest whole number. Return an array of skip counts for all throw profiles.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d342",
+  "title": "Terrarium Ecosystem Balancer",
+  "spec": "Develop a function `balance(environments)` to evaluate the self sustaining viability of enclosed gardens. The input is an array of terrariums, each represented by a list containing soil moisture percentage, number of broadleaf plants, and the population of isopod insects. Calculate the oxygen output by multiplying the number of plants by the moisture percentage. Calculate the carbon dioxide generation by multiplying the isopod population by three. The ecosystem stability score is the absolute difference between the oxygen output and the carbon dioxide generation. Return an array of stability scores, where lower numbers indicate better balance. An input of [[60, 2, 40]] returns [0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d343",
+  "title": "Hot Sauce Fermentation Profiler",
+  "spec": "Write a function `profile(batches)` to evaluate the progress of spicy condiment mashes. The input is a list of fermentation batches, each an array holding pepper mash weight in grams, salt concentration percentage, and days fermented. Determine the lactobacillus growth rate by multiplying the mash weight by the days fermented. Subtract an inhibition factor, which is the salt concentration squared multiplied by ten. If the final growth rate falls below zero, the batch is spoiled and receives a score of zero. Otherwise, divide the net growth rate by one hundred to get the tanginess rating. Return an array of these final tanginess ratings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d344",
+  "title": "Medieval Sword Forging Quality",
+  "spec": "Implement a function `forge(swords)` to determine the battle readiness of crafted weapons. The input is a list of forging attempts, each an array with the number of heating cycles, total hammer strikes, and a quenching medium quality rating from one to five. Calculate the blade density by dividing the hammer strikes by the heating cycles. Determine the temper strength by multiplying the quenching medium quality by twenty. The base durability score is the blade density plus the temper strength. If the heating cycles exceed forty, deduct fifteen points for thermal metal fatigue. Return an array of the final durability scores.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d345",
+  "title": "Paper Airplane Flight Envelope",
+  "spec": "Create a function `test(designs)` that models the aerodynamics of folded paper gliders. The input is an array of airplane designs, each an array containing wing surface area, nose cone weight, and throwing force. Compute the aerodynamic lift potential by multiplying the wing surface area by the throwing force. Compute the drag penalty by multiplying the nose cone weight by a constant of three. The estimated flight distance is the lift potential minus the drag penalty. If this distance calculation results in a negative number, the plane nose dives immediately and travels a distance of zero. Return a list of the estimated flight distances.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d346",
+  "title": "Drone Swarm Survey Coverage",
+  "spec": "Develop a function `survey(regions)` to calculate the mapping capability of unmanned aerial vehicles. The input is an array of survey missions, each containing battery capacity in milliamp hours, number of directional flight changes, and wind resistance severity level. The baseline flight time is the battery capacity divided by fifty. Each directional change consumes two extra minutes of battery life, which must be subtracted from the flight time. Multiply the remaining flight time by the wind resistance severity level to calculate the total surveyed acreage. Return an array containing the surveyed acreage for each mission. Inputting [[5000, 10, 2]] should yield [160].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d347",
+  "title": "Vintage Synthesizer Envelope Generator",
+  "spec": "Write a function `synthesize(notes)` to process the audio shaping stages of an electronic keyboard. The input is an array of note triggers, each an array containing attack time in milliseconds, sustain level percentage, and release time in milliseconds. Calculate the peak transient energy by multiplying the attack time by a resonance constant of four. Determine the holding energy by multiplying the sustain level by fifty. The decay slope is the absolute difference between the peak transient energy and the holding energy. The total active note duration is the attack time plus the release time plus the holding energy. Return an array of the total note durations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d348",
+  "title": "Cavern Stalagmite Mapping",
+  "spec": "Implement a function `map(caverns)` to estimate the height of geological formations inside caves. The input is an array of cavern chambers, each an array holding the mineral drip rate, ambient humidity percentage, and decades of uninterrupted growth. Determine the base deposition rate by multiplying the mineral drip rate by the ambient humidity percentage. The total raw column height is the deposition rate multiplied by the decades of growth. Subtract a dissolution factor, which is the humidity percentage divided by ten. Return an array of the final stalagmite heights in millimeters. An input of [[5, 80, 2]] would return [792].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d349",
+  "title": "Flooded Basement Structural Drying",
+  "spec": "Create a function `forecast(basements)` to estimate the time required to mitigate water damage in homes. The input is an array of basement scenarios, each a list containing water depth in inches, floor square footage, and the number of industrial dehumidifiers deployed. Calculate the total water volume by multiplying the depth by the square footage. Determine the extraction rate per hour, which is the number of dehumidifiers multiplied by twelve. The estimated base drying time is the total water volume divided by the extraction rate. If the drying time exceeds seventy two hours, add a mold remediation delay of twenty four hours. Return an array of total drying times.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d350",
+  "title": "Micro Algae Photobioreactor Yield",
+  "spec": "Develop a function `estimate(cycles)` to predict the biomass generation of aquatic agriculture. The input is an array of growth cycles, each an array with the light intensity level, nutrient flow rate, and days before harvest. The daily biomass growth is the light intensity level multiplied by the nutrient flow rate. Multiply this daily growth by the days before harvest to obtain the gross cycle yield. Subtract a cellular respiration loss, which is calculated as two percent of the gross yield multiplied by the days before harvest. Return a list of the net biomass yields for each cycle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d351",
+  "title": "Cycling Helmet Aerodynamic Drag",
+  "spec": "Write a function `evaluate(helmets)` to quantify the wind resistance of specialized racing headgear. The input is an array of helmet models, each containing the frontal surface area, number of ventilation holes, and wind tunnel yaw angle. Determine the base physical drag by multiplying the frontal surface area by the yaw angle. Add an air turbulence penalty, calculated as the number of ventilation holes multiplied by one point five. If the yaw angle is strictly greater than ten degrees, multiply the combined total drag by a crosswind multiplier of one point two. Return an array of the final aerodynamic drag values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d352",
+  "title": "Antique Book Restoration Cost",
+  "spec": "Implement a function `appraise(books)` to calculate the expenses of preserving rare literature. The input is a list of books, each represented by an array containing the number of torn pages, the leather binding deterioration percentage, and the physical age in years. Calculate the page repair cost by multiplying the number of torn pages by five. Calculate the rebinding cost by multiplying the leather deterioration percentage by two. If the book age is greater than one hundred years, add a special antiquarian handling fee of fifty. The final estimated repair cost is the sum of these three values. Return a list of estimated costs for all submitted books.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

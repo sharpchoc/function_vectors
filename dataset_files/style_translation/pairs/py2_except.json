@@ -21196,6 +21196,296 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py2_except__d085",
+"family": "py2_except",
+"topic": "Retro Arcade Highscore Parser",
+"angle": "code",
+"text_es": "Parse a corrupted highscore entry containing eight string fields. The entry function is `parse(entry)`. Store any exception messages in a corruption list. The first field is player score; convert to integer and multiply by ten, defaulting to zero on error. The second is levels cleared; convert to integer and add one, defaulting to one. The third is accuracy; remove the percent sign, convert to float, and divide by one hundred, defaulting to zero point five. The fourth is time played; split by colon, convert minutes and seconds to integers, and calculate total seconds, defaulting to three hundred. The fifth is lives remaining; convert from binary to integer, defaulting to three. The sixth is secret items found; convert to float and round to the nearest integer, defaulting to zero. The seventh is boss damage; strip the letters hp and convert to integer, defaulting to one thousand. The eighth is button presses; extract the first three characters and convert to integer, defaulting to one hundred. Return the parsed entry and the corruption list. Example input: [\"h\", \"h\", \"h\", \"h\", \"h\", \"h\", \"h\", \"h\"]. Example output: a tuple containing [0, 1, 0.5, 300, 3, 0.0, 1000, 100] and eight error strings.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import sys\n\n\ndef field(entry, index, corruption):\n    try:\n        return entry[index]\n    except IndexError as err:\n        corruption.append(\"field %d missing: %s\" % (index + 1, err))\n        return \"\"\n\n\ndef parse_score(raw, corruption):\n    try:\n        return int(raw) * 10\n    except ValueError as err:\n        corruption.append(\"score: %s\" % err)\n        return 0\n\n\ndef parse_levels(raw, corruption):\n    try:\n        return int(raw) + 1\n    except ValueError as err:\n        corruption.append(\"levels: %s\" % err)\n        return 1\n\n\ndef parse_accuracy(raw, corruption):\n    try:\n        return float(raw.replace(\"%\", \"\")) / 100\n    except ValueError as err:\n        corruption.append(\"accuracy: %s\" % err)\n        return 0.5\n\n\ndef parse_time(raw, corruption):\n    try:\n        minutes, seconds = raw.split(\":\")\n    except ValueError as err:\n        corruption.append(\"time played: %s\" % err)\n        return 300\n    try:\n        return int(minutes) * 60 + int(seconds)\n    except ValueError as err:\n        corruption.append(\"time played: %s\" % err)\n        return 300\n\n\ndef parse_lives(raw, corruption):\n    try:\n        return int(raw, 2)\n    except ValueError as err:\n        corruption.append(\"lives: %s\" % err)\n        return 3\n\n\ndef parse_secrets(raw, corruption):\n    try:\n        return round(float(raw))\n    except ValueError as err:\n        corruption.append(\"secret items: %s\" % err)\n        return 0.0\n\n\ndef parse_boss_damage(raw, corruption):\n    try:\n        return int(raw.strip().lower().replace(\"hp\", \"\"))\n    except ValueError as err:\n        corruption.append(\"boss damage: %s\" % err)\n        return 1000\n\n\ndef parse_presses(raw, corruption):\n    try:\n        return int(raw[:3])\n    except ValueError as err:\n        corruption.append(\"button presses: %s\" % err)\n        return 100\n\n\ndef parse(entry):\n    corruption = []\n    readers = [parse_score, parse_levels, parse_accuracy, parse_time,\n               parse_lives, parse_secrets, parse_boss_damage, parse_presses]\n    parsed = []\n    for index, reader in enumerate(readers):\n        parsed.append(reader(field(entry, index, corruption), corruption))\n    return parsed, corruption\n\n\ndef format_report(parsed, corruption):\n    labels = [\"score\", \"levels\", \"accuracy\", \"seconds\",\n              \"lives\", \"secrets\", \"boss damage\", \"presses\"]\n    lines = []\n    for label, value in zip(labels, parsed):\n        lines.append(\"{0:<13}{1}\".format(label, value))\n    lines.append(\"corrupted fields: {0}\".format(len(corruption)))\n    for message in corruption:\n        lines.append(\"  - \" + message)\n    return \"\\n\".join(lines)\n\n\ndef main(argv):\n    if len(argv) > 1:\n        entry = argv[1].split(\",\")\n    else:\n        entry = [\"h\", \"h\", \"h\", \"h\", \"h\", \"h\", \"h\", \"h\"]\n    parsed, corruption = parse(entry)\n    print(format_report(parsed, corruption))\n\n\nif __name__ == \"__main__\":\n    main(sys.argv)\n",
+"text_alt": "import sys\n\n\ndef field(entry, index, corruption):\n    try:\n        return entry[index]\n    except IndexError, err:\n        corruption.append(\"field %d missing: %s\" % (index + 1, err))\n        return \"\"\n\n\ndef parse_score(raw, corruption):\n    try:\n        return int(raw) * 10\n    except ValueError, err:\n        corruption.append(\"score: %s\" % err)\n        return 0\n\n\ndef parse_levels(raw, corruption):\n    try:\n        return int(raw) + 1\n    except ValueError, err:\n        corruption.append(\"levels: %s\" % err)\n        return 1\n\n\ndef parse_accuracy(raw, corruption):\n    try:\n        return float(raw.replace(\"%\", \"\")) / 100\n    except ValueError, err:\n        corruption.append(\"accuracy: %s\" % err)\n        return 0.5\n\n\ndef parse_time(raw, corruption):\n    try:\n        minutes, seconds = raw.split(\":\")\n    except ValueError, err:\n        corruption.append(\"time played: %s\" % err)\n        return 300\n    try:\n        return int(minutes) * 60 + int(seconds)\n    except ValueError, err:\n        corruption.append(\"time played: %s\" % err)\n        return 300\n\n\ndef parse_lives(raw, corruption):\n    try:\n        return int(raw, 2)\n    except ValueError, err:\n        corruption.append(\"lives: %s\" % err)\n        return 3\n\n\ndef parse_secrets(raw, corruption):\n    try:\n        return round(float(raw))\n    except ValueError, err:\n        corruption.append(\"secret items: %s\" % err)\n        return 0.0\n\n\ndef parse_boss_damage(raw, corruption):\n    try:\n        return int(raw.strip().lower().replace(\"hp\", \"\"))\n    except ValueError, err:\n        corruption.append(\"boss damage: %s\" % err)\n        return 1000\n\n\ndef parse_presses(raw, corruption):\n    try:\n        return int(raw[:3])\n    except ValueError, err:\n        corruption.append(\"button presses: %s\" % err)\n        return 100\n\n\ndef parse(entry):\n    corruption = []\n    readers = [parse_score, parse_levels, parse_accuracy, parse_time,\n               parse_lives, parse_secrets, parse_boss_damage, parse_presses]\n    parsed = []\n    for index, reader in enumerate(readers):\n        parsed.append(reader(field(entry, index, corruption), corruption))\n    return parsed, corruption\n\n\ndef format_report(parsed, corruption):\n    labels = [\"score\", \"levels\", \"accuracy\", \"seconds\",\n              \"lives\", \"secrets\", \"boss damage\", \"presses\"]\n    lines = []\n    for label, value in zip(labels, parsed):\n        lines.append(\"{0:<13}{1}\".format(label, value))\n    lines.append(\"corrupted fields: {0}\".format(len(corruption)))\n    for message in corruption:\n        lines.append(\"  - \" + message)\n    return \"\\n\".join(lines)\n\n\ndef main(argv):\n    if len(argv) > 1:\n        entry = argv[1].split(\",\")\n    else:\n        entry = [\"h\", \"h\", \"h\", \"h\", \"h\", \"h\", \"h\", \"h\"]\n    parsed, corruption = parse(entry)\n    print(format_report(parsed, corruption))\n\n\nif __name__ == \"__main__\":\n    main(sys.argv)\n",
+"opps": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+108,
+111
+],
+"alt_span": [
+108,
+109
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+299,
+302
+],
+"alt_span": [
+297,
+298
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+465,
+468
+],
+"alt_span": [
+461,
+462
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+655,
+658
+],
+"alt_span": [
+649,
+650
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+838,
+841
+],
+"alt_span": [
+830,
+831
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+995,
+998
+],
+"alt_span": [
+985,
+986
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1167,
+1170
+],
+"alt_span": [
+1155,
+1156
+]
+},
+{
+"k": 7,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1339,
+1342
+],
+"alt_span": [
+1325,
+1326
+]
+},
+{
+"k": 8,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1549,
+1552
+],
+"alt_span": [
+1533,
+1534
+]
+},
+{
+"k": 9,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1725,
+1728
+],
+"alt_span": [
+1707,
+1708
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.98,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+108,
+111
+],
+"alt_span": [
+108,
+109
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+299,
+302
+],
+"alt_span": [
+297,
+298
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+465,
+468
+],
+"alt_span": [
+461,
+462
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+655,
+658
+],
+"alt_span": [
+649,
+650
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+838,
+841
+],
+"alt_span": [
+830,
+831
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+995,
+998
+],
+"alt_span": [
+985,
+986
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1167,
+1170
+],
+"alt_span": [
+1155,
+1156
+]
+},
+{
+"k": 7,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1339,
+1342
+],
+"alt_span": [
+1325,
+1326
+]
+},
+{
+"k": 8,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1549,
+1552
+],
+"alt_span": [
+1533,
+1534
+]
+},
+{
+"k": 9,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1725,
+1728
+],
+"alt_span": [
+1707,
+1708
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py2_except__d086",
 "family": "py2_except",
 "topic": "Zombie Survival Inventory",
@@ -51136,6 +51426,348 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py2_except__d205",
+"family": "py2_except",
+"topic": "Stratospheric Ozone Profiler",
+"angle": "code",
+"text_es": "Create a module for parsing high-altitude balloon telemetry. The data contains altitude, ozone concentration, ultraviolet index, temperature, pressure, sensor voltage, gps latitude, and checksum. Implement an individual parsing routine for each component. Altitude and temperature are standard decimals. Ozone concentration requires parsing a fraction like '1/5'. Ultraviolet index and pressure are integers. Sensor voltage is a hex value to be converted to decimal. Latitude requires splitting by a colon and taking the second part. Checksum involves dividing 5000 by the integer value of the string. Each routine must catch any errors during its operation, bind the exception, and return the error string instead of crashing. The main function `profile(telemetry)` applies these routines to the split list of strings and returns a list of results. Example: if the ozone fraction is '1/0', the corresponding output element will be the division by zero error message.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "from fractions import Fraction\n\n\ndef parse_altitude(text):\n    try:\n        return float(text)\n    except ValueError as err:\n        return str(err)\n\n\ndef parse_ozone(text):\n    try:\n        numerator, denominator = text.split('/')\n        return float(numerator) / float(denominator)\n    except ValueError as err:\n        return str(err)\n    except ZeroDivisionError as err:\n        return str(err)\n\n\ndef parse_uv_index(text):\n    try:\n        return int(text)\n    except ValueError as err:\n        return str(err)\n\n\ndef parse_temperature(text):\n    try:\n        return float(text)\n    except ValueError as err:\n        return str(err)\n\n\ndef parse_pressure(text):\n    try:\n        return int(text)\n    except ValueError as err:\n        return str(err)\n\n\ndef parse_voltage(text):\n    try:\n        return int(text, 16)\n    except ValueError as err:\n        return str(err)\n\n\ndef parse_latitude(text):\n    try:\n        return text.split(':')[1]\n    except IndexError as err:\n        return str(err)\n\n\ndef parse_checksum(text):\n    try:\n        return 5000 / int(text)\n    except ValueError as err:\n        return str(err)\n    except ZeroDivisionError as err:\n        return str(err)\n\n\nFIELDS = (\n    ('altitude', parse_altitude),\n    ('ozone', parse_ozone),\n    ('uv_index', parse_uv_index),\n    ('temperature', parse_temperature),\n    ('pressure', parse_pressure),\n    ('voltage', parse_voltage),\n    ('latitude', parse_latitude),\n    ('checksum', parse_checksum),\n)\n\n\ndef profile(telemetry):\n    parts = telemetry.split()\n    results = []\n    for index in range(len(FIELDS)):\n        name, routine = FIELDS[index]\n        try:\n            results.append(routine(parts[index]))\n        except IndexError as err:\n            results.append('%s missing: %s' % (name, err))\n    return results\n\n\ndef ozone_as_fraction(text):\n    try:\n        return Fraction(text)\n    except ZeroDivisionError as err:\n        return str(err)\n\n\ndef report(telemetry):\n    values = profile(telemetry)\n    lines = []\n    for index in range(len(values)):\n        lines.append('%-12s %s' % (FIELDS[index][0], values[index]))\n    lines.append('%-12s %s' % ('ozone_frac', ozone_as_fraction(telemetry.split()[1])))\n    return '\\n'.join(lines)\n\n\ndef main():\n    samples = [\n        '31450.5 1/5 9 -54.25 118 1A4 N:47.6062 250',\n        '30012.0 1/0 high -48.0 1e2 XYZ 47.6062 0',\n    ]\n    for sample in samples:\n        print(report(sample))\n        print('-' * 32)\n\n\nif __name__ == '__main__':\n    main()\n",
+"text_alt": "from fractions import Fraction\n\n\ndef parse_altitude(text):\n    try:\n        return float(text)\n    except ValueError, err:\n        return str(err)\n\n\ndef parse_ozone(text):\n    try:\n        numerator, denominator = text.split('/')\n        return float(numerator) / float(denominator)\n    except ValueError, err:\n        return str(err)\n    except ZeroDivisionError, err:\n        return str(err)\n\n\ndef parse_uv_index(text):\n    try:\n        return int(text)\n    except ValueError, err:\n        return str(err)\n\n\ndef parse_temperature(text):\n    try:\n        return float(text)\n    except ValueError, err:\n        return str(err)\n\n\ndef parse_pressure(text):\n    try:\n        return int(text)\n    except ValueError, err:\n        return str(err)\n\n\ndef parse_voltage(text):\n    try:\n        return int(text, 16)\n    except ValueError, err:\n        return str(err)\n\n\ndef parse_latitude(text):\n    try:\n        return text.split(':')[1]\n    except IndexError, err:\n        return str(err)\n\n\ndef parse_checksum(text):\n    try:\n        return 5000 / int(text)\n    except ValueError, err:\n        return str(err)\n    except ZeroDivisionError, err:\n        return str(err)\n\n\nFIELDS = (\n    ('altitude', parse_altitude),\n    ('ozone', parse_ozone),\n    ('uv_index', parse_uv_index),\n    ('temperature', parse_temperature),\n    ('pressure', parse_pressure),\n    ('voltage', parse_voltage),\n    ('latitude', parse_latitude),\n    ('checksum', parse_checksum),\n)\n\n\ndef profile(telemetry):\n    parts = telemetry.split()\n    results = []\n    for index in range(len(FIELDS)):\n        name, routine = FIELDS[index]\n        try:\n            results.append(routine(parts[index]))\n        except IndexError, err:\n            results.append('%s missing: %s' % (name, err))\n    return results\n\n\ndef ozone_as_fraction(text):\n    try:\n        return Fraction(text)\n    except ZeroDivisionError, err:\n        return str(err)\n\n\ndef report(telemetry):\n    values = profile(telemetry)\n    lines = []\n    for index in range(len(values)):\n        lines.append('%-12s %s' % (FIELDS[index][0], values[index]))\n    lines.append('%-12s %s' % ('ozone_frac', ozone_as_fraction(telemetry.split()[1])))\n    return '\\n'.join(lines)\n\n\ndef main():\n    samples = [\n        '31450.5 1/5 9 -54.25 118 1A4 N:47.6062 250',\n        '30012.0 1/0 high -48.0 1e2 XYZ 47.6062 0',\n    ]\n    for sample in samples:\n        print(report(sample))\n        print('-' * 32)\n\n\nif __name__ == '__main__':\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+116,
+119
+],
+"alt_span": [
+116,
+117
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+306,
+309
+],
+"alt_span": [
+304,
+305
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+367,
+370
+],
+"alt_span": [
+363,
+364
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+483,
+486
+],
+"alt_span": [
+477,
+478
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+604,
+607
+],
+"alt_span": [
+596,
+597
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+720,
+723
+],
+"alt_span": [
+710,
+711
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+839,
+842
+],
+"alt_span": [
+827,
+828
+]
+},
+{
+"k": 7,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+964,
+967
+],
+"alt_span": [
+950,
+951
+]
+},
+{
+"k": 8,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1087,
+1090
+],
+"alt_span": [
+1071,
+1072
+]
+},
+{
+"k": 9,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1148,
+1151
+],
+"alt_span": [
+1130,
+1131
+]
+},
+{
+"k": 10,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1702,
+1705
+],
+"alt_span": [
+1682,
+1683
+]
+},
+{
+"k": 11,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1887,
+1890
+],
+"alt_span": [
+1865,
+1866
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.97,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+116,
+119
+],
+"alt_span": [
+116,
+117
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+306,
+309
+],
+"alt_span": [
+304,
+305
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+367,
+370
+],
+"alt_span": [
+363,
+364
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+483,
+486
+],
+"alt_span": [
+477,
+478
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+604,
+607
+],
+"alt_span": [
+596,
+597
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+720,
+723
+],
+"alt_span": [
+710,
+711
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+839,
+842
+],
+"alt_span": [
+827,
+828
+]
+},
+{
+"k": 7,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+964,
+967
+],
+"alt_span": [
+950,
+951
+]
+},
+{
+"k": 8,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1087,
+1090
+],
+"alt_span": [
+1071,
+1072
+]
+},
+{
+"k": 9,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1148,
+1151
+],
+"alt_span": [
+1130,
+1131
+]
+},
+{
+"k": 10,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1702,
+1705
+],
+"alt_span": [
+1682,
+1683
+]
+},
+{
+"k": 11,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1887,
+1890
+],
+"alt_span": [
+1865,
+1866
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py2_except__d206",
 "family": "py2_except",
 "topic": "Mangrove Biomass Quantifier",
@@ -56660,184 +57292,6 @@
 ]
 },
 {
-"doc_id": "py2_except__t038",
-"family": "py2_except",
-"topic": "Sum of Digits",
-"angle": "code",
-"text_es": "Write a function `sum_digits(n)` that calculates the sum of the digits of a given non-negative integer `n`. For example, `sum_digits(123)` should return `6`, and `sum_digits(9)` should return `9`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def sum_digits(n):\n    try:\n        if not isinstance(n, int):\n            raise TypeError(\"Input must be an integer.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if n < 0:\n            raise ValueError(\"Input must be a non-negative integer.\")\n    except ValueError as err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        s = str(n)\n    except Exception as err:\n        print(f\"Unexpected error converting to string: {err}\")\n        return None\n\n    total_sum = 0\n    for digit_char in s:\n        try:\n            digit = int(digit_char)\n        except ValueError as err:\n            print(f\"Error converting character to integer: {err}\")\n            return None\n        except TypeError as err:\n            print(f\"Error with character type: {err}\")\n            return None\n        total_sum += digit\n    \n    try:\n        if not isinstance(total_sum, int):\n            raise TypeError(\"Sum is not an integer, unexpected.\")\n    except TypeError as err:\n        print(f\"Internal error: {err}\")\n        return None\n\n    return total_sum\n",
-"text_alt": "def sum_digits(n):\n    try:\n        if not isinstance(n, int):\n            raise TypeError(\"Input must be an integer.\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if n < 0:\n            raise ValueError(\"Input must be a non-negative integer.\")\n    except ValueError, err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        s = str(n)\n    except Exception, err:\n        print(f\"Unexpected error converting to string: {err}\")\n        return None\n\n    total_sum = 0\n    for digit_char in s:\n        try:\n            digit = int(digit_char)\n        except ValueError, err:\n            print(f\"Error converting character to integer: {err}\")\n            return None\n        except TypeError, err:\n            print(f\"Error with character type: {err}\")\n            return None\n        total_sum += digit\n    \n    try:\n        if not isinstance(total_sum, int):\n            raise TypeError(\"Sum is not an integer, unexpected.\")\n    except TypeError, err:\n        print(f\"Internal error: {err}\")\n        return None\n\n    return total_sum\n",
-"opps": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-140,
-143
-],
-"alt_span": [
-140,
-141
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-319,
-322
-],
-"alt_span": [
-317,
-318
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-428,
-431
-],
-"alt_span": [
-424,
-425
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-638,
-641
-],
-"alt_span": [
-632,
-633
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-762,
-765
-],
-"alt_span": [
-754,
-755
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1020,
-1023
-],
-"alt_span": [
-1010,
-1011
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.965,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-140,
-143
-],
-"alt_span": [
-140,
-141
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-319,
-322
-],
-"alt_span": [
-317,
-318
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-428,
-431
-],
-"alt_span": [
-424,
-425
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-638,
-641
-],
-"alt_span": [
-632,
-633
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-762,
-765
-],
-"alt_span": [
-754,
-755
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1020,
-1023
-],
-"alt_span": [
-1010,
-1011
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py2_except__t051",
 "family": "py2_except",
 "topic": "Decimal to Binary Conversion",
@@ -57046,184 +57500,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "py2_except__t098",
-"family": "py2_except",
-"topic": "Coin Flip Simulation",
-"angle": "code",
-"text_es": "Simulate a coin flip and return 'Heads' or 'Tails'. The function `simulate_coin_flip()` should return one of the two strings randomly. Input: None. Output: `result` (str).\nExample 1: `simulate_coin_flip()` could return `'Heads'`.\nExample 2: `simulate_coin_flip()` could return `'Tails'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "import random\n\ndef simulate_coin_flip():\n    try:\n        coin_sides = ['Heads', 'Tails']\n    except TypeError as err:\n        print(f\"Error defining coin sides: {err}\")\n        return \"Error\"\n\n    try:\n        chosen_side_index = random.randint(0, 1)\n    except ValueError as err:\n        print(f\"Error generating random integer: {err}\")\n        return \"Error\"\n    except IndexError as err:\n        print(f\"Index error during random number generation: {err}\")\n        return \"Error\"\n\n    try:\n        result = coin_sides[chosen_side_index]\n    except IndexError as err:\n        print(f\"Error accessing coin side: {err}\")\n        return \"Error\"\n    except TypeError as err:\n        print(f\"Type error during result assignment: {err}\")\n        return \"Error\"\n\n    try:\n        if not isinstance(result, str):\n            raise TypeError(\"Result is not a string.\")\n    except TypeError as err:\n        print(f\"Validation error: {err}\")\n        return \"Error\"\n\n    return result\n",
-"text_alt": "import random\n\ndef simulate_coin_flip():\n    try:\n        coin_sides = ['Heads', 'Tails']\n    except TypeError, err:\n        print(f\"Error defining coin sides: {err}\")\n        return \"Error\"\n\n    try:\n        chosen_side_index = random.randint(0, 1)\n    except ValueError, err:\n        print(f\"Error generating random integer: {err}\")\n        return \"Error\"\n    except IndexError, err:\n        print(f\"Index error during random number generation: {err}\")\n        return \"Error\"\n\n    try:\n        result = coin_sides[chosen_side_index]\n    except IndexError, err:\n        print(f\"Error accessing coin side: {err}\")\n        return \"Error\"\n    except TypeError, err:\n        print(f\"Type error during result assignment: {err}\")\n        return \"Error\"\n\n    try:\n        if not isinstance(result, str):\n            raise TypeError(\"Result is not a string.\")\n    except TypeError, err:\n        print(f\"Validation error: {err}\")\n        return \"Error\"\n\n    return result\n",
-"opps": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-110,
-113
-],
-"alt_span": [
-110,
-111
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-273,
-276
-],
-"alt_span": [
-271,
-272
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-383,
-386
-],
-"alt_span": [
-379,
-380
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-562,
-565
-],
-"alt_span": [
-556,
-557
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-665,
-668
-],
-"alt_span": [
-657,
-658
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-883,
-886
-],
-"alt_span": [
-873,
-874
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.96,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-110,
-113
-],
-"alt_span": [
-110,
-111
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-273,
-276
-],
-"alt_span": [
-271,
-272
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-383,
-386
-],
-"alt_span": [
-379,
-380
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-562,
-565
-],
-"alt_span": [
-556,
-557
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-665,
-668
-],
-"alt_span": [
-657,
-658
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-883,
-886
-],
-"alt_span": [
-873,
-874
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "py2_except__t152",

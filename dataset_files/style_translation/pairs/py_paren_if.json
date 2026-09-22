@@ -11824,6 +11824,543 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py_paren_if__d022",
+"family": "py_paren_if",
+"topic": "Blackjack Dealer AI",
+"angle": "code",
+"text_es": "The entry function `deal(deck)` receives a list of strings representing playing cards and simulates a dealer hand. Continually draw cards from the deck using a loop while the hand value is less than seventeen. Check if a drawn card is an ace, which initially counts as eleven points. Check if the card is a face card like a king, queen, or jack, which counts as ten points. Check if the card is a numeric string to add its exact integer value. After adding a card, check if the total score exceeds twenty one, and if so, check if the hand contains an ace currently valued at eleven to reduce its value to one. Return the final hand score.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "SUITS = \"SHDC\"\nFACES = (\"K\", \"Q\", \"J\")\n\n\ndef rank_of(card):\n    \"\"\"Extract the rank part of a card string such as '10H', 'AS' or 'Q'.\"\"\"\n    text = str(card).strip().upper()\n    if not text:\n        raise ValueError(\"empty card string\")\n    if len(text) > 1 and text[-1] in SUITS:\n        text = text[:-1]\n    return text\n\n\ndef card_points(rank):\n    \"\"\"Return the point value of a rank, with aces counted as eleven.\"\"\"\n    if rank == \"A\":\n        return 11\n    elif rank in FACES:\n        return 10\n    elif rank.isdigit():\n        return int(rank)\n    else:\n        raise ValueError(\"unknown card rank: %r\" % rank)\n\n\ndef deal(deck):\n    \"\"\"Play a dealer hand from deck and return the final score.\"\"\"\n    if not isinstance(deck, list):\n        raise TypeError(\"deck must be a list of card strings\")\n    score = 0\n    soft_aces = 0\n    index = 0\n    while score < 17:\n        if index >= len(deck):\n            break\n        rank = rank_of(deck[index])\n        index += 1\n        points = card_points(rank)\n        if rank == \"A\":\n            soft_aces += 1\n        score += points\n        if score > 21:\n            while soft_aces > 0 and score > 21:\n                score -= 10\n                soft_aces -= 1\n    return score\n\n\ndef describe(score):\n    \"\"\"Turn a finished hand score into a short verdict.\"\"\"\n    if score > 21:\n        return \"bust\"\n    elif score >= 17:\n        return \"stands on %d\" % score\n    else:\n        return \"stuck on %d, deck exhausted\" % score\n\n\ndef main():\n    decks = [\n        [\"AS\", \"9H\", \"7D\", \"KC\"],\n        [\"5H\", \"6D\", \"AC\", \"AD\", \"2S\"],\n        [\"KH\", \"QD\", \"3C\", \"8S\"],\n        [\"2H\", \"3D\", \"4C\"],\n    ]\n    for deck in decks:\n        score = deal(deck)\n        print(\"%-30s -> %2d  (%s)\" % (\" \".join(deck), score, describe(score)))\n\n\nmain()\n",
+"text_alt": "SUITS = \"SHDC\"\nFACES = (\"K\", \"Q\", \"J\")\n\n\ndef rank_of(card):\n    \"\"\"Extract the rank part of a card string such as '10H', 'AS' or 'Q'.\"\"\"\n    text = str(card).strip().upper()\n    if (not text):\n        raise ValueError(\"empty card string\")\n    if (len(text) > 1 and text[-1] in SUITS):\n        text = text[:-1]\n    return text\n\n\ndef card_points(rank):\n    \"\"\"Return the point value of a rank, with aces counted as eleven.\"\"\"\n    if (rank == \"A\"):\n        return 11\n    elif (rank in FACES):\n        return 10\n    elif (rank.isdigit()):\n        return int(rank)\n    else:\n        raise ValueError(\"unknown card rank: %r\" % rank)\n\n\ndef deal(deck):\n    \"\"\"Play a dealer hand from deck and return the final score.\"\"\"\n    if (not isinstance(deck, list)):\n        raise TypeError(\"deck must be a list of card strings\")\n    score = 0\n    soft_aces = 0\n    index = 0\n    while (score < 17):\n        if (index >= len(deck)):\n            break\n        rank = rank_of(deck[index])\n        index += 1\n        points = card_points(rank)\n        if (rank == \"A\"):\n            soft_aces += 1\n        score += points\n        if (score > 21):\n            while (soft_aces > 0 and score > 21):\n                score -= 10\n                soft_aces -= 1\n    return score\n\n\ndef describe(score):\n    \"\"\"Turn a finished hand score into a short verdict.\"\"\"\n    if (score > 21):\n        return \"bust\"\n    elif (score >= 17):\n        return \"stands on %d\" % score\n    else:\n        return \"stuck on %d, deck exhausted\" % score\n\n\ndef main():\n    decks = [\n        [\"AS\", \"9H\", \"7D\", \"KC\"],\n        [\"5H\", \"6D\", \"AC\", \"AD\", \"2S\"],\n        [\"KH\", \"QD\", \"3C\", \"8S\"],\n        [\"2H\", \"3D\", \"4C\"],\n    ]\n    for deck in decks:\n        score = deal(deck)\n        print(\"%-30s -> %2d  (%s)\" % (\" \".join(deck), score, describe(score)))\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+181,
+181
+],
+"alt_span": [
+181,
+182
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+244,
+244
+],
+"alt_span": [
+246,
+247
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+427,
+427
+],
+"alt_span": [
+431,
+432
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+467,
+467
+],
+"alt_span": [
+473,
+474
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+509,
+509
+],
+"alt_span": [
+517,
+518
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+709,
+709
+],
+"alt_span": [
+719,
+720
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+856,
+856
+],
+"alt_span": [
+868,
+869
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+879,
+879
+],
+"alt_span": [
+893,
+894
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1018,
+1018
+],
+"alt_span": [
+1034,
+1035
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1093,
+1093
+],
+"alt_span": [
+1111,
+1112
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1123,
+1123
+],
+"alt_span": [
+1143,
+1144
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1318,
+1318
+],
+"alt_span": [
+1340,
+1341
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1361,
+1361
+],
+"alt_span": [
+1385,
+1386
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+181,
+181
+],
+"alt_span": [
+181,
+182
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+189,
+189
+],
+"alt_span": [
+190,
+191
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+244,
+244
+],
+"alt_span": [
+246,
+247
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+279,
+279
+],
+"alt_span": [
+282,
+283
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+427,
+427
+],
+"alt_span": [
+431,
+432
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+438,
+438
+],
+"alt_span": [
+443,
+444
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+467,
+467
+],
+"alt_span": [
+473,
+474
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+480,
+480
+],
+"alt_span": [
+487,
+488
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+509,
+509
+],
+"alt_span": [
+517,
+518
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+522,
+522
+],
+"alt_span": [
+531,
+532
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+709,
+709
+],
+"alt_span": [
+719,
+720
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+734,
+734
+],
+"alt_span": [
+745,
+746
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+856,
+856
+],
+"alt_span": [
+868,
+869
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+866,
+866
+],
+"alt_span": [
+879,
+880
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+879,
+879
+],
+"alt_span": [
+893,
+894
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+896,
+896
+],
+"alt_span": [
+911,
+912
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1018,
+1018
+],
+"alt_span": [
+1034,
+1035
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1029,
+1029
+],
+"alt_span": [
+1046,
+1047
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1093,
+1093
+],
+"alt_span": [
+1111,
+1112
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1103,
+1103
+],
+"alt_span": [
+1122,
+1123
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1123,
+1123
+],
+"alt_span": [
+1143,
+1144
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1151,
+1151
+],
+"alt_span": [
+1172,
+1173
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1318,
+1318
+],
+"alt_span": [
+1340,
+1341
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1328,
+1328
+],
+"alt_span": [
+1351,
+1352
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1361,
+1361
+],
+"alt_span": [
+1385,
+1386
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1372,
+1372
+],
+"alt_span": [
+1397,
+1398
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py_paren_if__d024",
 "family": "py_paren_if",
 "topic": "Markdown Table Formatter",
@@ -14246,6 +14783,582 @@
 "alt_span": [
 2187,
 2188
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "py_paren_if__d029",
+"family": "py_paren_if",
+"topic": "Bank Loan Approver",
+"angle": "code",
+"text_es": "Write a function `approve(applications)` that evaluates mortgage applications. The input is a list of tuples with annual income, total debt, and credit score. Process until an income of zero is found. Deny if the credit score is below six hundred. Approve immediately if income exceeds one hundred thousand and debt is below twenty thousand. Otherwise, calculate the debt to income ratio as a percentage. If the ratio is over forty percent, deny. If the credit score is over seven hundred and the ratio is under thirty percent, approve. Otherwise, deny. Return a list of strings: either approved or denied. Example input: [(120000, 10000, 650), (50000, 25000, 710), (0, 0, 0)] outputs ['approved', 'denied'].",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def parse_application(record):\n    \"\"\"Validate one application record and return (income, debt, score).\"\"\"\n    if len(record) != 3:\n        raise ValueError(\"each application needs income, debt and credit score\")\n    income, debt, score = record\n    for value in record:\n        if not isinstance(value, (int, float)):\n            raise TypeError(\"application fields must be numeric\")\n    if income < 0:\n        raise ValueError(\"income cannot be negative\")\n    elif debt < 0:\n        raise ValueError(\"debt cannot be negative\")\n    elif score < 0:\n        raise ValueError(\"credit score cannot be negative\")\n    return income, debt, score\n\n\ndef debt_to_income(income, debt):\n    \"\"\"Debt to income ratio expressed as a percentage.\"\"\"\n    if income <= 0:\n        raise ValueError(\"cannot compute a ratio without income\")\n    return debt / income * 100.0\n\n\ndef decide(income, debt, score):\n    \"\"\"Return 'approved' or 'denied' for a single applicant.\"\"\"\n    if score < 600:\n        return \"denied\"\n    elif income > 100000 and debt < 20000:\n        return \"approved\"\n    ratio = debt_to_income(income, debt)\n    if ratio > 40.0:\n        return \"denied\"\n    elif score > 700 and ratio < 30.0:\n        return \"approved\"\n    return \"denied\"\n\n\ndef approve(applications):\n    \"\"\"Evaluate applications until an income of zero terminates the list.\"\"\"\n    decisions = []\n    index = 0\n    while index < len(applications):\n        income, debt, score = parse_application(applications[index])\n        if income == 0:\n            break\n        decisions.append(decide(income, debt, score))\n        index += 1\n    return decisions\n\n\ndef format_report(applications, decisions):\n    \"\"\"Build a human readable summary of the processed applications.\"\"\"\n    lines = []\n    approved = 0\n    for position, outcome in enumerate(decisions):\n        income, debt, score = applications[position]\n        if outcome == \"approved\":\n            approved += 1\n        lines.append(\n            \"#%d income=%d debt=%d score=%d -> %s\"\n            % (position + 1, income, debt, score, outcome)\n        )\n    if not decisions:\n        lines.append(\"no applications were processed\")\n    else:\n        lines.append(\"%d of %d approved\" % (approved, len(decisions)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    batch = [\n        (120000, 10000, 650),\n        (50000, 25000, 710),\n        (90000, 20000, 720),\n        (40000, 30000, 580),\n        (0, 0, 0),\n        (150000, 1000, 800),\n    ]\n    decisions = approve(batch)\n    print(decisions)\n    print(format_report(batch, decisions))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_application(record):\n    \"\"\"Validate one application record and return (income, debt, score).\"\"\"\n    if (len(record) != 3):\n        raise ValueError(\"each application needs income, debt and credit score\")\n    income, debt, score = record\n    for value in record:\n        if (not isinstance(value, (int, float))):\n            raise TypeError(\"application fields must be numeric\")\n    if (income < 0):\n        raise ValueError(\"income cannot be negative\")\n    elif (debt < 0):\n        raise ValueError(\"debt cannot be negative\")\n    elif (score < 0):\n        raise ValueError(\"credit score cannot be negative\")\n    return income, debt, score\n\n\ndef debt_to_income(income, debt):\n    \"\"\"Debt to income ratio expressed as a percentage.\"\"\"\n    if (income <= 0):\n        raise ValueError(\"cannot compute a ratio without income\")\n    return debt / income * 100.0\n\n\ndef decide(income, debt, score):\n    \"\"\"Return 'approved' or 'denied' for a single applicant.\"\"\"\n    if (score < 600):\n        return \"denied\"\n    elif (income > 100000 and debt < 20000):\n        return \"approved\"\n    ratio = debt_to_income(income, debt)\n    if (ratio > 40.0):\n        return \"denied\"\n    elif (score > 700 and ratio < 30.0):\n        return \"approved\"\n    return \"denied\"\n\n\ndef approve(applications):\n    \"\"\"Evaluate applications until an income of zero terminates the list.\"\"\"\n    decisions = []\n    index = 0\n    while (index < len(applications)):\n        income, debt, score = parse_application(applications[index])\n        if (income == 0):\n            break\n        decisions.append(decide(income, debt, score))\n        index += 1\n    return decisions\n\n\ndef format_report(applications, decisions):\n    \"\"\"Build a human readable summary of the processed applications.\"\"\"\n    lines = []\n    approved = 0\n    for position, outcome in enumerate(decisions):\n        income, debt, score = applications[position]\n        if (outcome == \"approved\"):\n            approved += 1\n        lines.append(\n            \"#%d income=%d debt=%d score=%d -> %s\"\n            % (position + 1, income, debt, score, outcome)\n        )\n    if (not decisions):\n        lines.append(\"no applications were processed\")\n    else:\n        lines.append(\"%d of %d approved\" % (approved, len(decisions)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    batch = [\n        (120000, 10000, 650),\n        (50000, 25000, 710),\n        (90000, 20000, 720),\n        (40000, 30000, 580),\n        (0, 0, 0),\n        (150000, 1000, 800),\n    ]\n    decisions = approve(batch)\n    print(decisions)\n    print(format_report(batch, decisions))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+114,
+114
+],
+"alt_span": [
+114,
+115
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+282,
+282
+],
+"alt_span": [
+284,
+285
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+392,
+392
+],
+"alt_span": [
+396,
+397
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+467,
+467
+],
+"alt_span": [
+473,
+474
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+538,
+538
+],
+"alt_span": [
+546,
+547
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+741,
+741
+],
+"alt_span": [
+751,
+752
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+959,
+959
+],
+"alt_span": [
+971,
+972
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1005,
+1005
+],
+"alt_span": [
+1019,
+1020
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1113,
+1113
+],
+"alt_span": [
+1129,
+1130
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1160,
+1160
+],
+"alt_span": [
+1178,
+1179
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1385,
+1385
+],
+"alt_span": [
+1405,
+1406
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1492,
+1492
+],
+"alt_span": [
+1514,
+1515
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1882,
+1882
+],
+"alt_span": [
+1906,
+1907
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2080,
+2080
+],
+"alt_span": [
+2106,
+2107
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+114,
+114
+],
+"alt_span": [
+114,
+115
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+130,
+130
+],
+"alt_span": [
+131,
+132
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+282,
+282
+],
+"alt_span": [
+284,
+285
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+315,
+315
+],
+"alt_span": [
+318,
+319
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+392,
+392
+],
+"alt_span": [
+396,
+397
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+402,
+402
+],
+"alt_span": [
+407,
+408
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+467,
+467
+],
+"alt_span": [
+473,
+474
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+475,
+475
+],
+"alt_span": [
+482,
+483
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+538,
+538
+],
+"alt_span": [
+546,
+547
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+547,
+547
+],
+"alt_span": [
+556,
+557
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+741,
+741
+],
+"alt_span": [
+751,
+752
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+752,
+752
+],
+"alt_span": [
+763,
+764
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+959,
+959
+],
+"alt_span": [
+971,
+972
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+970,
+970
+],
+"alt_span": [
+983,
+984
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1005,
+1005
+],
+"alt_span": [
+1019,
+1020
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1037,
+1037
+],
+"alt_span": [
+1052,
+1053
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1113,
+1113
+],
+"alt_span": [
+1129,
+1130
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1125,
+1125
+],
+"alt_span": [
+1142,
+1143
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1160,
+1160
+],
+"alt_span": [
+1178,
+1179
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1188,
+1188
+],
+"alt_span": [
+1207,
+1208
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1385,
+1385
+],
+"alt_span": [
+1405,
+1406
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1409,
+1409
+],
+"alt_span": [
+1430,
+1431
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1492,
+1492
+],
+"alt_span": [
+1514,
+1515
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1503,
+1503
+],
+"alt_span": [
+1526,
+1527
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1882,
+1882
+],
+"alt_span": [
+1906,
+1907
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1903,
+1903
+],
+"alt_span": [
+1928,
+1929
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2080,
+2080
+],
+"alt_span": [
+2106,
+2107
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2093,
+2093
+],
+"alt_span": [
+2120,
+2121
 ]
 }
 ],
@@ -17256,6 +18369,569 @@
 "alt_span": [
 2279,
 2280
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "py_paren_if__d035",
+"family": "py_paren_if",
+"topic": "Amusement Park Ride Eligibility",
+"angle": "code",
+"text_es": "Write a function `screening(riders)` to check rollercoaster restrictions. The input is a list of tuples with height in inches, age in years, and heart condition boolean. Process until height is zero. Deny the rider if heart condition is true. Deny if height is under thirty six inches. If height is under forty eight inches, require a guardian. If age is under ten and height is over forty eight, still require a guardian. Otherwise, approve. Return a list of strings: approved, denied, or guardian. Example input: [(35, 12, False), (40, 8, False), (50, 9, False), (60, 15, True), (0, 0, False)] outputs ['denied', 'guardian', 'guardian', 'denied'].",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def validate_rider(rider):\n    \"\"\"Check that a rider record looks like (height, age, heart_condition).\"\"\"\n    if len(rider) != 3:\n        raise ValueError(\"each rider needs height, age and heart condition\")\n    height, age, heart = rider\n    if not isinstance(height, int) or not isinstance(age, int):\n        raise ValueError(\"height and age must be whole numbers\")\n    if height < 0 or age < 0:\n        raise ValueError(\"height and age must not be negative\")\n    if not isinstance(heart, bool):\n        raise ValueError(\"heart condition must be a boolean\")\n    return height, age, heart\n\n\ndef classify(height, age, heart):\n    \"\"\"Return the ruling for a single rider.\"\"\"\n    if heart:\n        return \"denied\"\n    elif height < 36:\n        return \"denied\"\n    elif height < 48:\n        return \"guardian\"\n    elif age < 10:\n        return \"guardian\"\n    return \"approved\"\n\n\ndef screening(riders):\n    \"\"\"Screen riders in order, stopping at the first zero-height sentinel.\"\"\"\n    rulings = []\n    index = 0\n    while index < len(riders):\n        height, age, heart = validate_rider(riders[index])\n        if height == 0:\n            break\n        rulings.append(classify(height, age, heart))\n        index += 1\n    return rulings\n\n\ndef summarize(rulings):\n    \"\"\"Count how many riders fell into each ruling.\"\"\"\n    totals = {\"approved\": 0, \"denied\": 0, \"guardian\": 0}\n    for ruling in rulings:\n        totals[ruling] += 1\n    return totals\n\n\ndef format_report(rulings):\n    \"\"\"Build human readable lines for the queue that was screened.\"\"\"\n    lines = []\n    for position, ruling in enumerate(rulings, start=1):\n        if ruling == \"approved\":\n            note = \"may ride alone\"\n        elif ruling == \"guardian\":\n            note = \"must ride with a guardian\"\n        else:\n            note = \"cannot ride today\"\n        lines.append(\"Rider {}: {} - {}\".format(position, ruling, note))\n    totals = summarize(rulings)\n    if not rulings:\n        lines.append(\"No riders were screened.\")\n    else:\n        lines.append(\"Totals: {approved} approved, {guardian} guardian, {denied} denied\".format(**totals))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    queue = [(35, 12, False), (40, 8, False), (50, 9, False), (60, 15, True), (0, 0, False)]\n    rulings = screening(queue)\n    print(rulings)\n    print(format_report(rulings))\n    totals = summarize(rulings)\n    if totals[\"denied\"] > totals[\"approved\"]:\n        print(\"Attendant: explain the height and health rules at the gate.\")\n\n\nmain()\n",
+"text_alt": "def validate_rider(rider):\n    \"\"\"Check that a rider record looks like (height, age, heart_condition).\"\"\"\n    if (len(rider) != 3):\n        raise ValueError(\"each rider needs height, age and heart condition\")\n    height, age, heart = rider\n    if (not isinstance(height, int) or not isinstance(age, int)):\n        raise ValueError(\"height and age must be whole numbers\")\n    if (height < 0 or age < 0):\n        raise ValueError(\"height and age must not be negative\")\n    if (not isinstance(heart, bool)):\n        raise ValueError(\"heart condition must be a boolean\")\n    return height, age, heart\n\n\ndef classify(height, age, heart):\n    \"\"\"Return the ruling for a single rider.\"\"\"\n    if (heart):\n        return \"denied\"\n    elif (height < 36):\n        return \"denied\"\n    elif (height < 48):\n        return \"guardian\"\n    elif (age < 10):\n        return \"guardian\"\n    return \"approved\"\n\n\ndef screening(riders):\n    \"\"\"Screen riders in order, stopping at the first zero-height sentinel.\"\"\"\n    rulings = []\n    index = 0\n    while (index < len(riders)):\n        height, age, heart = validate_rider(riders[index])\n        if (height == 0):\n            break\n        rulings.append(classify(height, age, heart))\n        index += 1\n    return rulings\n\n\ndef summarize(rulings):\n    \"\"\"Count how many riders fell into each ruling.\"\"\"\n    totals = {\"approved\": 0, \"denied\": 0, \"guardian\": 0}\n    for ruling in rulings:\n        totals[ruling] += 1\n    return totals\n\n\ndef format_report(rulings):\n    \"\"\"Build human readable lines for the queue that was screened.\"\"\"\n    lines = []\n    for position, ruling in enumerate(rulings, start=1):\n        if (ruling == \"approved\"):\n            note = \"may ride alone\"\n        elif (ruling == \"guardian\"):\n            note = \"must ride with a guardian\"\n        else:\n            note = \"cannot ride today\"\n        lines.append(\"Rider {}: {} - {}\".format(position, ruling, note))\n    totals = summarize(rulings)\n    if (not rulings):\n        lines.append(\"No riders were screened.\")\n    else:\n        lines.append(\"Totals: {approved} approved, {guardian} guardian, {denied} denied\".format(**totals))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    queue = [(35, 12, False), (40, 8, False), (50, 9, False), (60, 15, True), (0, 0, False)]\n    rulings = screening(queue)\n    print(rulings)\n    print(format_report(rulings))\n    totals = summarize(rulings)\n    if (totals[\"denied\"] > totals[\"approved\"]):\n        print(\"Attendant: explain the height and health rules at the gate.\")\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+113,
+113
+],
+"alt_span": [
+113,
+114
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+245,
+245
+],
+"alt_span": [
+247,
+248
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+374,
+374
+],
+"alt_span": [
+378,
+379
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+468,
+468
+],
+"alt_span": [
+474,
+475
+]
+},
+{
+"k": 4,
+"nat": "heart",
+"alt": "(heart)",
+"nat_span": [
+680,
+685
+],
+"alt_span": [
+688,
+695
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+720,
+720
+],
+"alt_span": [
+730,
+731
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+766,
+766
+],
+"alt_span": [
+778,
+779
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+814,
+814
+],
+"alt_span": [
+828,
+829
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1016,
+1016
+],
+"alt_span": [
+1032,
+1033
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1107,
+1107
+],
+"alt_span": [
+1125,
+1126
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1623,
+1623
+],
+"alt_span": [
+1643,
+1644
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1694,
+1694
+],
+"alt_span": [
+1716,
+1717
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1928,
+1928
+],
+"alt_span": [
+1952,
+1953
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2365,
+2365
+],
+"alt_span": [
+2391,
+2392
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+113,
+113
+],
+"alt_span": [
+113,
+114
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+128,
+128
+],
+"alt_span": [
+129,
+130
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+245,
+245
+],
+"alt_span": [
+247,
+248
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+299,
+299
+],
+"alt_span": [
+302,
+303
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+374,
+374
+],
+"alt_span": [
+378,
+379
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+395,
+395
+],
+"alt_span": [
+400,
+401
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+468,
+468
+],
+"alt_span": [
+474,
+475
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+494,
+494
+],
+"alt_span": [
+501,
+502
+]
+},
+{
+"k": 8,
+"nat": "heart",
+"alt": "(heart)",
+"nat_span": [
+680,
+685
+],
+"alt_span": [
+688,
+695
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+720,
+720
+],
+"alt_span": [
+730,
+731
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": ")",
+"nat_span": [
+731,
+731
+],
+"alt_span": [
+742,
+743
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+766,
+766
+],
+"alt_span": [
+778,
+779
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": ")",
+"nat_span": [
+777,
+777
+],
+"alt_span": [
+790,
+791
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+814,
+814
+],
+"alt_span": [
+828,
+829
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": ")",
+"nat_span": [
+822,
+822
+],
+"alt_span": [
+837,
+838
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1016,
+1016
+],
+"alt_span": [
+1032,
+1033
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1034,
+1034
+],
+"alt_span": [
+1051,
+1052
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1107,
+1107
+],
+"alt_span": [
+1125,
+1126
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1118,
+1118
+],
+"alt_span": [
+1137,
+1138
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1623,
+1623
+],
+"alt_span": [
+1643,
+1644
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1643,
+1643
+],
+"alt_span": [
+1664,
+1665
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1694,
+1694
+],
+"alt_span": [
+1716,
+1717
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1714,
+1714
+],
+"alt_span": [
+1737,
+1738
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1928,
+1928
+],
+"alt_span": [
+1952,
+1953
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1939,
+1939
+],
+"alt_span": [
+1964,
+1965
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2365,
+2365
+],
+"alt_span": [
+2391,
+2392
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2402,
+2402
+],
+"alt_span": [
+2429,
+2430
 ]
 }
 ],
@@ -31946,6 +33622,595 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py_paren_if__d067",
+"family": "py_paren_if",
+"topic": "Action Game Damage Processor",
+"angle": "code",
+"text_es": "Write a function `calculate(base, multipliers, conditions)`. Base is an integer, multipliers is a list of floats, conditions is a list of strings. Start with the base damage. If conditions includes stealth, double the damage. If conditions includes poisoned, add five to the base before checking multipliers. Iterate through the multipliers list. If a multiplier is greater than two, cap it at two. If a multiplier is less than zero point five, ignore it completely. Apply each valid multiplier to the running total. If the final damage is over nine thousand, cap it at nine thousand. Return the final integer damage.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def normalize_conditions(conditions):\n    cleaned = []\n    for item in conditions:\n        if not isinstance(item, str):\n            raise TypeError(\"conditions must contain only strings\")\n        name = item.strip().lower()\n        if name:\n            cleaned.append(name)\n    return cleaned\n\n\ndef clamp_multiplier(value):\n    if value > 2.0:\n        return 2.0\n    elif value < 0.5:\n        return None\n    return value\n\n\ndef calculate(base, multipliers, conditions):\n    if not isinstance(base, int):\n        raise TypeError(\"base must be an integer\")\n    names = normalize_conditions(conditions)\n    total = float(base)\n    if \"poisoned\" in names:\n        total += 5\n    if \"stealth\" in names:\n        total *= 2\n    index = 0\n    while index < len(multipliers):\n        factor = clamp_multiplier(multipliers[index])\n        if factor is not None:\n            total *= factor\n        index += 1\n    if total > 9000:\n        total = 9000\n    return int(total)\n\n\ndef describe_multipliers(multipliers):\n    parts = []\n    for value in multipliers:\n        factor = clamp_multiplier(value)\n        if factor is None:\n            parts.append(\"%g ignored\" % value)\n        elif factor != value:\n            parts.append(\"%g capped to 2\" % value)\n        else:\n            parts.append(\"%g applied\" % value)\n    if not parts:\n        return \"none\"\n    return \", \".join(parts)\n\n\ndef format_report(base, multipliers, conditions):\n    damage = calculate(base, multipliers, conditions)\n    names = normalize_conditions(conditions)\n    if names:\n        condition_text = \"+\".join(names)\n    else:\n        condition_text = \"none\"\n    lines = [\"base %d, conditions: %s\" % (base, condition_text),\n             \"multipliers: %s\" % describe_multipliers(multipliers),\n             \"final damage: %d\" % damage]\n    if damage == 9000:\n        lines.append(\"note: damage was capped at 9000\")\n    return \"\\n\".join(lines)\n\n\ndef main():\n    attacks = [(40, [1.5, 0.25, 3.0], [\"Stealth\"]),\n               (100, [1.2, 1.2], [\"poisoned\", \"burning\"]),\n               (2000, [2.5, 2.5], [\"stealth\", \"poisoned\"]),\n               (75, [], [])]\n    for base, multipliers, conditions in attacks:\n        print(format_report(base, multipliers, conditions))\n        print(\"-\" * 32)\n\n\nmain()\n",
+"text_alt": "def normalize_conditions(conditions):\n    cleaned = []\n    for item in conditions:\n        if (not isinstance(item, str)):\n            raise TypeError(\"conditions must contain only strings\")\n        name = item.strip().lower()\n        if (name):\n            cleaned.append(name)\n    return cleaned\n\n\ndef clamp_multiplier(value):\n    if (value > 2.0):\n        return 2.0\n    elif (value < 0.5):\n        return None\n    return value\n\n\ndef calculate(base, multipliers, conditions):\n    if (not isinstance(base, int)):\n        raise TypeError(\"base must be an integer\")\n    names = normalize_conditions(conditions)\n    total = float(base)\n    if (\"poisoned\" in names):\n        total += 5\n    if (\"stealth\" in names):\n        total *= 2\n    index = 0\n    while (index < len(multipliers)):\n        factor = clamp_multiplier(multipliers[index])\n        if (factor is not None):\n            total *= factor\n        index += 1\n    if (total > 9000):\n        total = 9000\n    return int(total)\n\n\ndef describe_multipliers(multipliers):\n    parts = []\n    for value in multipliers:\n        factor = clamp_multiplier(value)\n        if (factor is None):\n            parts.append(\"%g ignored\" % value)\n        elif (factor != value):\n            parts.append(\"%g capped to 2\" % value)\n        else:\n            parts.append(\"%g applied\" % value)\n    if (not parts):\n        return \"none\"\n    return \", \".join(parts)\n\n\ndef format_report(base, multipliers, conditions):\n    damage = calculate(base, multipliers, conditions)\n    names = normalize_conditions(conditions)\n    if (names):\n        condition_text = \"+\".join(names)\n    else:\n        condition_text = \"none\"\n    lines = [\"base %d, conditions: %s\" % (base, condition_text),\n             \"multipliers: %s\" % describe_multipliers(multipliers),\n             \"final damage: %d\" % damage]\n    if (damage == 9000):\n        lines.append(\"note: damage was capped at 9000\")\n    return \"\\n\".join(lines)\n\n\ndef main():\n    attacks = [(40, [1.5, 0.25, 3.0], [\"Stealth\"]),\n               (100, [1.2, 1.2], [\"poisoned\", \"burning\"]),\n               (2000, [2.5, 2.5], [\"stealth\", \"poisoned\"]),\n               (75, [], [])]\n    for base, multipliers, conditions in attacks:\n        print(format_report(base, multipliers, conditions))\n        print(\"-\" * 32)\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+94,
+94
+],
+"alt_span": [
+94,
+95
+]
+},
+{
+"k": 1,
+"nat": "name",
+"alt": "(name)",
+"nat_span": [
+236,
+240
+],
+"alt_span": [
+238,
+244
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+332,
+332
+],
+"alt_span": [
+336,
+337
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+373,
+373
+],
+"alt_span": [
+379,
+380
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+478,
+478
+],
+"alt_span": [
+486,
+487
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+632,
+632
+],
+"alt_span": [
+642,
+643
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+679,
+679
+],
+"alt_span": [
+691,
+692
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+742,
+742
+],
+"alt_span": [
+756,
+757
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+833,
+833
+],
+"alt_span": [
+849,
+850
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+907,
+907
+],
+"alt_span": [
+925,
+926
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1102,
+1102
+],
+"alt_span": [
+1122,
+1123
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1178,
+1178
+],
+"alt_span": [
+1200,
+1201
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1314,
+1314
+],
+"alt_span": [
+1338,
+1339
+]
+},
+{
+"k": 13,
+"nat": "names",
+"alt": "(names)",
+"nat_span": [
+1533,
+1538
+],
+"alt_span": [
+1559,
+1566
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1805,
+1805
+],
+"alt_span": [
+1833,
+1834
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+94,
+94
+],
+"alt_span": [
+94,
+95
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+118,
+118
+],
+"alt_span": [
+119,
+120
+]
+},
+{
+"k": 2,
+"nat": "name",
+"alt": "(name)",
+"nat_span": [
+236,
+240
+],
+"alt_span": [
+238,
+244
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+332,
+332
+],
+"alt_span": [
+336,
+337
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": ")",
+"nat_span": [
+343,
+343
+],
+"alt_span": [
+348,
+349
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+373,
+373
+],
+"alt_span": [
+379,
+380
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": ")",
+"nat_span": [
+384,
+384
+],
+"alt_span": [
+391,
+392
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+478,
+478
+],
+"alt_span": [
+486,
+487
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": ")",
+"nat_span": [
+502,
+502
+],
+"alt_span": [
+511,
+512
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+632,
+632
+],
+"alt_span": [
+642,
+643
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": ")",
+"nat_span": [
+651,
+651
+],
+"alt_span": [
+662,
+663
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+679,
+679
+],
+"alt_span": [
+691,
+692
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": ")",
+"nat_span": [
+697,
+697
+],
+"alt_span": [
+710,
+711
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+742,
+742
+],
+"alt_span": [
+756,
+757
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": ")",
+"nat_span": [
+765,
+765
+],
+"alt_span": [
+780,
+781
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+833,
+833
+],
+"alt_span": [
+849,
+850
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": ")",
+"nat_span": [
+851,
+851
+],
+"alt_span": [
+868,
+869
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "(",
+"nat_span": [
+907,
+907
+],
+"alt_span": [
+925,
+926
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": ")",
+"nat_span": [
+919,
+919
+],
+"alt_span": [
+938,
+939
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1102,
+1102
+],
+"alt_span": [
+1122,
+1123
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1116,
+1116
+],
+"alt_span": [
+1137,
+1138
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1178,
+1178
+],
+"alt_span": [
+1200,
+1201
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1193,
+1193
+],
+"alt_span": [
+1216,
+1217
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1314,
+1314
+],
+"alt_span": [
+1338,
+1339
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1323,
+1323
+],
+"alt_span": [
+1348,
+1349
+]
+},
+{
+"k": 25,
+"nat": "names",
+"alt": "(names)",
+"nat_span": [
+1533,
+1538
+],
+"alt_span": [
+1559,
+1566
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1805,
+1805
+],
+"alt_span": [
+1833,
+1834
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1819,
+1819
+],
+"alt_span": [
+1848,
+1849
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py_paren_if__d069",
 "family": "py_paren_if",
 "topic": "Board Game Word Scorer",
@@ -40955,6 +43220,777 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py_paren_if__d092",
+"family": "py_paren_if",
+"topic": "Solar Eclipse Forecaster",
+"angle": "code",
+"text_es": "Write a function `forecast(alignments)` to classify astronomical events. The input is a list of tuples containing the angular distance from the lunar node, the moon distance from earth, solar activity level, and time of day. If the angular distance from the node is greater than ten degrees, no eclipse occurs. If the distance is under ten degrees but the moon is near its apogee, classify it as an annular eclipse. If the moon is near its perigee and perfectly aligned under one degree, classify it as a total eclipse. If the alignment is between one and ten degrees regardless of distance, it is a partial eclipse. If a total eclipse occurs during high solar activity, append a coronal mass ejection viewing alert. If a partial eclipse happens near the horizon, append a atmospheric refraction warning. If an annular eclipse occurs during a supermoon phase, classify it as a hybrid eclipse. If the event happens during a lunar eclipse window instead, return a lunar eclipse classification. Return a list of classifications.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "MAX_NODE_DEG = 10.0\nTOTAL_DEG = 1.0\nAPOGEE_KM = 405000.0\nPERIGEE_KM = 363000.0\nHORIZON_TAGS = {\"sunrise\", \"sunset\", \"dawn\", \"dusk\", \"horizon\"}\nLUNAR_WINDOW_TAGS = {\"midnight\", \"umbral\", \"fullmoon\"}\n\n\ndef _tags(time_of_day):\n    tags = set()\n    token = \"\"\n    for char in str(time_of_day).lower():\n        if char.isalpha():\n            token += char\n        elif token:\n            tags.add(token)\n            token = \"\"\n    if token:\n        tags.add(token)\n    return tags\n\n\ndef lunar_phase_zone(moon_km):\n    if moon_km >= APOGEE_KM:\n        return \"apogee\"\n    elif moon_km <= PERIGEE_KM:\n        return \"perigee\"\n    return \"mean\"\n\n\ndef is_high_activity(solar_activity):\n    if isinstance(solar_activity, (int, float)):\n        return solar_activity >= 7\n    level = str(solar_activity).strip().lower()\n    if level in (\"high\", \"severe\", \"extreme\"):\n        return True\n    elif level.isdigit():\n        return int(level) >= 7\n    return False\n\n\ndef _classify(entry):\n    if len(entry) != 4:\n        raise ValueError(\"each alignment needs node angle, distance, solar level and time\")\n    node_deg, moon_km, solar_activity, time_of_day = entry\n    if node_deg < 0:\n        raise ValueError(\"angular distance from the node cannot be negative\")\n    tags = _tags(time_of_day)\n    if tags & LUNAR_WINDOW_TAGS:\n        return \"lunar eclipse\"\n    elif node_deg > MAX_NODE_DEG:\n        return \"no eclipse\"\n    zone = lunar_phase_zone(moon_km)\n    if zone == \"apogee\":\n        label = \"annular eclipse\"\n        if \"supermoon\" in tags:\n            label = \"hybrid eclipse\"\n    elif zone == \"perigee\" and node_deg < TOTAL_DEG:\n        label = \"total eclipse\"\n    else:\n        label = \"partial eclipse\"\n    if label == \"total eclipse\" and is_high_activity(solar_activity):\n        label += \" with coronal mass ejection viewing alert\"\n    elif label == \"partial eclipse\" and tags & HORIZON_TAGS:\n        label += \" with atmospheric refraction warning\"\n    return label\n\n\ndef forecast(alignments):\n    classifications = []\n    index = 0\n    while index < len(alignments):\n        classifications.append(_classify(alignments[index]))\n        index += 1\n    return classifications\n\n\ndef format_report(alignments, classifications):\n    lines = []\n    for entry, verdict in zip(alignments, classifications):\n        node_deg = entry[0]\n        if verdict == \"no eclipse\":\n            lines.append(\"%5.2f deg from node: nothing to observe\" % node_deg)\n        else:\n            lines.append(\"%5.2f deg from node: %s\" % (node_deg, verdict))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    alignments = [\n        (14.3, 370000.0, \"low\", \"noon\"),\n        (0.4, 408000.0, \"moderate\", \"afternoon\"),\n        (0.7, 407500.0, \"low\", \"sunset supermoon\"),\n        (0.3, 358000.0, \"high\", \"morning\"),\n        (4.8, 384000.0, \"low\", \"dawn\"),\n        (6.2, 384400.0, \"moderate\", \"midnight umbral\"),\n    ]\n    classifications = forecast(alignments)\n    print(format_report(alignments, classifications))\n    alerts = [item for item in classifications if \"alert\" in item or \"warning\" in item]\n    if alerts:\n        print(\"observers briefed on %d special condition(s)\" % len(alerts))\n\n\nmain()\n",
+"text_alt": "MAX_NODE_DEG = 10.0\nTOTAL_DEG = 1.0\nAPOGEE_KM = 405000.0\nPERIGEE_KM = 363000.0\nHORIZON_TAGS = {\"sunrise\", \"sunset\", \"dawn\", \"dusk\", \"horizon\"}\nLUNAR_WINDOW_TAGS = {\"midnight\", \"umbral\", \"fullmoon\"}\n\n\ndef _tags(time_of_day):\n    tags = set()\n    token = \"\"\n    for char in str(time_of_day).lower():\n        if (char.isalpha()):\n            token += char\n        elif (token):\n            tags.add(token)\n            token = \"\"\n    if (token):\n        tags.add(token)\n    return tags\n\n\ndef lunar_phase_zone(moon_km):\n    if (moon_km >= APOGEE_KM):\n        return \"apogee\"\n    elif (moon_km <= PERIGEE_KM):\n        return \"perigee\"\n    return \"mean\"\n\n\ndef is_high_activity(solar_activity):\n    if (isinstance(solar_activity, (int, float))):\n        return solar_activity >= 7\n    level = str(solar_activity).strip().lower()\n    if (level in (\"high\", \"severe\", \"extreme\")):\n        return True\n    elif (level.isdigit()):\n        return int(level) >= 7\n    return False\n\n\ndef _classify(entry):\n    if (len(entry) != 4):\n        raise ValueError(\"each alignment needs node angle, distance, solar level and time\")\n    node_deg, moon_km, solar_activity, time_of_day = entry\n    if (node_deg < 0):\n        raise ValueError(\"angular distance from the node cannot be negative\")\n    tags = _tags(time_of_day)\n    if (tags & LUNAR_WINDOW_TAGS):\n        return \"lunar eclipse\"\n    elif (node_deg > MAX_NODE_DEG):\n        return \"no eclipse\"\n    zone = lunar_phase_zone(moon_km)\n    if (zone == \"apogee\"):\n        label = \"annular eclipse\"\n        if (\"supermoon\" in tags):\n            label = \"hybrid eclipse\"\n    elif (zone == \"perigee\" and node_deg < TOTAL_DEG):\n        label = \"total eclipse\"\n    else:\n        label = \"partial eclipse\"\n    if (label == \"total eclipse\" and is_high_activity(solar_activity)):\n        label += \" with coronal mass ejection viewing alert\"\n    elif (label == \"partial eclipse\" and tags & HORIZON_TAGS):\n        label += \" with atmospheric refraction warning\"\n    return label\n\n\ndef forecast(alignments):\n    classifications = []\n    index = 0\n    while (index < len(alignments)):\n        classifications.append(_classify(alignments[index]))\n        index += 1\n    return classifications\n\n\ndef format_report(alignments, classifications):\n    lines = []\n    for entry, verdict in zip(alignments, classifications):\n        node_deg = entry[0]\n        if (verdict == \"no eclipse\"):\n            lines.append(\"%5.2f deg from node: nothing to observe\" % node_deg)\n        else:\n            lines.append(\"%5.2f deg from node: %s\" % (node_deg, verdict))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    alignments = [\n        (14.3, 370000.0, \"low\", \"noon\"),\n        (0.4, 408000.0, \"moderate\", \"afternoon\"),\n        (0.7, 407500.0, \"low\", \"sunset supermoon\"),\n        (0.3, 358000.0, \"high\", \"morning\"),\n        (4.8, 384000.0, \"low\", \"dawn\"),\n        (6.2, 384400.0, \"moderate\", \"midnight umbral\"),\n    ]\n    classifications = forecast(alignments)\n    print(format_report(alignments, classifications))\n    alerts = [item for item in classifications if \"alert\" in item or \"warning\" in item]\n    if (alerts):\n        print(\"observers briefed on %d special condition(s)\" % len(alerts))\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+309,
+309
+],
+"alt_span": [
+309,
+310
+]
+},
+{
+"k": 1,
+"nat": "token",
+"alt": "(token)",
+"nat_span": [
+364,
+369
+],
+"alt_span": [
+366,
+373
+]
+},
+{
+"k": 2,
+"nat": "token",
+"alt": "(token)",
+"nat_span": [
+429,
+434
+],
+"alt_span": [
+433,
+440
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+516,
+516
+],
+"alt_span": [
+522,
+523
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+571,
+571
+],
+"alt_span": [
+579,
+580
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+684,
+684
+],
+"alt_span": [
+694,
+695
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+816,
+816
+],
+"alt_span": [
+828,
+829
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+885,
+885
+],
+"alt_span": [
+899,
+900
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+981,
+981
+],
+"alt_span": [
+997,
+998
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1156,
+1156
+],
+"alt_span": [
+1174,
+1175
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1285,
+1285
+],
+"alt_span": [
+1305,
+1306
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1351,
+1351
+],
+"alt_span": [
+1373,
+1374
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1448,
+1448
+],
+"alt_span": [
+1472,
+1473
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1511,
+1511
+],
+"alt_span": [
+1537,
+1538
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1578,
+1578
+],
+"alt_span": [
+1606,
+1607
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1705,
+1705
+],
+"alt_span": [
+1735,
+1736
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1838,
+1838
+],
+"alt_span": [
+1870,
+1871
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2040,
+2040
+],
+"alt_span": [
+2074,
+2075
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2336,
+2336
+],
+"alt_span": [
+2372,
+2373
+]
+},
+{
+"k": 19,
+"nat": "alerts",
+"alt": "(alerts)",
+"nat_span": [
+3070,
+3076
+],
+"alt_span": [
+3108,
+3116
+]
+}
+],
+"k_en": 20,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+309,
+309
+],
+"alt_span": [
+309,
+310
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+322,
+322
+],
+"alt_span": [
+323,
+324
+]
+},
+{
+"k": 2,
+"nat": "token",
+"alt": "(token)",
+"nat_span": [
+364,
+369
+],
+"alt_span": [
+366,
+373
+]
+},
+{
+"k": 3,
+"nat": "token",
+"alt": "(token)",
+"nat_span": [
+429,
+434
+],
+"alt_span": [
+433,
+440
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+516,
+516
+],
+"alt_span": [
+522,
+523
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+536,
+536
+],
+"alt_span": [
+543,
+544
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+571,
+571
+],
+"alt_span": [
+579,
+580
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+592,
+592
+],
+"alt_span": [
+601,
+602
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+684,
+684
+],
+"alt_span": [
+694,
+695
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+722,
+722
+],
+"alt_span": [
+733,
+734
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+816,
+816
+],
+"alt_span": [
+828,
+829
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+854,
+854
+],
+"alt_span": [
+867,
+868
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+885,
+885
+],
+"alt_span": [
+899,
+900
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+899,
+899
+],
+"alt_span": [
+914,
+915
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+981,
+981
+],
+"alt_span": [
+997,
+998
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+996,
+996
+],
+"alt_span": [
+1013,
+1014
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1156,
+1156
+],
+"alt_span": [
+1174,
+1175
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1168,
+1168
+],
+"alt_span": [
+1187,
+1188
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1285,
+1285
+],
+"alt_span": [
+1305,
+1306
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1309,
+1309
+],
+"alt_span": [
+1330,
+1331
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1351,
+1351
+],
+"alt_span": [
+1373,
+1374
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1374,
+1374
+],
+"alt_span": [
+1397,
+1398
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1448,
+1448
+],
+"alt_span": [
+1472,
+1473
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1464,
+1464
+],
+"alt_span": [
+1489,
+1490
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1511,
+1511
+],
+"alt_span": [
+1537,
+1538
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1530,
+1530
+],
+"alt_span": [
+1557,
+1558
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1578,
+1578
+],
+"alt_span": [
+1606,
+1607
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1620,
+1620
+],
+"alt_span": [
+1649,
+1650
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1705,
+1705
+],
+"alt_span": [
+1735,
+1736
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1765,
+1765
+],
+"alt_span": [
+1796,
+1797
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1838,
+1838
+],
+"alt_span": [
+1870,
+1871
+]
+},
+{
+"k": 31,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1888,
+1888
+],
+"alt_span": [
+1921,
+1922
+]
+},
+{
+"k": 32,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2040,
+2040
+],
+"alt_span": [
+2074,
+2075
+]
+},
+{
+"k": 33,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2062,
+2062
+],
+"alt_span": [
+2097,
+2098
+]
+},
+{
+"k": 34,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2336,
+2336
+],
+"alt_span": [
+2372,
+2373
+]
+},
+{
+"k": 35,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2359,
+2359
+],
+"alt_span": [
+2396,
+2397
+]
+},
+{
+"k": 36,
+"nat": "alerts",
+"alt": "(alerts)",
+"nat_span": [
+3070,
+3076
+],
+"alt_span": [
+3108,
+3116
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py_paren_if__d093",
 "family": "py_paren_if",
 "topic": "Drone Flight Controller",
@@ -41584,6 +44620,660 @@
 "alt_span": [
 2838,
 2839
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "py_paren_if__d094",
+"family": "py_paren_if",
+"topic": "Coffee Roasting Profile",
+"angle": "code",
+"text_es": "Create a function `roast(logs)` to automate adjustments in a coffee roaster. The input is a sequence of temperature readings, rate of rise, auditory crack events, ambient humidity, and time elapsed. Loop over the logs. If the bean temperature is under two hundred degrees, the roaster is in the drying phase, so set the heat to maximum. If the temperature is between two hundred and three hundred degrees, it enters the maillard phase, so reduce the heat to medium. If the rate of rise spikes above thirty degrees per minute, increase the fan speed to clear smoke. If a first crack event is detected, lower the heat further to prevent scorching the beans. If a second crack event is heard, stop the roast immediately. If the ambient humidity is high, increase the baseline fan speed by ten percent. If the bean temperature stalls for more than one minute, increase the heat to high. If the roast time exceeds fifteen minutes, abort the roast to prevent baked flavors. Return a list of setting adjustments.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def normalize_crack(crack):\n    if crack is None:\n        return \"\"\n    text = str(crack).strip().lower()\n    if \"second\" in text or text == \"2\":\n        return \"second\"\n    elif \"first\" in text or text == \"1\":\n        return \"first\"\n    return \"\"\n\n\ndef read_entry(entry):\n    if isinstance(entry, dict):\n        temp = entry.get(\"temp\")\n        ror = entry.get(\"ror\", 0.0)\n        crack = entry.get(\"crack\")\n        humidity = entry.get(\"humidity\", 0.0)\n        elapsed = entry.get(\"time\")\n    elif len(entry) == 5:\n        temp, ror, crack, humidity, elapsed = entry\n    else:\n        raise ValueError(\"a log record needs 5 fields: temp, ror, crack, humidity, time\")\n    if temp is None or elapsed is None:\n        raise ValueError(\"log record is missing the bean temperature or the elapsed time\")\n    return float(temp), float(ror or 0.0), normalize_crack(crack), float(humidity or 0.0), float(elapsed)\n\n\ndef roast(logs):\n    adjustments = []\n    stall_start = None\n    last_temp = None\n    index = 0\n    while index < len(logs):\n        temp, ror, crack, humidity, elapsed = read_entry(logs[index])\n        index += 1\n        if elapsed > 15.0:\n            adjustments.append({\"time\": elapsed, \"heat\": \"off\", \"fan\": 0.0,\n                                \"note\": \"abort roast: baked flavours past 15 min\"})\n            break\n        if crack == \"second\":\n            adjustments.append({\"time\": elapsed, \"heat\": \"off\", \"fan\": 0.0,\n                                \"note\": \"second crack: stop the roast immediately\"})\n            break\n        fan = 50.0\n        if humidity > 60.0:\n            fan = round(fan * 1.10, 1)\n        if temp < 200.0:\n            heat, phase = \"maximum\", \"drying phase\"\n        elif temp <= 300.0:\n            heat, phase = \"medium\", \"maillard phase\"\n        else:\n            heat, phase = \"low\", \"development phase\"\n        notes = [phase]\n        if last_temp is None or abs(temp - last_temp) >= 1.0:\n            stall_start = elapsed\n        elif elapsed - stall_start > 1.0:\n            heat = \"high\"\n            notes.append(\"stalled bean temperature\")\n        if crack == \"first\":\n            heat = \"low\"\n            notes.append(\"first crack: prevent scorching\")\n        if ror > 30.0:\n            fan = round(fan + 20.0, 1)\n            notes.append(\"rate of rise spike: clear smoke\")\n        last_temp = temp\n        adjustments.append({\"time\": elapsed, \"heat\": heat, \"fan\": fan, \"note\": \", \".join(notes)})\n    return adjustments\n\n\ndef main():\n    session = [\n        {\"temp\": 150.0, \"ror\": 18.0, \"crack\": None, \"humidity\": 45.0, \"time\": 1.0},\n        {\"temp\": 150.4, \"ror\": 2.0, \"crack\": None, \"humidity\": 45.0, \"time\": 3.5},\n        {\"temp\": 245.0, \"ror\": 34.0, \"crack\": None, \"humidity\": 72.0, \"time\": 7.0},\n        {\"temp\": 300.0, \"ror\": 12.0, \"crack\": \"first crack\", \"humidity\": 72.0, \"time\": 10.5},\n        {\"temp\": 320.0, \"ror\": 9.0, \"crack\": \"second crack\", \"humidity\": 72.0, \"time\": 13.0},\n    ]\n    for step in roast(session):\n        print(\"{0:5.1f} min | heat={1:<7} | fan={2:5.1f}% | {3}\".format(\n            step[\"time\"], step[\"heat\"], step[\"fan\"], step[\"note\"]))\n\n\nmain()\n",
+"text_alt": "def normalize_crack(crack):\n    if (crack is None):\n        return \"\"\n    text = str(crack).strip().lower()\n    if (\"second\" in text or text == \"2\"):\n        return \"second\"\n    elif (\"first\" in text or text == \"1\"):\n        return \"first\"\n    return \"\"\n\n\ndef read_entry(entry):\n    if (isinstance(entry, dict)):\n        temp = entry.get(\"temp\")\n        ror = entry.get(\"ror\", 0.0)\n        crack = entry.get(\"crack\")\n        humidity = entry.get(\"humidity\", 0.0)\n        elapsed = entry.get(\"time\")\n    elif (len(entry) == 5):\n        temp, ror, crack, humidity, elapsed = entry\n    else:\n        raise ValueError(\"a log record needs 5 fields: temp, ror, crack, humidity, time\")\n    if (temp is None or elapsed is None):\n        raise ValueError(\"log record is missing the bean temperature or the elapsed time\")\n    return float(temp), float(ror or 0.0), normalize_crack(crack), float(humidity or 0.0), float(elapsed)\n\n\ndef roast(logs):\n    adjustments = []\n    stall_start = None\n    last_temp = None\n    index = 0\n    while (index < len(logs)):\n        temp, ror, crack, humidity, elapsed = read_entry(logs[index])\n        index += 1\n        if (elapsed > 15.0):\n            adjustments.append({\"time\": elapsed, \"heat\": \"off\", \"fan\": 0.0,\n                                \"note\": \"abort roast: baked flavours past 15 min\"})\n            break\n        if (crack == \"second\"):\n            adjustments.append({\"time\": elapsed, \"heat\": \"off\", \"fan\": 0.0,\n                                \"note\": \"second crack: stop the roast immediately\"})\n            break\n        fan = 50.0\n        if (humidity > 60.0):\n            fan = round(fan * 1.10, 1)\n        if (temp < 200.0):\n            heat, phase = \"maximum\", \"drying phase\"\n        elif (temp <= 300.0):\n            heat, phase = \"medium\", \"maillard phase\"\n        else:\n            heat, phase = \"low\", \"development phase\"\n        notes = [phase]\n        if (last_temp is None or abs(temp - last_temp) >= 1.0):\n            stall_start = elapsed\n        elif (elapsed - stall_start > 1.0):\n            heat = \"high\"\n            notes.append(\"stalled bean temperature\")\n        if (crack == \"first\"):\n            heat = \"low\"\n            notes.append(\"first crack: prevent scorching\")\n        if (ror > 30.0):\n            fan = round(fan + 20.0, 1)\n            notes.append(\"rate of rise spike: clear smoke\")\n        last_temp = temp\n        adjustments.append({\"time\": elapsed, \"heat\": heat, \"fan\": fan, \"note\": \", \".join(notes)})\n    return adjustments\n\n\ndef main():\n    session = [\n        {\"temp\": 150.0, \"ror\": 18.0, \"crack\": None, \"humidity\": 45.0, \"time\": 1.0},\n        {\"temp\": 150.4, \"ror\": 2.0, \"crack\": None, \"humidity\": 45.0, \"time\": 3.5},\n        {\"temp\": 245.0, \"ror\": 34.0, \"crack\": None, \"humidity\": 72.0, \"time\": 7.0},\n        {\"temp\": 300.0, \"ror\": 12.0, \"crack\": \"first crack\", \"humidity\": 72.0, \"time\": 10.5},\n        {\"temp\": 320.0, \"ror\": 9.0, \"crack\": \"second crack\", \"humidity\": 72.0, \"time\": 13.0},\n    ]\n    for step in roast(session):\n        print(\"{0:5.1f} min | heat={1:<7} | fan={2:5.1f}% | {3}\".format(\n            step[\"time\"], step[\"heat\"], step[\"fan\"], step[\"note\"]))\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+35,
+35
+],
+"alt_span": [
+35,
+36
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+113,
+113
+],
+"alt_span": [
+115,
+116
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+179,
+179
+],
+"alt_span": [
+183,
+184
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+280,
+280
+],
+"alt_span": [
+286,
+287
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+500,
+500
+],
+"alt_span": [
+508,
+509
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+676,
+676
+],
+"alt_span": [
+686,
+687
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1014,
+1014
+],
+"alt_span": [
+1026,
+1027
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1133,
+1133
+],
+"alt_span": [
+1147,
+1148
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1338,
+1338
+],
+"alt_span": [
+1354,
+1355
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1566,
+1566
+],
+"alt_span": [
+1584,
+1585
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1633,
+1633
+],
+"alt_span": [
+1653,
+1654
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1712,
+1712
+],
+"alt_span": [
+1734,
+1735
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1882,
+1882
+],
+"alt_span": [
+1906,
+1907
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1980,
+1980
+],
+"alt_span": [
+2006,
+2007
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2099,
+2099
+],
+"alt_span": [
+2127,
+2128
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2212,
+2212
+],
+"alt_span": [
+2242,
+2243
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+35,
+35
+],
+"alt_span": [
+35,
+36
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+48,
+48
+],
+"alt_span": [
+49,
+50
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+113,
+113
+],
+"alt_span": [
+115,
+116
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+144,
+144
+],
+"alt_span": [
+147,
+148
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+179,
+179
+],
+"alt_span": [
+183,
+184
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+209,
+209
+],
+"alt_span": [
+214,
+215
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+280,
+280
+],
+"alt_span": [
+286,
+287
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+302,
+302
+],
+"alt_span": [
+309,
+310
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+500,
+500
+],
+"alt_span": [
+508,
+509
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+515,
+515
+],
+"alt_span": [
+524,
+525
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+676,
+676
+],
+"alt_span": [
+686,
+687
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+707,
+707
+],
+"alt_span": [
+718,
+719
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1014,
+1014
+],
+"alt_span": [
+1026,
+1027
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1030,
+1030
+],
+"alt_span": [
+1043,
+1044
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1133,
+1133
+],
+"alt_span": [
+1147,
+1148
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1147,
+1147
+],
+"alt_span": [
+1162,
+1163
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1338,
+1338
+],
+"alt_span": [
+1354,
+1355
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1355,
+1355
+],
+"alt_span": [
+1372,
+1373
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1566,
+1566
+],
+"alt_span": [
+1584,
+1585
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1581,
+1581
+],
+"alt_span": [
+1600,
+1601
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1633,
+1633
+],
+"alt_span": [
+1653,
+1654
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1645,
+1645
+],
+"alt_span": [
+1666,
+1667
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1712,
+1712
+],
+"alt_span": [
+1734,
+1735
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1725,
+1725
+],
+"alt_span": [
+1748,
+1749
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1882,
+1882
+],
+"alt_span": [
+1906,
+1907
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1931,
+1931
+],
+"alt_span": [
+1956,
+1957
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1980,
+1980
+],
+"alt_span": [
+2006,
+2007
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2007,
+2007
+],
+"alt_span": [
+2034,
+2035
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2099,
+2099
+],
+"alt_span": [
+2127,
+2128
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2115,
+2115
+],
+"alt_span": [
+2144,
+2145
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2212,
+2212
+],
+"alt_span": [
+2242,
+2243
+]
+},
+{
+"k": 31,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2222,
+2222
+],
+"alt_span": [
+2253,
+2254
 ]
 }
 ],
@@ -57764,6 +61454,660 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py_paren_if__d132",
+"family": "py_paren_if",
+"topic": "Historical Manuscript Authenticator",
+"angle": "code",
+"text_es": "Evaluate the authenticity of antique documents. The entry function `authenticate(documents)` takes a list of tuples containing ink type, paper material, language, and century of origin. If century is before ten and paper material is parchment, authenticity is highly probable. If century is before fifteen and paper material is wood pulp, mark as obvious forgery. If ink type is iron gall and century is between ten and eighteen, mark as consistent with period. If language is middle english and century is after eighteen, mark as suspected revival text. If ink type is synthetic and century is before nineteen, mark as obvious forgery. If language is unknown and century is before five, mark as requiring translation specialist. If paper material is vellum and language is latin, mark as needing microscopic analysis. If century is twenty and ink type is iron gall, mark as unusual combination. Otherwise mark as standard review needed. Return a list of status strings. Example: `[(\"synthetic\", \"parchment\", \"latin\", 12)]` returns `[\"obvious forgery\"]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import sys\n\nVALID_STATUSES_ORDER = [\n    \"highly probable\",\n    \"obvious forgery\",\n    \"consistent with period\",\n    \"suspected revival text\",\n    \"requiring translation specialist\",\n    \"needing microscopic analysis\",\n    \"unusual combination\",\n    \"standard review needed\",\n]\n\n\ndef normalize_text(value, field):\n    if not isinstance(value, str):\n        raise TypeError(\"field %s must be a string, got %r\" % (field, value))\n    return \" \".join(value.lower().split())\n\n\ndef validate_century(century):\n    if isinstance(century, bool) or not isinstance(century, int):\n        raise TypeError(\"century must be an integer, got %r\" % (century,))\n    if century < 1 or century > 21:\n        raise ValueError(\"century out of range: %d\" % century)\n    return century\n\n\ndef classify(ink, paper, language, century):\n    if century < 10 and paper == \"parchment\":\n        return \"highly probable\"\n    elif century < 15 and paper == \"wood pulp\":\n        return \"obvious forgery\"\n    elif ink == \"iron gall\" and 10 <= century <= 18:\n        return \"consistent with period\"\n    elif language == \"middle english\" and century > 18:\n        return \"suspected revival text\"\n    elif ink == \"synthetic\" and century < 19:\n        return \"obvious forgery\"\n    elif language == \"unknown\" and century < 5:\n        return \"requiring translation specialist\"\n    elif paper == \"vellum\" and language == \"latin\":\n        return \"needing microscopic analysis\"\n    elif century == 20 and ink == \"iron gall\":\n        return \"unusual combination\"\n    return \"standard review needed\"\n\n\ndef authenticate(documents):\n    statuses = []\n    for document in documents:\n        if len(document) != 4:\n            raise ValueError(\"each document needs 4 fields: %r\" % (document,))\n        ink, paper, language, century = document\n        statuses.append(classify(\n            normalize_text(ink, \"ink type\"),\n            normalize_text(paper, \"paper material\"),\n            normalize_text(language, \"language\"),\n            validate_century(century),\n        ))\n    return statuses\n\n\ndef parse_document(line):\n    fields = [part.strip() for part in line.split(\",\")]\n    if len(fields) != 4:\n        raise ValueError(\"malformed record: %r\" % line)\n    return (fields[0], fields[1], fields[2], int(fields[3]))\n\n\ndef read_documents(stream):\n    documents = []\n    for line in stream:\n        if not line.strip():\n            continue\n        documents.append(parse_document(line))\n    return documents\n\n\ndef report(documents, statuses):\n    counts = {}\n    for document, status in zip(documents, statuses):\n        print(\"%-10s %-11s %-15s c.%-3d -> %s\" % (document + (status,)))\n        counts[status] = counts.get(status, 0) + 1\n    print(\"--- summary ---\")\n    for status in VALID_STATUSES_ORDER:\n        if status in counts:\n            print(\"%-32s %d\" % (status, counts[status]))\n\n\ndef main(argv):\n    if len(argv) > 1:\n        with open(argv[1]) as handle:\n            documents = read_documents(handle)\n    else:\n        documents = read_documents(sys.stdin)\n    report(documents, authenticate(documents))\n\n\nmain(sys.argv)\n",
+"text_alt": "import sys\n\nVALID_STATUSES_ORDER = [\n    \"highly probable\",\n    \"obvious forgery\",\n    \"consistent with period\",\n    \"suspected revival text\",\n    \"requiring translation specialist\",\n    \"needing microscopic analysis\",\n    \"unusual combination\",\n    \"standard review needed\",\n]\n\n\ndef normalize_text(value, field):\n    if (not isinstance(value, str)):\n        raise TypeError(\"field %s must be a string, got %r\" % (field, value))\n    return \" \".join(value.lower().split())\n\n\ndef validate_century(century):\n    if (isinstance(century, bool) or not isinstance(century, int)):\n        raise TypeError(\"century must be an integer, got %r\" % (century,))\n    if (century < 1 or century > 21):\n        raise ValueError(\"century out of range: %d\" % century)\n    return century\n\n\ndef classify(ink, paper, language, century):\n    if (century < 10 and paper == \"parchment\"):\n        return \"highly probable\"\n    elif (century < 15 and paper == \"wood pulp\"):\n        return \"obvious forgery\"\n    elif (ink == \"iron gall\" and 10 <= century <= 18):\n        return \"consistent with period\"\n    elif (language == \"middle english\" and century > 18):\n        return \"suspected revival text\"\n    elif (ink == \"synthetic\" and century < 19):\n        return \"obvious forgery\"\n    elif (language == \"unknown\" and century < 5):\n        return \"requiring translation specialist\"\n    elif (paper == \"vellum\" and language == \"latin\"):\n        return \"needing microscopic analysis\"\n    elif (century == 20 and ink == \"iron gall\"):\n        return \"unusual combination\"\n    return \"standard review needed\"\n\n\ndef authenticate(documents):\n    statuses = []\n    for document in documents:\n        if (len(document) != 4):\n            raise ValueError(\"each document needs 4 fields: %r\" % (document,))\n        ink, paper, language, century = document\n        statuses.append(classify(\n            normalize_text(ink, \"ink type\"),\n            normalize_text(paper, \"paper material\"),\n            normalize_text(language, \"language\"),\n            validate_century(century),\n        ))\n    return statuses\n\n\ndef parse_document(line):\n    fields = [part.strip() for part in line.split(\",\")]\n    if (len(fields) != 4):\n        raise ValueError(\"malformed record: %r\" % line)\n    return (fields[0], fields[1], fields[2], int(fields[3]))\n\n\ndef read_documents(stream):\n    documents = []\n    for line in stream:\n        if (not line.strip()):\n            continue\n        documents.append(parse_document(line))\n    return documents\n\n\ndef report(documents, statuses):\n    counts = {}\n    for document, status in zip(documents, statuses):\n        print(\"%-10s %-11s %-15s c.%-3d -> %s\" % (document + (status,)))\n        counts[status] = counts.get(status, 0) + 1\n    print(\"--- summary ---\")\n    for status in VALID_STATUSES_ORDER:\n        if (status in counts):\n            print(\"%-32s %d\" % (status, counts[status]))\n\n\ndef main(argv):\n    if (len(argv) > 1):\n        with open(argv[1]) as handle:\n            documents = read_documents(handle)\n    else:\n        documents = read_documents(sys.stdin)\n    report(documents, authenticate(documents))\n\n\nmain(sys.argv)\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+321,
+321
+],
+"alt_span": [
+321,
+322
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+510,
+510
+],
+"alt_span": [
+512,
+513
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+651,
+651
+],
+"alt_span": [
+655,
+656
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+816,
+816
+],
+"alt_span": [
+822,
+823
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+897,
+897
+],
+"alt_span": [
+905,
+906
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+978,
+978
+],
+"alt_span": [
+988,
+989
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1071,
+1071
+],
+"alt_span": [
+1083,
+1084
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1167,
+1167
+],
+"alt_span": [
+1181,
+1182
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1246,
+1246
+],
+"alt_span": [
+1262,
+1263
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1344,
+1344
+],
+"alt_span": [
+1362,
+1363
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1442,
+1442
+],
+"alt_span": [
+1462,
+1463
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1644,
+1644
+],
+"alt_span": [
+1666,
+1667
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2135,
+2135
+],
+"alt_span": [
+2159,
+2160
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2354,
+2354
+],
+"alt_span": [
+2380,
+2381
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2770,
+2770
+],
+"alt_span": [
+2798,
+2799
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2870,
+2870
+],
+"alt_span": [
+2900,
+2901
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+321,
+321
+],
+"alt_span": [
+321,
+322
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+346,
+346
+],
+"alt_span": [
+347,
+348
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+510,
+510
+],
+"alt_span": [
+512,
+513
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+566,
+566
+],
+"alt_span": [
+569,
+570
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+651,
+651
+],
+"alt_span": [
+655,
+656
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+678,
+678
+],
+"alt_span": [
+683,
+684
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+816,
+816
+],
+"alt_span": [
+822,
+823
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+853,
+853
+],
+"alt_span": [
+860,
+861
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+897,
+897
+],
+"alt_span": [
+905,
+906
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+934,
+934
+],
+"alt_span": [
+943,
+944
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+978,
+978
+],
+"alt_span": [
+988,
+989
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1020,
+1020
+],
+"alt_span": [
+1031,
+1032
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1071,
+1071
+],
+"alt_span": [
+1083,
+1084
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1116,
+1116
+],
+"alt_span": [
+1129,
+1130
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1167,
+1167
+],
+"alt_span": [
+1181,
+1182
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1202,
+1202
+],
+"alt_span": [
+1217,
+1218
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1246,
+1246
+],
+"alt_span": [
+1262,
+1263
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1283,
+1283
+],
+"alt_span": [
+1300,
+1301
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1344,
+1344
+],
+"alt_span": [
+1362,
+1363
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1385,
+1385
+],
+"alt_span": [
+1404,
+1405
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1442,
+1442
+],
+"alt_span": [
+1462,
+1463
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1478,
+1478
+],
+"alt_span": [
+1499,
+1500
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1644,
+1644
+],
+"alt_span": [
+1666,
+1667
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1662,
+1662
+],
+"alt_span": [
+1685,
+1686
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2135,
+2135
+],
+"alt_span": [
+2159,
+2160
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2151,
+2151
+],
+"alt_span": [
+2176,
+2177
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2354,
+2354
+],
+"alt_span": [
+2380,
+2381
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2369,
+2369
+],
+"alt_span": [
+2396,
+2397
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2770,
+2770
+],
+"alt_span": [
+2798,
+2799
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2786,
+2786
+],
+"alt_span": [
+2815,
+2816
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2870,
+2870
+],
+"alt_span": [
+2900,
+2901
+]
+},
+{
+"k": 31,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2883,
+2883
+],
+"alt_span": [
+2914,
+2915
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py_paren_if__d135",
 "family": "py_paren_if",
 "topic": "Microscope Lens Selector",
@@ -64067,6 +68411,816 @@
 "alt_span": [
 3021,
 3031
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "py_paren_if__d147",
+"family": "py_paren_if",
+"topic": "Diamond Clarity Grader",
+"angle": "code",
+"text_es": "Evaluate gemstones to assign them an industry standard clarity grade. The entry function `grade(diamonds)` takes a list of tuples containing inclusion size, inclusion count, inclusion location, and a boolean for magnification visible. If inclusion size is none and magnification visible is false, grade as flawless. If inclusion size is tiny and inclusion count is one and magnification visible is true at ten times, grade as very very slightly included. If inclusion size is small and inclusion location is center, grade as slightly included type two. If inclusion size is small and inclusion location is edge, grade as slightly included type one. If inclusion count is over five and magnification visible is true at naked eye, grade as included type three. If inclusion size is large and inclusion location is center, grade as included type two regardless of count. If inclusion size is massive and inclusion location is center, grade as industrial quality diamond. If inclusion size is microscopic and count is under three, grade as very slightly included. Otherwise grade as included type one. Return a list of grade strings. Example: `[(\"none\", 0, \"edge\", False)]` returns `[\"flawless\"]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "VALID_SIZES = {\"none\", \"microscopic\", \"tiny\", \"small\", \"large\", \"massive\"}\nVALID_LOCATIONS = {\"none\", \"center\", \"edge\"}\n\n\ndef normalize_field(value, allowed, label):\n    if not isinstance(value, str):\n        raise TypeError(f\"{label} must be a string, got {type(value).__name__}\")\n    cleaned = value.strip().lower()\n    if cleaned not in allowed:\n        raise ValueError(f\"unknown {label}: {value!r}\")\n    return cleaned\n\n\ndef check_count(value):\n    if isinstance(value, bool):\n        raise TypeError(\"inclusion count must be an integer, got bool\")\n    elif not isinstance(value, int):\n        raise TypeError(f\"inclusion count must be an integer, got {type(value).__name__}\")\n    elif value < 0:\n        raise ValueError(\"inclusion count cannot be negative\")\n    return value\n\n\ndef grade_one(size, count, location, magnified):\n    # The flag records whether magnification is needed, so False means the\n    # inclusion already shows at the naked eye.\n    if size == \"none\" and not magnified:\n        return \"flawless\"\n    elif size == \"tiny\" and count == 1 and magnified:\n        return \"very very slightly included\"\n    elif size == \"small\" and location == \"center\":\n        return \"slightly included type two\"\n    elif size == \"small\" and location == \"edge\":\n        return \"slightly included type one\"\n    elif count > 5 and not magnified:\n        return \"included type three\"\n    elif size == \"large\" and location == \"center\":\n        return \"included type two\"\n    elif size == \"massive\" and location == \"center\":\n        return \"industrial quality diamond\"\n    elif size == \"microscopic\" and count < 3:\n        return \"very slightly included\"\n    return \"included type one\"\n\n\ndef grade(diamonds):\n    if not isinstance(diamonds, (list, tuple)):\n        raise TypeError(\"diamonds must be a sequence of tuples\")\n    grades = []\n    index = 0\n    while index < len(diamonds):\n        record = diamonds[index]\n        if not isinstance(record, tuple):\n            raise TypeError(f\"record {index} is not a tuple\")\n        elif len(record) != 4:\n            raise ValueError(f\"record {index} must have four fields\")\n        size, count, location, magnified = record\n        if not isinstance(magnified, bool):\n            raise TypeError(f\"record {index}: magnification flag must be a bool\")\n        grades.append(grade_one(normalize_field(size, VALID_SIZES, \"inclusion size\"),\n                                check_count(count),\n                                normalize_field(location, VALID_LOCATIONS, \"inclusion location\"),\n                                magnified))\n        index += 1\n    return grades\n\n\ndef format_report(grades):\n    tally = {}\n    position = 0\n    while position < len(grades):\n        name = grades[position]\n        if name in tally:\n            tally[name] += 1\n        else:\n            tally[name] = 1\n        position += 1\n    return [f\"{name}: {tally[name]}\" for name in sorted(tally)]\n\n\ndef main():\n    parcel = [(\"none\", 0, \"edge\", False),\n              (\"tiny\", 1, \"edge\", True),\n              (\"small\", 2, \"center\", True),\n              (\"small\", 3, \"edge\", True),\n              (\"large\", 9, \"center\", False),\n              (\"massive\", 4, \"center\", True),\n              (\"microscopic\", 2, \"edge\", True),\n              (\"tiny\", 7, \"edge\", False)]\n    grades = grade(parcel)\n    for stone, verdict in zip(parcel, grades):\n        print(f\"{stone} -> {verdict}\")\n    print(\"--- summary ---\")\n    for line in format_report(grades):\n        print(line)\n\n\nmain()\n",
+"text_alt": "VALID_SIZES = {\"none\", \"microscopic\", \"tiny\", \"small\", \"large\", \"massive\"}\nVALID_LOCATIONS = {\"none\", \"center\", \"edge\"}\n\n\ndef normalize_field(value, allowed, label):\n    if (not isinstance(value, str)):\n        raise TypeError(f\"{label} must be a string, got {type(value).__name__}\")\n    cleaned = value.strip().lower()\n    if (cleaned not in allowed):\n        raise ValueError(f\"unknown {label}: {value!r}\")\n    return cleaned\n\n\ndef check_count(value):\n    if (isinstance(value, bool)):\n        raise TypeError(\"inclusion count must be an integer, got bool\")\n    elif (not isinstance(value, int)):\n        raise TypeError(f\"inclusion count must be an integer, got {type(value).__name__}\")\n    elif (value < 0):\n        raise ValueError(\"inclusion count cannot be negative\")\n    return value\n\n\ndef grade_one(size, count, location, magnified):\n    # The flag records whether magnification is needed, so False means the\n    # inclusion already shows at the naked eye.\n    if (size == \"none\" and not magnified):\n        return \"flawless\"\n    elif (size == \"tiny\" and count == 1 and magnified):\n        return \"very very slightly included\"\n    elif (size == \"small\" and location == \"center\"):\n        return \"slightly included type two\"\n    elif (size == \"small\" and location == \"edge\"):\n        return \"slightly included type one\"\n    elif (count > 5 and not magnified):\n        return \"included type three\"\n    elif (size == \"large\" and location == \"center\"):\n        return \"included type two\"\n    elif (size == \"massive\" and location == \"center\"):\n        return \"industrial quality diamond\"\n    elif (size == \"microscopic\" and count < 3):\n        return \"very slightly included\"\n    return \"included type one\"\n\n\ndef grade(diamonds):\n    if (not isinstance(diamonds, (list, tuple))):\n        raise TypeError(\"diamonds must be a sequence of tuples\")\n    grades = []\n    index = 0\n    while (index < len(diamonds)):\n        record = diamonds[index]\n        if (not isinstance(record, tuple)):\n            raise TypeError(f\"record {index} is not a tuple\")\n        elif (len(record) != 4):\n            raise ValueError(f\"record {index} must have four fields\")\n        size, count, location, magnified = record\n        if (not isinstance(magnified, bool)):\n            raise TypeError(f\"record {index}: magnification flag must be a bool\")\n        grades.append(grade_one(normalize_field(size, VALID_SIZES, \"inclusion size\"),\n                                check_count(count),\n                                normalize_field(location, VALID_LOCATIONS, \"inclusion location\"),\n                                magnified))\n        index += 1\n    return grades\n\n\ndef format_report(grades):\n    tally = {}\n    position = 0\n    while (position < len(grades)):\n        name = grades[position]\n        if (name in tally):\n            tally[name] += 1\n        else:\n            tally[name] = 1\n        position += 1\n    return [f\"{name}: {tally[name]}\" for name in sorted(tally)]\n\n\ndef main():\n    parcel = [(\"none\", 0, \"edge\", False),\n              (\"tiny\", 1, \"edge\", True),\n              (\"small\", 2, \"center\", True),\n              (\"small\", 3, \"edge\", True),\n              (\"large\", 9, \"center\", False),\n              (\"massive\", 4, \"center\", True),\n              (\"microscopic\", 2, \"edge\", True),\n              (\"tiny\", 7, \"edge\", False)]\n    grades = grade(parcel)\n    for stone, verdict in zip(parcel, grades):\n        print(f\"{stone} -> {verdict}\")\n    print(\"--- summary ---\")\n    for line in format_report(grades):\n        print(line)\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+173,
+173
+],
+"alt_span": [
+173,
+174
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+325,
+325
+],
+"alt_span": [
+327,
+328
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+457,
+457
+],
+"alt_span": [
+461,
+462
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+563,
+563
+],
+"alt_span": [
+569,
+570
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+691,
+691
+],
+"alt_span": [
+699,
+700
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+963,
+963
+],
+"alt_span": [
+973,
+974
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1032,
+1032
+],
+"alt_span": [
+1044,
+1045
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1131,
+1131
+],
+"alt_span": [
+1145,
+1146
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1226,
+1226
+],
+"alt_span": [
+1242,
+1243
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1319,
+1319
+],
+"alt_span": [
+1337,
+1338
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1394,
+1394
+],
+"alt_span": [
+1414,
+1415
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1480,
+1480
+],
+"alt_span": [
+1502,
+1503
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1577,
+1577
+],
+"alt_span": [
+1601,
+1602
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1715,
+1715
+],
+"alt_span": [
+1741,
+1742
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1861,
+1861
+],
+"alt_span": [
+1889,
+1890
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1928,
+1928
+],
+"alt_span": [
+1958,
+1959
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2034,
+2034
+],
+"alt_span": [
+2066,
+2067
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2183,
+2183
+],
+"alt_span": [
+2217,
+2218
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2686,
+2686
+],
+"alt_span": [
+2722,
+2723
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2753,
+2753
+],
+"alt_span": [
+2791,
+2792
+]
+}
+],
+"k_en": 20,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+173,
+173
+],
+"alt_span": [
+173,
+174
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+198,
+198
+],
+"alt_span": [
+199,
+200
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+325,
+325
+],
+"alt_span": [
+327,
+328
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+347,
+347
+],
+"alt_span": [
+350,
+351
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+457,
+457
+],
+"alt_span": [
+461,
+462
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+479,
+479
+],
+"alt_span": [
+484,
+485
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+563,
+563
+],
+"alt_span": [
+569,
+570
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+588,
+588
+],
+"alt_span": [
+595,
+596
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+691,
+691
+],
+"alt_span": [
+699,
+700
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+700,
+700
+],
+"alt_span": [
+709,
+710
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+963,
+963
+],
+"alt_span": [
+973,
+974
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+995,
+995
+],
+"alt_span": [
+1006,
+1007
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1032,
+1032
+],
+"alt_span": [
+1044,
+1045
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1075,
+1075
+],
+"alt_span": [
+1088,
+1089
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1131,
+1131
+],
+"alt_span": [
+1145,
+1146
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1171,
+1171
+],
+"alt_span": [
+1186,
+1187
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1226,
+1226
+],
+"alt_span": [
+1242,
+1243
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1264,
+1264
+],
+"alt_span": [
+1281,
+1282
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1319,
+1319
+],
+"alt_span": [
+1337,
+1338
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1346,
+1346
+],
+"alt_span": [
+1365,
+1366
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1394,
+1394
+],
+"alt_span": [
+1414,
+1415
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1434,
+1434
+],
+"alt_span": [
+1455,
+1456
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1480,
+1480
+],
+"alt_span": [
+1502,
+1503
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1522,
+1522
+],
+"alt_span": [
+1545,
+1546
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1577,
+1577
+],
+"alt_span": [
+1601,
+1602
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1612,
+1612
+],
+"alt_span": [
+1637,
+1638
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1715,
+1715
+],
+"alt_span": [
+1741,
+1742
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1752,
+1752
+],
+"alt_span": [
+1779,
+1780
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1861,
+1861
+],
+"alt_span": [
+1889,
+1890
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1881,
+1881
+],
+"alt_span": [
+1910,
+1911
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1928,
+1928
+],
+"alt_span": [
+1958,
+1959
+]
+},
+{
+"k": 31,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1956,
+1956
+],
+"alt_span": [
+1987,
+1988
+]
+},
+{
+"k": 32,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2034,
+2034
+],
+"alt_span": [
+2066,
+2067
+]
+},
+{
+"k": 33,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2050,
+2050
+],
+"alt_span": [
+2083,
+2084
+]
+},
+{
+"k": 34,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2183,
+2183
+],
+"alt_span": [
+2217,
+2218
+]
+},
+{
+"k": 35,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2213,
+2213
+],
+"alt_span": [
+2248,
+2249
+]
+},
+{
+"k": 36,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2686,
+2686
+],
+"alt_span": [
+2722,
+2723
+]
+},
+{
+"k": 37,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2707,
+2707
+],
+"alt_span": [
+2744,
+2745
+]
+},
+{
+"k": 38,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2753,
+2753
+],
+"alt_span": [
+2791,
+2792
+]
+},
+{
+"k": 39,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2766,
+2766
+],
+"alt_span": [
+2805,
+2806
 ]
 }
 ],
@@ -74197,6 +79351,1353 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py_paren_if__d182",
+"family": "py_paren_if",
+"topic": "Chemical Formula Mass",
+"angle": "code",
+"text_es": "Calculate the molecular mass of a chemical compound string. Write the function `weigh(formula)` taking a single string. Loop through the characters. If the character is an uppercase letter, start a new element token. If the character is a lowercase letter, append it to the current element token. If the character is a digit, parse it as a multiplier for the current element. If the character is an open bracket, ignore it. If the character is a closing bracket, double the mass of the next element processed. If the parsed element is carbon, add twelve to the total mass. If the element is oxygen, add sixteen. If the element is unrecognized, ignore it and continue. For example, an input string of carbon oxygen oxygen returns an integer mass of forty four.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "MASSES = {\"C\": 12, \"O\": 16}\n\n\ndef validate(formula):\n    \"\"\"Reject anything weigh() cannot interpret, and check bracket balance.\"\"\"\n    if not isinstance(formula, str):\n        raise TypeError(\"formula must be a string\")\n    depth = 0\n    for ch in formula:\n        if ch == \"(\":\n            depth += 1\n        elif ch == \")\":\n            depth -= 1\n            if depth < 0:\n                raise ValueError(\"closing bracket without an opening one\")\n        elif not ch.isalnum():\n            raise ValueError(\"unexpected character %r\" % ch)\n    if depth != 0:\n        raise ValueError(\"unclosed bracket\")\n\n\ndef element_mass(symbol):\n    if symbol in MASSES:\n        return MASSES[symbol]\n    return 0\n\n\ndef weigh(formula):\n    validate(formula)\n    total = 0\n    symbol = \"\"\n    digits = \"\"\n    doubling = False\n\n    def flush():\n        nonlocal total, symbol, digits, doubling\n        if symbol:\n            count = 1\n            if digits:\n                count = int(digits)\n            mass = element_mass(symbol)\n            if doubling:\n                mass *= 2\n                doubling = False\n            total += mass * count\n        symbol = \"\"\n        digits = \"\"\n\n    index = 0\n    while index < len(formula):\n        ch = formula[index]\n        if ch.isupper():\n            flush()\n            symbol = ch\n        elif ch.islower():\n            symbol += ch\n        elif ch.isdigit():\n            digits += ch\n        elif ch == \")\":\n            doubling = True\n        index += 1\n    flush()\n    return total\n\n\ndef report(formulas):\n    lines = []\n    for formula in formulas:\n        try:\n            mass = weigh(formula)\n        except ValueError as exc:\n            lines.append(\"%s: invalid (%s)\" % (formula, exc))\n            continue\n        if mass == 0:\n            lines.append(\"%s: no recognised elements\" % formula)\n        else:\n            lines.append(\"%s: %d\" % (formula, mass))\n    return lines\n\n\ndef heaviest(formulas):\n    best = None\n    best_mass = -1\n    for formula in formulas:\n        try:\n            mass = weigh(formula)\n        except ValueError:\n            continue\n        if mass > best_mass:\n            best_mass = mass\n            best = formula\n    return best\n\n\ndef main():\n    samples = [\"COO\", \"CO2\", \"C6H12O6\", \"(CO)O2\", \"Xe\", \"C(O\"]\n    for line in report(samples):\n        print(line)\n    winner = heaviest(samples)\n    print(\"heaviest: %s (%d)\" % (winner, weigh(winner)))\n\n\nmain()\n",
+"text_alt": "MASSES = {\"C\": 12, \"O\": 16}\n\n\ndef validate(formula):\n    \"\"\"Reject anything weigh() cannot interpret, and check bracket balance.\"\"\"\n    if (not isinstance(formula, str)):\n        raise TypeError(\"formula must be a string\")\n    depth = 0\n    for ch in formula:\n        if (ch == \"(\"):\n            depth += 1\n        elif (ch == \")\"):\n            depth -= 1\n            if (depth < 0):\n                raise ValueError(\"closing bracket without an opening one\")\n        elif (not ch.isalnum()):\n            raise ValueError(\"unexpected character %r\" % ch)\n    if (depth != 0):\n        raise ValueError(\"unclosed bracket\")\n\n\ndef element_mass(symbol):\n    if (symbol in MASSES):\n        return MASSES[symbol]\n    return 0\n\n\ndef weigh(formula):\n    validate(formula)\n    total = 0\n    symbol = \"\"\n    digits = \"\"\n    doubling = False\n\n    def flush():\n        nonlocal total, symbol, digits, doubling\n        if (symbol):\n            count = 1\n            if (digits):\n                count = int(digits)\n            mass = element_mass(symbol)\n            if (doubling):\n                mass *= 2\n                doubling = False\n            total += mass * count\n        symbol = \"\"\n        digits = \"\"\n\n    index = 0\n    while (index < len(formula)):\n        ch = formula[index]\n        if (ch.isupper()):\n            flush()\n            symbol = ch\n        elif (ch.islower()):\n            symbol += ch\n        elif (ch.isdigit()):\n            digits += ch\n        elif (ch == \")\"):\n            doubling = True\n        index += 1\n    flush()\n    return total\n\n\ndef report(formulas):\n    lines = []\n    for formula in formulas:\n        try:\n            mass = weigh(formula)\n        except ValueError as exc:\n            lines.append(\"%s: invalid (%s)\" % (formula, exc))\n            continue\n        if (mass == 0):\n            lines.append(\"%s: no recognised elements\" % formula)\n        else:\n            lines.append(\"%s: %d\" % (formula, mass))\n    return lines\n\n\ndef heaviest(formulas):\n    best = None\n    best_mass = -1\n    for formula in formulas:\n        try:\n            mass = weigh(formula)\n        except ValueError:\n            continue\n        if (mass > best_mass):\n            best_mass = mass\n            best = formula\n    return best\n\n\ndef main():\n    samples = [\"COO\", \"CO2\", \"C6H12O6\", \"(CO)O2\", \"Xe\", \"C(O\"]\n    for line in report(samples):\n        print(line)\n    winner = heaviest(samples)\n    print(\"heaviest: %s (%d)\" % (winner, weigh(winner)))\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+139,
+139
+],
+"alt_span": [
+139,
+140
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+269,
+269
+],
+"alt_span": [
+271,
+272
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+316,
+316
+],
+"alt_span": [
+320,
+321
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+365,
+365
+],
+"alt_span": [
+371,
+372
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+464,
+464
+],
+"alt_span": [
+472,
+473
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+550,
+550
+],
+"alt_span": [
+560,
+561
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+642,
+642
+],
+"alt_span": [
+654,
+655
+]
+},
+{
+"k": 7,
+"nat": "symbol",
+"alt": "(symbol)",
+"nat_span": [
+892,
+898
+],
+"alt_span": [
+906,
+914
+]
+},
+{
+"k": 8,
+"nat": "digits",
+"alt": "(digits)",
+"nat_span": [
+937,
+943
+],
+"alt_span": [
+953,
+961
+]
+},
+{
+"k": 9,
+"nat": "doubling",
+"alt": "(doubling)",
+"nat_span": [
+1036,
+1044
+],
+"alt_span": [
+1054,
+1064
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1204,
+1204
+],
+"alt_span": [
+1224,
+1225
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1265,
+1265
+],
+"alt_span": [
+1287,
+1288
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1336,
+1336
+],
+"alt_span": [
+1360,
+1361
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1388,
+1388
+],
+"alt_span": [
+1414,
+1415
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1440,
+1440
+],
+"alt_span": [
+1468,
+1469
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1770,
+1770
+],
+"alt_span": [
+1800,
+1801
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2126,
+2126
+],
+"alt_span": [
+2158,
+2159
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+139,
+139
+],
+"alt_span": [
+139,
+140
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+166,
+166
+],
+"alt_span": [
+167,
+168
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+269,
+269
+],
+"alt_span": [
+271,
+272
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+278,
+278
+],
+"alt_span": [
+281,
+282
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+316,
+316
+],
+"alt_span": [
+320,
+321
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+325,
+325
+],
+"alt_span": [
+330,
+331
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+365,
+365
+],
+"alt_span": [
+371,
+372
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+374,
+374
+],
+"alt_span": [
+381,
+382
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+464,
+464
+],
+"alt_span": [
+472,
+473
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+479,
+479
+],
+"alt_span": [
+488,
+489
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+550,
+550
+],
+"alt_span": [
+560,
+561
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+560,
+560
+],
+"alt_span": [
+571,
+572
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+642,
+642
+],
+"alt_span": [
+654,
+655
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+658,
+658
+],
+"alt_span": [
+671,
+672
+]
+},
+{
+"k": 14,
+"nat": "symbol",
+"alt": "(symbol)",
+"nat_span": [
+892,
+898
+],
+"alt_span": [
+906,
+914
+]
+},
+{
+"k": 15,
+"nat": "digits",
+"alt": "(digits)",
+"nat_span": [
+937,
+943
+],
+"alt_span": [
+953,
+961
+]
+},
+{
+"k": 16,
+"nat": "doubling",
+"alt": "(doubling)",
+"nat_span": [
+1036,
+1044
+],
+"alt_span": [
+1054,
+1064
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1204,
+1204
+],
+"alt_span": [
+1224,
+1225
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1223,
+1223
+],
+"alt_span": [
+1244,
+1245
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1265,
+1265
+],
+"alt_span": [
+1287,
+1288
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1276,
+1276
+],
+"alt_span": [
+1299,
+1300
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1336,
+1336
+],
+"alt_span": [
+1360,
+1361
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1347,
+1347
+],
+"alt_span": [
+1372,
+1373
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1388,
+1388
+],
+"alt_span": [
+1414,
+1415
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1399,
+1399
+],
+"alt_span": [
+1426,
+1427
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1440,
+1440
+],
+"alt_span": [
+1468,
+1469
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1449,
+1449
+],
+"alt_span": [
+1478,
+1479
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1770,
+1770
+],
+"alt_span": [
+1800,
+1801
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1779,
+1779
+],
+"alt_span": [
+1810,
+1811
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2126,
+2126
+],
+"alt_span": [
+2158,
+2159
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2142,
+2142
+],
+"alt_span": [
+2175,
+2176
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "py_paren_if__d183",
+"family": "py_paren_if",
+"topic": "Echo Sounder Depth Mapper",
+"angle": "code",
+"text_es": "Map the seabed using echo sounder ping data. Write the function `map(pings)` taking a list of integer depth readings. Loop through the readings to classify the terrain. If a reading is exactly zero, skip it as a sensor error. If a reading is greater than the previous reading by fifty meters or more, increment a cliff counter. If a reading is less than the previous reading by fifty meters or more, increment a trench counter. If three consecutive readings are completely identical, increment a flat seabed counter. If a reading exceeds the maximum sensor range of one thousand, clamp its value to one thousand before comparing. If a reading is negative, treat it as a surface reflection and ignore it. If the total number of consecutive errors exceeds five, stop processing immediately. If the total distance mapped reaches ten thousand meters, terminate the loop. For example, depth readings of 100, 160, 220 increment the cliff counter twice.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "MAX_RANGE = 1000\nSTEP = 50\nMAX_CONSECUTIVE_ERRORS = 5\nMAX_DISTANCE = 10000\nPING_SPACING = 10\n\n\ndef validate_pings(pings):\n    if not isinstance(pings, list):\n        raise TypeError(\"pings must be a list of integers\")\n    for value in pings:\n        if not isinstance(value, int) or isinstance(value, bool):\n            raise TypeError(\"ping readings must be plain integers\")\n\n\ndef clamp_reading(value):\n    if value > MAX_RANGE:\n        return MAX_RANGE\n    return value\n\n\ndef map(pings):\n    validate_pings(pings)\n    stats = {\"cliffs\": 0, \"trenches\": 0, \"flat\": 0, \"sensor_errors\": 0,\n             \"reflections\": 0, \"distance\": 0, \"stopped_early\": False}\n    previous = None\n    identical_run = 0\n    consecutive_errors = 0\n    index = 0\n    while index < len(pings):\n        reading = pings[index]\n        index += 1\n        if reading <= 0:\n            if reading == 0:\n                stats[\"sensor_errors\"] += 1\n            else:\n                stats[\"reflections\"] += 1\n            consecutive_errors += 1\n            if consecutive_errors > MAX_CONSECUTIVE_ERRORS:\n                stats[\"stopped_early\"] = True\n                break\n            continue\n        consecutive_errors = 0\n        depth = clamp_reading(reading)\n        stats[\"distance\"] += PING_SPACING\n        if previous is not None:\n            change = depth - previous\n            if change >= STEP:\n                stats[\"cliffs\"] += 1\n            elif change <= -STEP:\n                stats[\"trenches\"] += 1\n        if depth == previous:\n            identical_run += 1\n        else:\n            identical_run = 1\n        if identical_run >= 3:\n            stats[\"flat\"] += 1\n        previous = depth\n        if stats[\"distance\"] >= MAX_DISTANCE:\n            stats[\"stopped_early\"] = True\n            break\n    return stats\n\n\ndef dominant_terrain(stats):\n    if stats[\"cliffs\"] > stats[\"trenches\"] and stats[\"cliffs\"] > stats[\"flat\"]:\n        return \"rising\"\n    elif stats[\"trenches\"] > stats[\"cliffs\"] and stats[\"trenches\"] > stats[\"flat\"]:\n        return \"descending\"\n    elif stats[\"flat\"] > 0:\n        return \"flat\"\n    return \"mixed\"\n\n\ndef format_report(name, stats):\n    lines = [\"Survey %s: %s seabed\" % (name, dominant_terrain(stats))]\n    lines.append(\"  cliffs=%d trenches=%d flat=%d\" % (stats[\"cliffs\"], stats[\"trenches\"], stats[\"flat\"]))\n    lines.append(\"  distance=%dm errors=%d reflections=%d\"\n                 % (stats[\"distance\"], stats[\"sensor_errors\"], stats[\"reflections\"]))\n    if stats[\"stopped_early\"]:\n        lines.append(\"  survey aborted before the last ping\")\n    return \"\\n\".join(lines)\n\n\ndef main():\n    surveys = [(\"ridge\", [100, 160, 220]),\n               (\"plateau\", [300, 300, 300, 300, 0, 250, -5, 1200, 1400]),\n               (\"noisy\", [400, 0, 0, 0, 0, 0, 0, 500])]\n    for name, pings in surveys:\n        print(format_report(name, map(pings)))\n\n\nmain()\n",
+"text_alt": "MAX_RANGE = 1000\nSTEP = 50\nMAX_CONSECUTIVE_ERRORS = 5\nMAX_DISTANCE = 10000\nPING_SPACING = 10\n\n\ndef validate_pings(pings):\n    if (not isinstance(pings, list)):\n        raise TypeError(\"pings must be a list of integers\")\n    for value in pings:\n        if (not isinstance(value, int) or isinstance(value, bool)):\n            raise TypeError(\"ping readings must be plain integers\")\n\n\ndef clamp_reading(value):\n    if (value > MAX_RANGE):\n        return MAX_RANGE\n    return value\n\n\ndef map(pings):\n    validate_pings(pings)\n    stats = {\"cliffs\": 0, \"trenches\": 0, \"flat\": 0, \"sensor_errors\": 0,\n             \"reflections\": 0, \"distance\": 0, \"stopped_early\": False}\n    previous = None\n    identical_run = 0\n    consecutive_errors = 0\n    index = 0\n    while (index < len(pings)):\n        reading = pings[index]\n        index += 1\n        if (reading <= 0):\n            if (reading == 0):\n                stats[\"sensor_errors\"] += 1\n            else:\n                stats[\"reflections\"] += 1\n            consecutive_errors += 1\n            if (consecutive_errors > MAX_CONSECUTIVE_ERRORS):\n                stats[\"stopped_early\"] = True\n                break\n            continue\n        consecutive_errors = 0\n        depth = clamp_reading(reading)\n        stats[\"distance\"] += PING_SPACING\n        if (previous is not None):\n            change = depth - previous\n            if (change >= STEP):\n                stats[\"cliffs\"] += 1\n            elif (change <= -STEP):\n                stats[\"trenches\"] += 1\n        if (depth == previous):\n            identical_run += 1\n        else:\n            identical_run = 1\n        if (identical_run >= 3):\n            stats[\"flat\"] += 1\n        previous = depth\n        if (stats[\"distance\"] >= MAX_DISTANCE):\n            stats[\"stopped_early\"] = True\n            break\n    return stats\n\n\ndef dominant_terrain(stats):\n    if (stats[\"cliffs\"] > stats[\"trenches\"] and stats[\"cliffs\"] > stats[\"flat\"]):\n        return \"rising\"\n    elif (stats[\"trenches\"] > stats[\"cliffs\"] and stats[\"trenches\"] > stats[\"flat\"]):\n        return \"descending\"\n    elif (stats[\"flat\"] > 0):\n        return \"flat\"\n    return \"mixed\"\n\n\ndef format_report(name, stats):\n    lines = [\"Survey %s: %s seabed\" % (name, dominant_terrain(stats))]\n    lines.append(\"  cliffs=%d trenches=%d flat=%d\" % (stats[\"cliffs\"], stats[\"trenches\"], stats[\"flat\"]))\n    lines.append(\"  distance=%dm errors=%d reflections=%d\"\n                 % (stats[\"distance\"], stats[\"sensor_errors\"], stats[\"reflections\"]))\n    if (stats[\"stopped_early\"]):\n        lines.append(\"  survey aborted before the last ping\")\n    return \"\\n\".join(lines)\n\n\ndef main():\n    surveys = [(\"ridge\", [100, 160, 220]),\n               (\"plateau\", [300, 300, 300, 300, 0, 250, -5, 1200, 1400]),\n               (\"noisy\", [400, 0, 0, 0, 0, 0, 0, 500])]\n    for name, pings in surveys:\n        print(format_report(name, map(pings)))\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+129,
+129
+],
+"alt_span": [
+129,
+130
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+253,
+253
+],
+"alt_span": [
+255,
+256
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+411,
+411
+],
+"alt_span": [
+415,
+416
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+751,
+751
+],
+"alt_span": [
+757,
+758
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+832,
+832
+],
+"alt_span": [
+840,
+841
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+861,
+861
+],
+"alt_span": [
+871,
+872
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1030,
+1030
+],
+"alt_span": [
+1042,
+1043
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1287,
+1287
+],
+"alt_span": [
+1301,
+1302
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1362,
+1362
+],
+"alt_span": [
+1378,
+1379
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1432,
+1432
+],
+"alt_span": [
+1450,
+1451
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1499,
+1499
+],
+"alt_span": [
+1519,
+1520
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1604,
+1604
+],
+"alt_span": [
+1626,
+1627
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1691,
+1691
+],
+"alt_span": [
+1715,
+1716
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1841,
+1841
+],
+"alt_span": [
+1867,
+1868
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1947,
+1947
+],
+"alt_span": [
+1975,
+1976
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2059,
+2059
+],
+"alt_span": [
+2089,
+2090
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2482,
+2482
+],
+"alt_span": [
+2514,
+2515
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+129,
+129
+],
+"alt_span": [
+129,
+130
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+155,
+155
+],
+"alt_span": [
+156,
+157
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+253,
+253
+],
+"alt_span": [
+255,
+256
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+305,
+305
+],
+"alt_span": [
+308,
+309
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+411,
+411
+],
+"alt_span": [
+415,
+416
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+428,
+428
+],
+"alt_span": [
+433,
+434
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+751,
+751
+],
+"alt_span": [
+757,
+758
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+768,
+768
+],
+"alt_span": [
+775,
+776
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+832,
+832
+],
+"alt_span": [
+840,
+841
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+844,
+844
+],
+"alt_span": [
+853,
+854
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+861,
+861
+],
+"alt_span": [
+871,
+872
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+873,
+873
+],
+"alt_span": [
+884,
+885
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1030,
+1030
+],
+"alt_span": [
+1042,
+1043
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1073,
+1073
+],
+"alt_span": [
+1086,
+1087
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1287,
+1287
+],
+"alt_span": [
+1301,
+1302
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1307,
+1307
+],
+"alt_span": [
+1322,
+1323
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1362,
+1362
+],
+"alt_span": [
+1378,
+1379
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1376,
+1376
+],
+"alt_span": [
+1393,
+1394
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1432,
+1432
+],
+"alt_span": [
+1450,
+1451
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1447,
+1447
+],
+"alt_span": [
+1466,
+1467
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1499,
+1499
+],
+"alt_span": [
+1519,
+1520
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1516,
+1516
+],
+"alt_span": [
+1537,
+1538
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1604,
+1604
+],
+"alt_span": [
+1626,
+1627
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1622,
+1622
+],
+"alt_span": [
+1645,
+1646
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1691,
+1691
+],
+"alt_span": [
+1715,
+1716
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1724,
+1724
+],
+"alt_span": [
+1749,
+1750
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1841,
+1841
+],
+"alt_span": [
+1867,
+1868
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1912,
+1912
+],
+"alt_span": [
+1939,
+1940
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1947,
+1947
+],
+"alt_span": [
+1975,
+1976
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2020,
+2020
+],
+"alt_span": [
+2049,
+2050
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2059,
+2059
+],
+"alt_span": [
+2089,
+2090
+]
+},
+{
+"k": 31,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2076,
+2076
+],
+"alt_span": [
+2107,
+2108
+]
+},
+{
+"k": 32,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2482,
+2482
+],
+"alt_span": [
+2514,
+2515
+]
+},
+{
+"k": 33,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2504,
+2504
+],
+"alt_span": [
+2537,
+2538
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py_paren_if__d185",
 "family": "py_paren_if",
 "topic": "Debate Tournament Speaker Scorer",
@@ -76147,6 +82648,634 @@
 "alt_span": [
 2024,
 2025
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "py_paren_if__d189",
+"family": "py_paren_if",
+"topic": "Morse Code Decoder",
+"angle": "code",
+"text_es": "Decode a noisy Morse code transmission. Write the function `decode(signal)` taking a string of characters. Maintain a current sequence string and a decoded message list. Loop through the characters. If the character is a period, append a dot to the sequence. If the character is a hyphen, append a dash to the sequence. If the character is a single space, convert the current sequence to a letter using a standard mapping and reset the sequence. If the character is an asterisk, treat it as a triple space and append a word break to the message. If the character is an exclamation mark, discard the current sequence as a glitch. If the sequence grows longer than six dots and dashes, clear it as invalid noise. If the signal ends while a sequence is still building, convert the remainder. If the final message length exceeds one hundred words, truncate it. For example, period hyphen space decodes to the letter a.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "MORSE = {\n    \".-\": \"a\", \"-...\": \"b\", \"-.-.\": \"c\", \"-..\": \"d\", \".\": \"e\",\n    \"..-.\": \"f\", \"--.\": \"g\", \"....\": \"h\", \"..\": \"i\", \".---\": \"j\",\n    \"-.-\": \"k\", \".-..\": \"l\", \"--\": \"m\", \"-.\": \"n\", \"---\": \"o\",\n    \".--.\": \"p\", \"--.-\": \"q\", \".-.\": \"r\", \"...\": \"s\", \"-\": \"t\",\n    \"..-\": \"u\", \"...-\": \"v\", \".--\": \"w\", \"-..-\": \"x\", \"-.--\": \"y\",\n    \"--..\": \"z\",\n}\n\nMAX_SEQUENCE = 6\nMAX_WORDS = 100\n\n\ndef translate(sequence):\n    \"\"\"Turn a finished dot/dash sequence into a letter, '?' when unknown.\"\"\"\n    if not sequence:\n        return \"\"\n    letter = MORSE.get(sequence)\n    if letter is None:\n        return \"?\"\n    return letter\n\n\ndef truncate_words(text, limit):\n    \"\"\"Keep at most `limit` whitespace separated words of `text`.\"\"\"\n    words = text.split()\n    while len(words) > limit:\n        words.pop()\n    return \" \".join(words)\n\n\ndef decode(signal):\n    if not isinstance(signal, str):\n        raise TypeError(\"signal must be a string\")\n    sequence = \"\"\n    message = []\n    for char in signal:\n        if char == \".\":\n            sequence += \".\"\n        elif char == \"-\":\n            sequence += \"-\"\n        elif char == \" \":\n            message.append(translate(sequence))\n            sequence = \"\"\n        elif char == \"*\":\n            if sequence:\n                message.append(translate(sequence))\n                sequence = \"\"\n            message.append(\" \")\n        elif char == \"!\":\n            sequence = \"\"\n        if len(sequence) > MAX_SEQUENCE:\n            sequence = \"\"\n    if sequence:\n        message.append(translate(sequence))\n    return truncate_words(\"\".join(message), MAX_WORDS)\n\n\ndef describe(signal):\n    \"\"\"Format one transmission and flag the letters that could not be read.\"\"\"\n    text = decode(signal)\n    if not text:\n        return \"(silence)\"\n    glitches = text.count(\"?\")\n    if glitches == 1:\n        return text + \"   [1 unreadable letter]\"\n    elif glitches > 1:\n        return text + \"   [%d unreadable letters]\" % glitches\n    return text\n\n\ndef main(argv):\n    signals = argv[1:]\n    if not signals:\n        signals = [\n            \".- \",\n            \".... . .-.. .-.. --- *.-- --- .-. .-.. -.. \",\n            \"... --- .......! ... --- ...\",\n        ]\n    for signal in signals:\n        print(\"%-40s -> %s\" % (repr(signal), describe(signal)))\n\n\nif __name__ == \"__main__\":\n    import sys\n\n    main(sys.argv)\n",
+"text_alt": "MORSE = {\n    \".-\": \"a\", \"-...\": \"b\", \"-.-.\": \"c\", \"-..\": \"d\", \".\": \"e\",\n    \"..-.\": \"f\", \"--.\": \"g\", \"....\": \"h\", \"..\": \"i\", \".---\": \"j\",\n    \"-.-\": \"k\", \".-..\": \"l\", \"--\": \"m\", \"-.\": \"n\", \"---\": \"o\",\n    \".--.\": \"p\", \"--.-\": \"q\", \".-.\": \"r\", \"...\": \"s\", \"-\": \"t\",\n    \"..-\": \"u\", \"...-\": \"v\", \".--\": \"w\", \"-..-\": \"x\", \"-.--\": \"y\",\n    \"--..\": \"z\",\n}\n\nMAX_SEQUENCE = 6\nMAX_WORDS = 100\n\n\ndef translate(sequence):\n    \"\"\"Turn a finished dot/dash sequence into a letter, '?' when unknown.\"\"\"\n    if (not sequence):\n        return \"\"\n    letter = MORSE.get(sequence)\n    if (letter is None):\n        return \"?\"\n    return letter\n\n\ndef truncate_words(text, limit):\n    \"\"\"Keep at most `limit` whitespace separated words of `text`.\"\"\"\n    words = text.split()\n    while (len(words) > limit):\n        words.pop()\n    return \" \".join(words)\n\n\ndef decode(signal):\n    if (not isinstance(signal, str)):\n        raise TypeError(\"signal must be a string\")\n    sequence = \"\"\n    message = []\n    for char in signal:\n        if (char == \".\"):\n            sequence += \".\"\n        elif (char == \"-\"):\n            sequence += \"-\"\n        elif (char == \" \"):\n            message.append(translate(sequence))\n            sequence = \"\"\n        elif (char == \"*\"):\n            if (sequence):\n                message.append(translate(sequence))\n                sequence = \"\"\n            message.append(\" \")\n        elif (char == \"!\"):\n            sequence = \"\"\n        if (len(sequence) > MAX_SEQUENCE):\n            sequence = \"\"\n    if (sequence):\n        message.append(translate(sequence))\n    return truncate_words(\"\".join(message), MAX_WORDS)\n\n\ndef describe(signal):\n    \"\"\"Format one transmission and flag the letters that could not be read.\"\"\"\n    text = decode(signal)\n    if (not text):\n        return \"(silence)\"\n    glitches = text.count(\"?\")\n    if (glitches == 1):\n        return text + \"   [1 unreadable letter]\"\n    elif (glitches > 1):\n        return text + \"   [%d unreadable letters]\" % glitches\n    return text\n\n\ndef main(argv):\n    signals = argv[1:]\n    if (not signals):\n        signals = [\n            \".- \",\n            \".... . .-.. .-.. --- *.-- --- .-. .-.. -.. \",\n            \"... --- .......! ... --- ...\",\n        ]\n    for signal in signals:\n        print(\"%-40s -> %s\" % (repr(signal), describe(signal)))\n\n\nif __name__ == \"__main__\":\n    import sys\n\n    main(sys.argv)\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+497,
+497
+],
+"alt_span": [
+497,
+498
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+569,
+569
+],
+"alt_span": [
+571,
+572
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+761,
+761
+],
+"alt_span": [
+765,
+766
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+857,
+857
+],
+"alt_span": [
+863,
+864
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1007,
+1007
+],
+"alt_span": [
+1015,
+1016
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1061,
+1061
+],
+"alt_span": [
+1071,
+1072
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1115,
+1115
+],
+"alt_span": [
+1127,
+1128
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1215,
+1215
+],
+"alt_span": [
+1229,
+1230
+]
+},
+{
+"k": 8,
+"nat": "sequence",
+"alt": "(sequence)",
+"nat_span": [
+1243,
+1251
+],
+"alt_span": [
+1259,
+1269
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1380,
+1380
+],
+"alt_span": [
+1398,
+1399
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1430,
+1430
+],
+"alt_span": [
+1450,
+1451
+]
+},
+{
+"k": 11,
+"nat": "sequence",
+"alt": "(sequence)",
+"nat_span": [
+1493,
+1501
+],
+"alt_span": [
+1515,
+1525
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1738,
+1738
+],
+"alt_span": [
+1762,
+1763
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1813,
+1813
+],
+"alt_span": [
+1839,
+1840
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1886,
+1886
+],
+"alt_span": [
+1914,
+1915
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2026,
+2026
+],
+"alt_span": [
+2056,
+2057
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+497,
+497
+],
+"alt_span": [
+497,
+498
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+509,
+509
+],
+"alt_span": [
+510,
+511
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+569,
+569
+],
+"alt_span": [
+571,
+572
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+583,
+583
+],
+"alt_span": [
+586,
+587
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+761,
+761
+],
+"alt_span": [
+765,
+766
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+779,
+779
+],
+"alt_span": [
+784,
+785
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+857,
+857
+],
+"alt_span": [
+863,
+864
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+883,
+883
+],
+"alt_span": [
+890,
+891
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1007,
+1007
+],
+"alt_span": [
+1015,
+1016
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1018,
+1018
+],
+"alt_span": [
+1027,
+1028
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1061,
+1061
+],
+"alt_span": [
+1071,
+1072
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1072,
+1072
+],
+"alt_span": [
+1083,
+1084
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1115,
+1115
+],
+"alt_span": [
+1127,
+1128
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1126,
+1126
+],
+"alt_span": [
+1139,
+1140
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1215,
+1215
+],
+"alt_span": [
+1229,
+1230
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1226,
+1226
+],
+"alt_span": [
+1241,
+1242
+]
+},
+{
+"k": 16,
+"nat": "sequence",
+"alt": "(sequence)",
+"nat_span": [
+1243,
+1251
+],
+"alt_span": [
+1259,
+1269
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1380,
+1380
+],
+"alt_span": [
+1398,
+1399
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1391,
+1391
+],
+"alt_span": [
+1410,
+1411
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1430,
+1430
+],
+"alt_span": [
+1450,
+1451
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1458,
+1458
+],
+"alt_span": [
+1479,
+1480
+]
+},
+{
+"k": 21,
+"nat": "sequence",
+"alt": "(sequence)",
+"nat_span": [
+1493,
+1501
+],
+"alt_span": [
+1515,
+1525
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1738,
+1738
+],
+"alt_span": [
+1762,
+1763
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1746,
+1746
+],
+"alt_span": [
+1771,
+1772
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1813,
+1813
+],
+"alt_span": [
+1839,
+1840
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1826,
+1826
+],
+"alt_span": [
+1853,
+1854
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "(",
+"nat_span": [
+1886,
+1886
+],
+"alt_span": [
+1914,
+1915
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": ")",
+"nat_span": [
+1898,
+1898
+],
+"alt_span": [
+1927,
+1928
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "(",
+"nat_span": [
+2026,
+2026
+],
+"alt_span": [
+2056,
+2057
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": ")",
+"nat_span": [
+2037,
+2037
+],
+"alt_span": [
+2068,
+2069
 ]
 }
 ],
@@ -88737,557 +95866,6 @@
 "regen": "regen8"
 },
 {
-"doc_id": "py_paren_if__t003",
-"family": "py_paren_if",
-"topic": "Factorial Calculation",
-"angle": "code",
-"text_es": "Create a function `calculate_factorial(n)` that computes the factorial of a non-negative integer `n`. The factorial of 0 is 1. For example, `calculate_factorial(5)` should return `120`, and `calculate_factorial(0)` should return `1`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def calculate_factorial(n):\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers\")\n\n    if n == 0:\n        return 1\n\n    result = 1\n    i = 1\n    while i <= n:\n        result *= i\n        if i == n:\n            break\n        i += 1\n\n    if n > 10:\n        pass\n    elif n > 5:\n        pass\n    elif n > 2:\n        pass\n    else:\n        pass\n\n    return result\n",
-"text_alt": "def calculate_factorial(n):\n    if (n < 0):\n        raise ValueError(\"Factorial is not defined for negative numbers\")\n\n    if (n == 0):\n        return 1\n\n    result = 1\n    i = 1\n    while (i <= n):\n        result *= i\n        if (i == n):\n            break\n        i += 1\n\n    if (n > 10):\n        pass\n    elif (n > 5):\n        pass\n    elif (n > 2):\n        pass\n    else:\n        pass\n\n    return result\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-35,
-35
-],
-"alt_span": [
-35,
-36
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-124,
-124
-],
-"alt_span": [
-126,
-127
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-185,
-185
-],
-"alt_span": [
-189,
-190
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-224,
-224
-],
-"alt_span": [
-230,
-231
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-273,
-273
-],
-"alt_span": [
-281,
-282
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-303,
-303
-],
-"alt_span": [
-313,
-314
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-332,
-332
-],
-"alt_span": [
-344,
-345
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-35,
-35
-],
-"alt_span": [
-35,
-36
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-40,
-40
-],
-"alt_span": [
-41,
-42
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-124,
-124
-],
-"alt_span": [
-126,
-127
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-130,
-130
-],
-"alt_span": [
-133,
-134
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-185,
-185
-],
-"alt_span": [
-189,
-190
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-191,
-191
-],
-"alt_span": [
-196,
-197
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-224,
-224
-],
-"alt_span": [
-230,
-231
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-230,
-230
-],
-"alt_span": [
-237,
-238
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-273,
-273
-],
-"alt_span": [
-281,
-282
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-279,
-279
-],
-"alt_span": [
-288,
-289
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-303,
-303
-],
-"alt_span": [
-313,
-314
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-308,
-308
-],
-"alt_span": [
-319,
-320
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-332,
-332
-],
-"alt_span": [
-344,
-345
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-337,
-337
-],
-"alt_span": [
-350,
-351
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_paren_if__t004",
-"family": "py_paren_if",
-"topic": "Check Palindrome",
-"angle": "code",
-"text_es": "Implement a function `is_palindrome(text)` that determines if a given string `text` is a palindrome (reads the same forwards and backwards, ignoring case and non-alphanumeric characters). For example, `is_palindrome('Racecar')` should return `True`, and `is_palindrome('Hello World')` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def is_palindrome(text):\n    clean_text = \"\"\n    for char in text:\n        if 'a' <= char <= 'z' or 'A' <= char <= 'Z' or '0' <= char <= '9':\n            clean_text += char.lower()\n\n    if len(clean_text) == 0: return True\n    if len(clean_text) == 1: return True\n\n    left = 0\n    right = len(clean_text) - 1\n\n    while left < right:\n        if clean_text[left] != clean_text[right]: return False\n        left += 1\n        right -= 1\n\n    if left >= right: return True\n    return False\n",
-"text_alt": "def is_palindrome(text):\n    clean_text = \"\"\n    for char in text:\n        if ('a' <= char <= 'z' or 'A' <= char <= 'Z' or '0' <= char <= '9'):\n            clean_text += char.lower()\n\n    if (len(clean_text) == 0): return True\n    if (len(clean_text) == 1): return True\n\n    left = 0\n    right = len(clean_text) - 1\n\n    while (left < right):\n        if (clean_text[left] != clean_text[right]): return False\n        left += 1\n        right -= 1\n\n    if (left >= right): return True\n    return False\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-78,
-78
-],
-"alt_span": [
-78,
-79
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-189,
-189
-],
-"alt_span": [
-191,
-192
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-230,
-230
-],
-"alt_span": [
-234,
-235
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-321,
-321
-],
-"alt_span": [
-327,
-328
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-346,
-346
-],
-"alt_span": [
-354,
-355
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-443,
-443
-],
-"alt_span": [
-453,
-454
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-78,
-78
-],
-"alt_span": [
-78,
-79
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-140,
-140
-],
-"alt_span": [
-141,
-142
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-189,
-189
-],
-"alt_span": [
-191,
-192
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-209,
-209
-],
-"alt_span": [
-212,
-213
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-230,
-230
-],
-"alt_span": [
-234,
-235
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-250,
-250
-],
-"alt_span": [
-255,
-256
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-321,
-321
-],
-"alt_span": [
-327,
-328
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-333,
-333
-],
-"alt_span": [
-340,
-341
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-346,
-346
-],
-"alt_span": [
-354,
-355
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-383,
-383
-],
-"alt_span": [
-392,
-393
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-443,
-443
-],
-"alt_span": [
-453,
-454
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-456,
-456
-],
-"alt_span": [
-467,
-468
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_paren_if__t005",
 "family": "py_paren_if",
 "topic": "Sum of List Elements",
@@ -94519,262 +101097,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "py_paren_if__t037",
-"family": "py_paren_if",
-"topic": "Most Frequent Character",
-"angle": "code",
-"text_es": "Implement a function `most_frequent_char(text)` that returns the character that appears most frequently in a string `text`. Ignore spaces and case. If ties, return the one that appears first. For example, `most_frequent_char('hello world')` should return `'l'`, and `most_frequent_char('aabbc')` should return `'a'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def most_frequent_char(text):\n    freq = {}\n    max_freq = 0\n    result_char = ''\n    i = 0\n    while i < len(text):\n        char = text[i].lower()\n        if char != ' ':\n            if char not in freq:\n                freq[char] = 0\n            freq[char] += 1\n            if freq[char] > max_freq:\n                max_freq = freq[char]\n                result_char = char\n            elif freq[char] == max_freq:\n                if result_char == '': # first character encountered\n                    result_char = char\n        i += 1\n    return result_char\n",
-"text_alt": "def most_frequent_char(text):\n    freq = {}\n    max_freq = 0\n    result_char = ''\n    i = 0\n    while (i < len(text)):\n        char = text[i].lower()\n        if (char != ' '):\n            if (char not in freq):\n                freq[char] = 0\n            freq[char] += 1\n            if (freq[char] > max_freq):\n                max_freq = freq[char]\n                result_char = char\n            elif (freq[char] == max_freq):\n                if (result_char == ''): # first character encountered\n                    result_char = char\n        i += 1\n    return result_char\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-102,
-102
-],
-"alt_span": [
-102,
-103
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-159,
-159
-],
-"alt_span": [
-161,
-162
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-187,
-187
-],
-"alt_span": [
-191,
-192
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-279,
-279
-],
-"alt_span": [
-285,
-286
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-392,
-392
-],
-"alt_span": [
-400,
-401
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-435,
-435
-],
-"alt_span": [
-445,
-446
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-102,
-102
-],
-"alt_span": [
-102,
-103
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-114,
-114
-],
-"alt_span": [
-115,
-116
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-159,
-159
-],
-"alt_span": [
-161,
-162
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-170,
-170
-],
-"alt_span": [
-173,
-174
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-187,
-187
-],
-"alt_span": [
-191,
-192
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-203,
-203
-],
-"alt_span": [
-208,
-209
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-279,
-279
-],
-"alt_span": [
-285,
-286
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-300,
-300
-],
-"alt_span": [
-307,
-308
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-392,
-392
-],
-"alt_span": [
-400,
-401
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-414,
-414
-],
-"alt_span": [
-423,
-424
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-435,
-435
-],
-"alt_span": [
-445,
-446
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-452,
-452
-],
-"alt_span": [
-463,
-464
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "py_paren_if__t042",
@@ -103558,674 +109880,6 @@
 ]
 },
 {
-"doc_id": "py_paren_if__t103",
-"family": "py_paren_if",
-"topic": "Simple Stock Profit Calculator",
-"angle": "code",
-"text_es": "Calculate the profit or loss from a single stock transaction given buy price, sell price, and quantity. The function `calculate_stock_profit(buy_price, sell_price, quantity)` should return the total profit/loss. Input: `buy_price` (float), `sell_price` (float), `quantity` (int). Output: `profit_loss` (float).\nExample 1: `calculate_stock_profit(10.0, 12.0, 100)` should return `200.0`.\nExample 2: `calculate_stock_profit(15.0, 13.0, 50)` should return `-100.0`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def calculate_stock_profit(buy_price, sell_price, quantity):\n    if buy_price < 0.0:\n        return 0.0\n    if sell_price < 0.0:\n        return 0.0\n    if quantity <= 0:\n        return 0.0\n\n    profit_per_share = sell_price - buy_price\n    total_profit_loss = profit_per_share * quantity\n\n    if total_profit_loss > 0:\n        print(\"Profit made!\")\n    elif total_profit_loss < 0:\n        print(\"Loss incurred.\")\n    else:\n        print(\"Break-even.\")\n\n    if total_profit_loss == 0.0:\n        i = 0\n        while i < 1:\n            i += 1\n            return 0.0\n    elif total_profit_loss > 1000.0:\n        return total_profit_loss * 0.99  # Small commission for large profit\n    elif total_profit_loss < -1000.0:\n        return total_profit_loss * 1.01  # Small penalty for large loss\n    else:\n        return total_profit_loss\n",
-"text_alt": "def calculate_stock_profit(buy_price, sell_price, quantity):\n    if (buy_price < 0.0):\n        return 0.0\n    if (sell_price < 0.0):\n        return 0.0\n    if (quantity <= 0):\n        return 0.0\n\n    profit_per_share = sell_price - buy_price\n    total_profit_loss = profit_per_share * quantity\n\n    if (total_profit_loss > 0):\n        print(\"Profit made!\")\n    elif (total_profit_loss < 0):\n        print(\"Loss incurred.\")\n    else:\n        print(\"Break-even.\")\n\n    if (total_profit_loss == 0.0):\n        i = 0\n        while (i < 1):\n            i += 1\n            return 0.0\n    elif (total_profit_loss > 1000.0):\n        return total_profit_loss * 0.99  # Small commission for large profit\n    elif (total_profit_loss < -1000.0):\n        return total_profit_loss * 1.01  # Small penalty for large loss\n    else:\n        return total_profit_loss\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-68,
-68
-],
-"alt_span": [
-68,
-69
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-111,
-111
-],
-"alt_span": [
-113,
-114
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-155,
-155
-],
-"alt_span": [
-159,
-160
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-296,
-296
-],
-"alt_span": [
-302,
-303
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-358,
-358
-],
-"alt_span": [
-366,
-367
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-460,
-460
-],
-"alt_span": [
-470,
-471
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-514,
-514
-],
-"alt_span": [
-526,
-527
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": "(",
-"nat_span": [
-572,
-572
-],
-"alt_span": [
-586,
-587
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-686,
-686
-],
-"alt_span": [
-702,
-703
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-68,
-68
-],
-"alt_span": [
-68,
-69
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-83,
-83
-],
-"alt_span": [
-84,
-85
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-111,
-111
-],
-"alt_span": [
-113,
-114
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-127,
-127
-],
-"alt_span": [
-130,
-131
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-155,
-155
-],
-"alt_span": [
-159,
-160
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-168,
-168
-],
-"alt_span": [
-173,
-174
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-296,
-296
-],
-"alt_span": [
-302,
-303
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-317,
-317
-],
-"alt_span": [
-324,
-325
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-358,
-358
-],
-"alt_span": [
-366,
-367
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-379,
-379
-],
-"alt_span": [
-388,
-389
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-460,
-460
-],
-"alt_span": [
-470,
-471
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-484,
-484
-],
-"alt_span": [
-495,
-496
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-514,
-514
-],
-"alt_span": [
-526,
-527
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-519,
-519
-],
-"alt_span": [
-532,
-533
-]
-},
-{
-"k": 14,
-"nat": "",
-"alt": "(",
-"nat_span": [
-572,
-572
-],
-"alt_span": [
-586,
-587
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": ")",
-"nat_span": [
-598,
-598
-],
-"alt_span": [
-613,
-614
-]
-},
-{
-"k": 16,
-"nat": "",
-"alt": "(",
-"nat_span": [
-686,
-686
-],
-"alt_span": [
-702,
-703
-]
-},
-{
-"k": 17,
-"nat": "",
-"alt": ")",
-"nat_span": [
-713,
-713
-],
-"alt_span": [
-730,
-731
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_paren_if__t106",
-"family": "py_paren_if",
-"topic": "Decimal to Hexadecimal Conversion",
-"angle": "code",
-"text_es": "Convert a decimal integer to its hexadecimal string representation. The function `decimal_to_hex(decimal_num)` should return the hexadecimal string. Input: `decimal_num` (int). Output: `hex_string` (str).\nExample 1: `decimal_to_hex(255)` should return `'FF'`.\nExample 2: `decimal_to_hex(10)` should return `'A'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def decimal_to_hex(decimal_num):\n    hex_chars = \"0123456789ABCDEF\"\n    hex_string = \"\"\n\n    if decimal_num == 0:\n        return \"0\"\n\n    while decimal_num > 0:\n        remainder = decimal_num % 16\n        hex_string = hex_chars[remainder] + hex_string\n        decimal_num //= 16\n\n    if len(hex_string) == 0:\n        return \"\"\n\n    if hex_string[0] == '0' and len(hex_string) > 1:\n        while hex_string[0] == '0' and len(hex_string) > 1:\n            hex_string = hex_string[1:]\n\n    elif hex_string[-1] == 'F' and len(hex_string) == 1:\n        if remainder == 15:\n            pass\n\n    return hex_string\n",
-"text_alt": "def decimal_to_hex(decimal_num):\n    hex_chars = \"0123456789ABCDEF\"\n    hex_string = \"\"\n\n    if (decimal_num == 0):\n        return \"0\"\n\n    while (decimal_num > 0):\n        remainder = decimal_num % 16\n        hex_string = hex_chars[remainder] + hex_string\n        decimal_num //= 16\n\n    if (len(hex_string) == 0):\n        return \"\"\n\n    if (hex_string[0] == '0' and len(hex_string) > 1):\n        while (hex_string[0] == '0' and len(hex_string) > 1):\n            hex_string = hex_string[1:]\n\n    elif (hex_string[-1] == 'F' and len(hex_string) == 1):\n        if (remainder == 15):\n            pass\n\n    return hex_string\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-96,
-96
-],
-"alt_span": [
-96,
-97
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-144,
-144
-],
-"alt_span": [
-146,
-147
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-288,
-288
-],
-"alt_span": [
-292,
-293
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-336,
-336
-],
-"alt_span": [
-342,
-343
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-396,
-396
-],
-"alt_span": [
-404,
-405
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-492,
-492
-],
-"alt_span": [
-502,
-503
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-551,
-551
-],
-"alt_span": [
-563,
-564
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-96,
-96
-],
-"alt_span": [
-96,
-97
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-112,
-112
-],
-"alt_span": [
-113,
-114
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-144,
-144
-],
-"alt_span": [
-146,
-147
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-159,
-159
-],
-"alt_span": [
-162,
-163
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-288,
-288
-],
-"alt_span": [
-292,
-293
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-308,
-308
-],
-"alt_span": [
-313,
-314
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-336,
-336
-],
-"alt_span": [
-342,
-343
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-380,
-380
-],
-"alt_span": [
-387,
-388
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-396,
-396
-],
-"alt_span": [
-404,
-405
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-440,
-440
-],
-"alt_span": [
-449,
-450
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-492,
-492
-],
-"alt_span": [
-502,
-503
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-538,
-538
-],
-"alt_span": [
-549,
-550
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-551,
-551
-],
-"alt_span": [
-563,
-564
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-566,
-566
-],
-"alt_span": [
-579,
-580
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_paren_if__t107",
 "family": "py_paren_if",
 "topic": "Hexadecimal to Decimal Conversion",
@@ -104746,340 +110400,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "py_paren_if__t108",
-"family": "py_paren_if",
-"topic": "Check Website Status (Dummy)",
-"angle": "code",
-"text_es": "Simulate checking the status of a website. The function `check_website_status(url)` should always return a dummy value of '200 OK'. In a real scenario, this would involve an HTTP request. Input: `url` (str). Output: `status` (str).\nExample 1: `check_website_status('http://example.com')` should return `'200 OK'`.\nExample 2: `check_website_status('https://google.com')` should return `'200 OK'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def check_website_status(url):\n    status_code = 200\n    status_message = \"OK\"\n\n    if url is None:\n        return \"400 Bad Request\"\n    if not isinstance(url, str):\n        return \"400 Bad Request\"\n    if len(url) == 0:\n        return \"400 Bad Request\"\n\n    if status_code == 200:\n        if status_message == \"OK\":\n            return f\"{status_code} {status_message}\"\n        elif status_message == \"Not Found\":\n            return \"404 Not Found\"\n    elif status_code == 404:\n        return \"404 Not Found\"\n    elif status_code == 500:\n        return \"500 Internal Server Error\"\n\n    while status_code == 200 and status_message == \"OK\":\n        return f\"{status_code} {status_message}\"\n    \n    return \"Unknown Error\"\n",
-"text_alt": "def check_website_status(url):\n    status_code = 200\n    status_message = \"OK\"\n\n    if (url is None):\n        return \"400 Bad Request\"\n    if (not isinstance(url, str)):\n        return \"400 Bad Request\"\n    if (len(url) == 0):\n        return \"400 Bad Request\"\n\n    if (status_code == 200):\n        if (status_message == \"OK\"):\n            return f\"{status_code} {status_message}\"\n        elif (status_message == \"Not Found\"):\n            return \"404 Not Found\"\n    elif (status_code == 404):\n        return \"404 Not Found\"\n    elif (status_code == 500):\n        return \"500 Internal Server Error\"\n\n    while (status_code == 200 and status_message == \"OK\"):\n        return f\"{status_code} {status_message}\"\n    \n    return \"Unknown Error\"\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-87,
-87
-],
-"alt_span": [
-87,
-88
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(not isinstance(url, str)):\n        return \"400 Bad Request\"\n    if (",
-"nat_span": [
-206,
-206
-],
-"alt_span": [
-142,
-211
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-262,
-262
-],
-"alt_span": [
-268,
-269
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-293,
-293
-],
-"alt_span": [
-301,
-302
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-383,
-383
-],
-"alt_span": [
-393,
-394
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-458,
-458
-],
-"alt_span": [
-470,
-471
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-518,
-518
-],
-"alt_span": [
-532,
-533
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": "(",
-"nat_span": [
-592,
-592
-],
-"alt_span": [
-608,
-609
-]
-}
-],
-"k_en": 8,
-"shared_fraction": 0.904,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-87,
-87
-],
-"alt_span": [
-87,
-88
-]
-},
-{
-"k": 1,
-"nat": ":\n        return \"400 Bad Request\"\n    if not isinstance(url, str",
-"alt": "",
-"nat_span": [
-98,
-163
-],
-"alt_span": [
-99,
-99
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(not isinstance(url, str)):\n        return \"400 Bad Request\"\n    if (",
-"nat_span": [
-206,
-206
-],
-"alt_span": [
-142,
-211
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-219,
-219
-],
-"alt_span": [
-224,
-225
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-262,
-262
-],
-"alt_span": [
-268,
-269
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-280,
-280
-],
-"alt_span": [
-287,
-288
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-293,
-293
-],
-"alt_span": [
-301,
-302
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-315,
-315
-],
-"alt_span": [
-324,
-325
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-383,
-383
-],
-"alt_span": [
-393,
-394
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-412,
-412
-],
-"alt_span": [
-423,
-424
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-458,
-458
-],
-"alt_span": [
-470,
-471
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-476,
-476
-],
-"alt_span": [
-489,
-490
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-518,
-518
-],
-"alt_span": [
-532,
-533
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-536,
-536
-],
-"alt_span": [
-551,
-552
-]
-},
-{
-"k": 14,
-"nat": "",
-"alt": "(",
-"nat_span": [
-592,
-592
-],
-"alt_span": [
-608,
-609
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": ")",
-"nat_span": [
-637,
-637
-],
-"alt_span": [
-654,
-655
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "py_paren_if__t109",
@@ -106960,379 +112280,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "py_paren_if__t119",
-"family": "py_paren_if",
-"topic": "Check if List is Sorted",
-"angle": "code",
-"text_es": "Check if a list of numbers is sorted in ascending order. The function `is_sorted(numbers)` should return a boolean. Input: `numbers` (list of int/float). Output: `is_ascending` (bool).\nExample 1: `is_sorted([1, 2, 3, 4])` should return `True`.\nExample 2: `is_sorted([1, 3, 2])` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def is_sorted(numbers):\n  if not numbers: return True\n  if len(numbers) == 1: return True\n\n  i = 0\n  while i < len(numbers) - 1:\n    if numbers[i] > numbers[i + 1]: return False\n    i += 1\n    if i == len(numbers) - 1: break\n    if numbers[i] < numbers[i-1]: return False\n    if numbers[i] == numbers[i-1]: pass\n    if i > 0 and numbers[i] < numbers[i-1]: return False\n    if i < len(numbers) -1 and numbers[i] > numbers[i+1]: return False\n\n  return True\n",
-"text_alt": "def is_sorted(numbers):\n  if (not numbers): return True\n  if (len(numbers) == 1): return True\n\n  i = 0\n  while (i < len(numbers) - 1):\n    if (numbers[i] > numbers[i + 1]): return False\n    i += 1\n    if (i == len(numbers) - 1): break\n    if (numbers[i] < numbers[i-1]): return False\n    if (numbers[i] == numbers[i-1]): pass\n    if (i > 0 and numbers[i] < numbers[i-1]): return False\n    if (i < len(numbers) -1 and numbers[i] > numbers[i+1]): return False\n\n  return True\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-29,
-29
-],
-"alt_span": [
-29,
-30
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-59,
-59
-],
-"alt_span": [
-61,
-62
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-107,
-107
-],
-"alt_span": [
-111,
-112
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-136,
-136
-],
-"alt_span": [
-142,
-143
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-196,
-196
-],
-"alt_span": [
-204,
-205
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-232,
-232
-],
-"alt_span": [
-242,
-243
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-279,
-279
-],
-"alt_span": [
-291,
-292
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": "(",
-"nat_span": [
-319,
-319
-],
-"alt_span": [
-333,
-334
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-376,
-376
-],
-"alt_span": [
-392,
-393
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-29,
-29
-],
-"alt_span": [
-29,
-30
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-40,
-40
-],
-"alt_span": [
-41,
-42
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-59,
-59
-],
-"alt_span": [
-61,
-62
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-76,
-76
-],
-"alt_span": [
-79,
-80
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-107,
-107
-],
-"alt_span": [
-111,
-112
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-127,
-127
-],
-"alt_span": [
-132,
-133
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-136,
-136
-],
-"alt_span": [
-142,
-143
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-163,
-163
-],
-"alt_span": [
-170,
-171
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-196,
-196
-],
-"alt_span": [
-204,
-205
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-217,
-217
-],
-"alt_span": [
-226,
-227
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-232,
-232
-],
-"alt_span": [
-242,
-243
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-257,
-257
-],
-"alt_span": [
-268,
-269
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-279,
-279
-],
-"alt_span": [
-291,
-292
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-305,
-305
-],
-"alt_span": [
-318,
-319
-]
-},
-{
-"k": 14,
-"nat": "",
-"alt": "(",
-"nat_span": [
-319,
-319
-],
-"alt_span": [
-333,
-334
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": ")",
-"nat_span": [
-354,
-354
-],
-"alt_span": [
-369,
-370
-]
-},
-{
-"k": 16,
-"nat": "",
-"alt": "(",
-"nat_span": [
-376,
-376
-],
-"alt_span": [
-392,
-393
-]
-},
-{
-"k": 17,
-"nat": "",
-"alt": ")",
-"nat_span": [
-425,
-425
-],
-"alt_span": [
-442,
-443
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "py_paren_if__t124",
@@ -109501,379 +114448,6 @@
 ]
 },
 {
-"doc_id": "py_paren_if__t131",
-"family": "py_paren_if",
-"topic": "Simple CSV Parser",
-"angle": "code",
-"text_es": "Parse a single line of CSV data into a list of strings. Assume comma-separated values, no quoted fields. The function `parse_csv_line` should take one argument: `csv_line` (str). It should return a list of strings. \nExample 1: `parse_csv_line('apple,banana,orange')` should return `['apple', 'banana', 'orange']`. \nExample 2: `parse_csv_line('10,20,30')` should return `['10', '20', '30']`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def parse_csv_line(csv_line):\n  if not csv_line:\n    return []\n  \n  result = []\n  current_field = []\n  i = 0\n  \n  while i < len(csv_line):\n    char = csv_line[i]\n    if char == ',':\n      result.append(\"\".join(current_field))\n      current_field = []\n    elif char != '\\n':\n      current_field.append(char)\n    i += 1\n  \n  if current_field or csv_line.endswith(','):\n    result.append(\"\".join(current_field))\n  \n  if not result:\n    return [''] if csv_line == '' else []\n\n  if len(result) == 1 and result[0] == '':\n    if csv_line != '':\n      pass\n    else:\n      return []\n  \n  return result\n",
-"text_alt": "def parse_csv_line(csv_line):\n  if (not csv_line):\n    return []\n  \n  result = []\n  current_field = []\n  i = 0\n  \n  while (i < len(csv_line)):\n    char = csv_line[i]\n    if (char == ','):\n      result.append(\"\".join(current_field))\n      current_field = []\n    elif (char != '\\n'):\n      current_field.append(char)\n    i += 1\n  \n  if (current_field or csv_line.endswith(',')):\n    result.append(\"\".join(current_field))\n  \n  if (not result):\n    return [''] if (csv_line == '') else []\n\n  if (len(result) == 1 and result[0] == ''):\n    if (csv_line != ''):\n      pass\n    else:\n      return []\n  \n  return result\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-35,
-35
-],
-"alt_span": [
-35,
-36
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-120,
-120
-],
-"alt_span": [
-122,
-123
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-169,
-169
-],
-"alt_span": [
-173,
-174
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-260,
-260
-],
-"alt_span": [
-266,
-267
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-326,
-326
-],
-"alt_span": [
-334,
-335
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-417,
-417
-],
-"alt_span": [
-427,
-428
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-448,
-448
-],
-"alt_span": [
-460,
-461
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": "(",
-"nat_span": [
-477,
-477
-],
-"alt_span": [
-491,
-492
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-522,
-522
-],
-"alt_span": [
-538,
-539
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-35,
-35
-],
-"alt_span": [
-35,
-36
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-47,
-47
-],
-"alt_span": [
-48,
-49
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-120,
-120
-],
-"alt_span": [
-122,
-123
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-136,
-136
-],
-"alt_span": [
-139,
-140
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-169,
-169
-],
-"alt_span": [
-173,
-174
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-180,
-180
-],
-"alt_span": [
-185,
-186
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-260,
-260
-],
-"alt_span": [
-266,
-267
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-272,
-272
-],
-"alt_span": [
-279,
-280
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-326,
-326
-],
-"alt_span": [
-334,
-335
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-364,
-364
-],
-"alt_span": [
-373,
-374
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-417,
-417
-],
-"alt_span": [
-427,
-428
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-427,
-427
-],
-"alt_span": [
-438,
-439
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-448,
-448
-],
-"alt_span": [
-460,
-461
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-462,
-462
-],
-"alt_span": [
-475,
-476
-]
-},
-{
-"k": 14,
-"nat": "",
-"alt": "(",
-"nat_span": [
-477,
-477
-],
-"alt_span": [
-491,
-492
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": ")",
-"nat_span": [
-513,
-513
-],
-"alt_span": [
-528,
-529
-]
-},
-{
-"k": 16,
-"nat": "",
-"alt": "(",
-"nat_span": [
-522,
-522
-],
-"alt_span": [
-538,
-539
-]
-},
-{
-"k": 17,
-"nat": "",
-"alt": ")",
-"nat_span": [
-536,
-536
-],
-"alt_span": [
-553,
-554
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_paren_if__t134",
 "family": "py_paren_if",
 "topic": "Find Common Elements in Lists",
@@ -110407,262 +114981,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "py_paren_if__t140",
-"family": "py_paren_if",
-"topic": "Count Words in a String",
-"angle": "code",
-"text_es": "Count the number of words in a given string. Words are separated by spaces. Punctuation should be ignored. The function `count_words` should take one argument: `text` (str). It should return an integer. \nExample 1: `count_words('Hello world, how are you?')` should return `5`. \nExample 2: `count_words(' One word ')` should return `1`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def count_words(text):\n    if not text: return 0\n    clean_text = \"\"\n    for char in text:\n        if 'a' <= char <= 'z' : pass\n        elif 'A' <= char <= 'Z' : pass\n        elif char == ' ' : pass\n        else: continue\n        clean_text += char\n    words = clean_text.split()\n    word_count = 0\n    if not words: return 0\n    for word in words:\n        if len(word) > 0 : pass\n        else: continue\n        word_count += 1\n    return word_count\n",
-"text_alt": "def count_words(text):\n    if (not text): return 0\n    clean_text = \"\"\n    for char in text:\n        if ('a' <= char <= 'z') : pass\n        elif ('A' <= char <= 'Z') : pass\n        elif (char == ' ') : pass\n        else: continue\n        clean_text += char\n    words = clean_text.split()\n    word_count = 0\n    if (not words): return 0\n    for word in words:\n        if (len(word) > 0) : pass\n        else: continue\n        word_count += 1\n    return word_count\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-30,
-30
-],
-"alt_span": [
-30,
-31
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-102,
-102
-],
-"alt_span": [
-104,
-105
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-141,
-141
-],
-"alt_span": [
-145,
-146
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-180,
-180
-],
-"alt_span": [
-186,
-187
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-306,
-306
-],
-"alt_span": [
-314,
-315
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-360,
-360
-],
-"alt_span": [
-370,
-371
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-30,
-30
-],
-"alt_span": [
-30,
-31
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-38,
-38
-],
-"alt_span": [
-39,
-40
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-102,
-102
-],
-"alt_span": [
-104,
-105
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-120,
-120
-],
-"alt_span": [
-123,
-124
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-141,
-141
-],
-"alt_span": [
-145,
-146
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-159,
-159
-],
-"alt_span": [
-164,
-165
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-180,
-180
-],
-"alt_span": [
-186,
-187
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-191,
-191
-],
-"alt_span": [
-198,
-199
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-306,
-306
-],
-"alt_span": [
-314,
-315
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-315,
-315
-],
-"alt_span": [
-324,
-325
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-360,
-360
-],
-"alt_span": [
-370,
-371
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-373,
-373
-],
-"alt_span": [
-384,
-385
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "py_paren_if__t145",
@@ -112355,752 +116673,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "py_paren_if__t174",
-"family": "py_paren_if",
-"topic": "Parse CSV Line",
-"angle": "code",
-"text_es": "Create a function `parse_csv_line(line)` that takes a string `line` representing a single CSV row. It should return a list of strings, splitting by comma. Handle cases where fields might be empty. Example: `parse_csv_line('apple,banana,cherry')` should return `['apple', 'banana', 'cherry']`, `parse_csv_line('one,,three')` should return `['one', '', 'three']`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def parse_csv_line(line):\n    result = []\n    current_field = []\n    i = 0\n    line_len = len(line)\n\n    while i < line_len:\n        char = line[i]\n        if char == ',':\n            result.append(\"\".join(current_field))\n            current_field = []\n        else:\n            current_field.append(char)\n        i += 1\n\n    result.append(\"\".join(current_field))\n\n    if not result:\n        return []\n    elif len(result) == 1:\n        if not result[0]:\n            return ['']\n        else:\n            return result\n    else:\n        return result\n\n    if not line:\n        return ['']\n    if line == ',':\n        return ['', '']\n    elif line.endswith(','):\n        result.append('')\n    elif line.startswith(','):\n        result.insert(0, '')\n    else:\n        pass\n",
-"text_alt": "def parse_csv_line(line):\n    result = []\n    current_field = []\n    i = 0\n    line_len = len(line)\n\n    while (i < line_len):\n        char = line[i]\n        if (char == ','):\n            result.append(\"\".join(current_field))\n            current_field = []\n        else:\n            current_field.append(char)\n        i += 1\n\n    result.append(\"\".join(current_field))\n\n    if (not result):\n        return []\n    elif (len(result) == 1):\n        if (not result[0]):\n            return ['']\n        else:\n            return result\n    else:\n        return result\n\n    if (not line):\n        return ['']\n    if (line == ','):\n        return ['', '']\n    elif (line.endswith(',')):\n        result.append('')\n    elif (line.startswith(',')):\n        result.insert(0, '')\n    else:\n        pass\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-111,
-111
-],
-"alt_span": [
-111,
-112
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-159,
-159
-],
-"alt_span": [
-161,
-162
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-372,
-372
-],
-"alt_span": [
-376,
-377
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-411,
-411
-],
-"alt_span": [
-417,
-418
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-440,
-440
-],
-"alt_span": [
-448,
-449
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-559,
-559
-],
-"alt_span": [
-569,
-570
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-596,
-596
-],
-"alt_span": [
-608,
-609
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": "(",
-"nat_span": [
-642,
-642
-],
-"alt_span": [
-656,
-657
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-697,
-697
-],
-"alt_span": [
-713,
-714
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-111,
-111
-],
-"alt_span": [
-111,
-112
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-123,
-123
-],
-"alt_span": [
-124,
-125
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-159,
-159
-],
-"alt_span": [
-161,
-162
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-170,
-170
-],
-"alt_span": [
-173,
-174
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-372,
-372
-],
-"alt_span": [
-376,
-377
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-382,
-382
-],
-"alt_span": [
-387,
-388
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-411,
-411
-],
-"alt_span": [
-417,
-418
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-427,
-427
-],
-"alt_span": [
-434,
-435
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-440,
-440
-],
-"alt_span": [
-448,
-449
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-453,
-453
-],
-"alt_span": [
-462,
-463
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-559,
-559
-],
-"alt_span": [
-569,
-570
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-567,
-567
-],
-"alt_span": [
-578,
-579
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-596,
-596
-],
-"alt_span": [
-608,
-609
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-607,
-607
-],
-"alt_span": [
-620,
-621
-]
-},
-{
-"k": 14,
-"nat": "",
-"alt": "(",
-"nat_span": [
-642,
-642
-],
-"alt_span": [
-656,
-657
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": ")",
-"nat_span": [
-659,
-659
-],
-"alt_span": [
-674,
-675
-]
-},
-{
-"k": 16,
-"nat": "",
-"alt": "(",
-"nat_span": [
-697,
-697
-],
-"alt_span": [
-713,
-714
-]
-},
-{
-"k": 17,
-"nat": "",
-"alt": ")",
-"nat_span": [
-716,
-716
-],
-"alt_span": [
-733,
-734
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_paren_if__t175",
-"family": "py_paren_if",
-"topic": "Simple Bank Account Simulation",
-"angle": "code",
-"text_es": "Implement a class `BankAccount` with `deposit(amount)` and `withdraw(amount)` methods, and an `__init__(initial_balance)` method. `deposit` and `withdraw` should update the balance and return `True` if successful, `False` otherwise (e.g., insufficient funds). Example: `acc = BankAccount(100); acc.deposit(50)` should make balance 150, `acc.withdraw(200)` should return `False` and balance remains 150.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "class BankAccount:\n    def __init__(self, initial_balance):\n        self.balance = initial_balance\n\n    def deposit(self, amount):\n        if amount > 0:\n            self.balance += amount\n            return True\n        return False\n\n    def withdraw(self, amount):\n        if amount > 0:\n            if self.balance >= amount:\n                self.balance -= amount\n                return True\n            elif self.balance < amount:\n                return False\n        elif amount <= 0:\n            return False\n        return False # Should not be reached but good practice\n\n    def get_balance(self):\n        return self.balance\n\n    def is_positive_balance(self):\n        if self.balance > 0:\n            return True\n        else:\n            return False\n\n    def has_sufficient_funds(self, amount):\n        if self.balance >= amount:\n            return True\n        else:\n            return False\n\n    def can_deposit_zero(self, amount):\n        if amount == 0:\n            return False\n        else:\n            return True\n\n    def will_be_negative_after_withdrawal(self, amount):\n        if self.balance - amount < 0:\n            return True\n        return False\n",
-"text_alt": "class BankAccount:\n    def __init__(self, initial_balance):\n        self.balance = initial_balance\n\n    def deposit(self, amount):\n        if (amount > 0):\n            self.balance += amount\n            return True\n        return False\n\n    def withdraw(self, amount):\n        if (amount > 0):\n            if (self.balance >= amount):\n                self.balance -= amount\n                return True\n            elif (self.balance < amount):\n                return False\n        elif (amount <= 0):\n            return False\n        return False # Should not be reached but good practice\n\n    def get_balance(self):\n        return self.balance\n\n    def is_positive_balance(self):\n        if (self.balance > 0):\n            return True\n        else:\n            return False\n\n    def has_sufficient_funds(self, amount):\n        if (self.balance >= amount):\n            return True\n        else:\n            return False\n\n    def can_deposit_zero(self, amount):\n        if (amount == 0):\n            return False\n        else:\n            return True\n\n    def will_be_negative_after_withdrawal(self, amount):\n        if (self.balance - amount < 0):\n            return True\n        return False\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-142,
-142
-],
-"alt_span": [
-142,
-143
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "(",
-"nat_span": [
-278,
-278
-],
-"alt_span": [
-280,
-281
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-305,
-305
-],
-"alt_span": [
-309,
-310
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "(",
-"nat_span": [
-413,
-413
-],
-"alt_span": [
-419,
-420
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-478,
-478
-],
-"alt_span": [
-486,
-487
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "(",
-"nat_span": [
-682,
-682
-],
-"alt_span": [
-692,
-693
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-819,
-819
-],
-"alt_span": [
-831,
-832
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": "(",
-"nat_span": [
-958,
-958
-],
-"alt_span": [
-972,
-973
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-1103,
-1103
-],
-"alt_span": [
-1119,
-1120
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 1.0,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "(",
-"nat_span": [
-142,
-142
-],
-"alt_span": [
-142,
-143
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": ")",
-"nat_span": [
-152,
-152
-],
-"alt_span": [
-153,
-154
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "(",
-"nat_span": [
-278,
-278
-],
-"alt_span": [
-280,
-281
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-288,
-288
-],
-"alt_span": [
-291,
-292
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "(",
-"nat_span": [
-305,
-305
-],
-"alt_span": [
-309,
-310
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": ")",
-"nat_span": [
-327,
-327
-],
-"alt_span": [
-332,
-333
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "(",
-"nat_span": [
-413,
-413
-],
-"alt_span": [
-419,
-420
-]
-},
-{
-"k": 7,
-"nat": "",
-"alt": ")",
-"nat_span": [
-434,
-434
-],
-"alt_span": [
-441,
-442
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "(",
-"nat_span": [
-478,
-478
-],
-"alt_span": [
-486,
-487
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": ")",
-"nat_span": [
-489,
-489
-],
-"alt_span": [
-498,
-499
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "(",
-"nat_span": [
-682,
-682
-],
-"alt_span": [
-692,
-693
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": ")",
-"nat_span": [
-698,
-698
-],
-"alt_span": [
-709,
-710
-]
-},
-{
-"k": 12,
-"nat": "",
-"alt": "(",
-"nat_span": [
-819,
-819
-],
-"alt_span": [
-831,
-832
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": ")",
-"nat_span": [
-841,
-841
-],
-"alt_span": [
-854,
-855
-]
-},
-{
-"k": 14,
-"nat": "",
-"alt": "(",
-"nat_span": [
-958,
-958
-],
-"alt_span": [
-972,
-973
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": ")",
-"nat_span": [
-969,
-969
-],
-"alt_span": [
-984,
-985
-]
-},
-{
-"k": 16,
-"nat": "",
-"alt": "(",
-"nat_span": [
-1103,
-1103
-],
-"alt_span": [
-1119,
-1120
-]
-},
-{
-"k": 17,
-"nat": "",
-"alt": ")",
-"nat_span": [
-1128,
-1128
-],
-"alt_span": [
-1145,
-1146
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "py_paren_if__t178",

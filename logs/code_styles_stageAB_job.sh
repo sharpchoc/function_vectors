@@ -6,6 +6,7 @@ T="$1"; shift; FAMS="$@"; PY=/workspace/micromamba/envs/fv/bin/python; A=artifac
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 ( $PY src/sandbox/style_translation/rollout.py --model qwen25_code --families $FAMS > logs/regen_rollout_$T.log 2>&1 \
   && $PY src/sandbox/style_translation/logprob_margin.py --model qwen25_code --families $FAMS > logs/regen_logprob_$T.log 2>&1 \
+  && for f in $FAMS; do until [ -f $A/read_features/evidence/$f.json ]; do sleep 20; done; done \
   && $PY src/sandbox/style_translation/capture_prompt_pairs_code.py --model qwen25_code --families $FAMS --ks 3 4 --read_layer 8 --write_layer 24 --select all > logs/regen_pairs_$T.log 2>&1 \
   && echo "STAGE A DONE $T" >> logs/stageAB_$T.log \
   && for f in $FAMS; do until [ -f $A/rollouts/$f.judged ]; do sleep 20; done; done \

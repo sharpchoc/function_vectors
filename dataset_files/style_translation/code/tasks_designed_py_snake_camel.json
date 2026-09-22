@@ -1496,5 +1496,306 @@
   "spec": "Write a function mix(recipes) that calculates dry chemical weights for ceramic glazes. The input is a list of tuples where each contains a glaze name, target batch weight in grams, silica percentage, and flux percentage. Calculate the required silica weight by multiplying the target batch weight by the silica percentage. Calculate the flux weight by multiplying the target batch weight by the flux percentage. The remaining percentage of the batch is assumed to be clay, so calculate the clay weight by subtracting the silica and flux weights from the target batch weight. Sum the total required flux weight across all recipes. Return a tuple with the total flux weight needed and the glaze name that requires the most clay. Example: given [(\"matte\", 1000, 0.60, 0.30), (\"gloss\", 2000, 0.70, 0.20)], return (700.0, \"gloss\").",
   "designed_by": "google/gemini-3.1-pro-preview",
   "v2": true
+ },
+ {
+  "id": "d224",
+  "title": "Bowling Ball Layout Specs",
+  "spec": "Write a function `layout(measurements)` that takes a list of lists, where each inner list contains three numbers: a bowler's span length, flexibility angle, and grip pressure rating. The function should calculate layout coordinates. For each bowler, first multiply the span by a factor of 1.25. If the flexibility angle is under forty-five degrees, add a quarter inch to the span calculation. Divide the grip pressure by two and subtract it from the angle. Return a list of tuples containing the final calculated span and adjusted angle for each bowler. For example, given [[4.0, 50, 10]], return [(5.0, 45.0)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d225",
+  "title": "Crane Lift Load Moment",
+  "spec": "Write a function `evaluate(lifts)` that receives a list of lift scenarios, each being a tuple of weight, boom radius, and wind speed. The function must evaluate each lift. Calculate the load moment by multiplying weight by boom radius. A lift is safe if the load moment is strictly less than fifty thousand and the wind speed is below twenty-five. If wind speed is between fifteen and twenty-five, the load moment threshold drops to forty thousand. Return a list of boolean values indicating whether each lift is safe to proceed. Example input: [(1000, 40, 10), (2000, 30, 20)] returns [True, False].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d226",
+  "title": "SCUBA Gas Mixture Planner",
+  "spec": "Write a function `blend(dives)` that takes a list of target dive profiles, where each is a tuple of target depth in meters and bottom time in minutes. Calculate the optimal oxygen percentage and total gas volume needed. The ideal oxygen fraction is computed by dividing 1.4 by the ambient pressure (depth divided by ten, plus one), capped at forty percent. The gas volume needed is bottom time multiplied by ambient pressure multiplied by a base consumption rate of twenty liters per minute, adding a safety reserve of fifty percent. Return a list of tuples with the oxygen percentage as an integer and the total gas volume in liters. For example, [(30, 45)] should yield [(35, 5400)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d227",
+  "title": "Archery Target Grouping",
+  "spec": "Write a function `score(arrows)` that takes a list of coordinate pairs representing arrow hits on a target face from the center point. First, compute the radial distance of each hit using the Pythagorean theorem. If the distance is less than two, it scores ten points. Distances between two and four score eight points, and between four and eight score five points. Hits beyond eight score zero. Also, find the maximum distance between any two arrows in the set to determine the group spread. Return a tuple containing the total score and the group spread. Example: [(0, 1), (3, 4)] returns (15, 5.0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d228",
+  "title": "Espresso Shot Extraction Analysis",
+  "spec": "Write a function `extract(shots)` that processes a list of shot records, where each record is a tuple of dry grounds weight, liquid yield weight, and extraction time. Calculate the brew ratio by dividing liquid yield by dry grounds. An ideal brew ratio is between 1.8 and 2.2. If the ratio is ideal and the extraction time is between twenty-five and thirty seconds, classify it as perfect. If the time is under twenty-five seconds, classify as under-extracted, and over thirty seconds as over-extracted. If the ratio is off, classify as bad ratio. Return a list of string classifications for each shot. Example: [(18, 36, 27), (20, 50, 22)] returns ['perfect', 'bad ratio'].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d229",
+  "title": "Forklift Battery Charging Cycles",
+  "spec": "Write a function `schedule(usage)` that accepts a list of daily operating hours for a fleet of forklifts. A standard battery lasts eight hours. Calculate how many full charge cycles each forklift needs per week, assuming five working days with the given daily hours. If the daily hours exceed eight, one mid-shift charge is required every day, adding a penalty of an extra half cycle to the weekly total. Accumulate the total number of charge cycles across the entire fleet and find the maximum cycles required by any single forklift. Return a tuple with the total fleet cycles and the highest individual weekly cycles. For example, [6, 9, 4] returns (12.5, 8.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d230",
+  "title": "Sled Dog Nutritional Needs",
+  "spec": "Write a function `feed(dogs)` that receives a list of dog profiles, each a tuple of body weight, daily distance run, and ambient temperature. The base caloric need is body weight multiplied by one hundred. Add fifty calories for every kilometer run. If the ambient temperature is below zero, add an extra ten calories per degree below zero. Sum up the daily caloric requirements for the whole team and calculate how many kilograms of food are needed, assuming the food has four thousand calories per kilogram. Return the total food needed rounded to two decimal places. Example: [(25, 40, -10), (30, 40, -10)] returns 2.45.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d231",
+  "title": "Carpet Installation Cutting Waste",
+  "spec": "Write a function `estimate(rooms)` that takes a list of room dimensions, each a tuple of length and width in feet. Standard carpet rolls are twelve feet wide. For each room, determine the best orientation to minimize waste by checking two scenarios: running the twelve-foot width along the room's length or along its width. Calculate the linear feet of carpet needed for the most efficient orientation, rounding up to the nearest whole foot for each strip. Sum the linear feet required for all rooms. Return the total linear feet and the total wasted square footage. Example: [(10, 15)] returns (15, 30).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d232",
+  "title": "Window Blind Slat Spacing",
+  "spec": "Write a function `measure(windows)` that takes a list of window drop lengths in inches. Each blind slat is two inches wide, and the maximum distance between slats is one point eight inches. Calculate the minimum number of slats required for each window so that the gap between them does not exceed the maximum allowed spacing. Compute the actual spacing distance evenly distributed between the calculated number of slats. Return a list of tuples containing the integer number of slats and the exact gap distance rounded to two decimal places. Example: [60] returns [(16, 1.76)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d233",
+  "title": "Ski Jumping Aerodynamic Points",
+  "spec": "Write a function `evaluate(jumps)` that takes a list of jumps, where each jump is a tuple of flight distance, wind headwind speed, and gate height offset. The base distance points are sixty plus two points for every meter beyond one hundred and twenty meters. Deduct one point for every meter under one hundred twenty. Adjust the score by subtracting wind speed multiplied by a factor of eight and subtracting the gate height offset multiplied by four point eight. Return a list of final scores for each jump, clamped to a minimum of zero. Example: [(125, 1.5, -2)] returns [67.6].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d234",
+  "title": "Greenhouse Pest Control Release",
+  "spec": "Write a function `release(zones)` that takes a list of tuples representing different greenhouse sections. Each tuple contains the square footage, the pest severity level on a scale of one to five, and the current temperature. The baseline release rate for beneficial insects is ten bugs per square foot. Multiply this by the pest severity level. If the temperature is above eighty-five degrees, increase the required bugs by twenty percent because the pests breed faster. Calculate the total bugs needed for all zones and the average bugs per square foot across the entire greenhouse. Return a tuple of the total bugs and the average density. Example: [(1000, 3, 90)] returns (36000.0, 36.0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d235",
+  "title": "Trampoline Park Spring Tension",
+  "spec": "Write a function `tension(beds)` that takes a list of trampoline bed dimensions in feet, provided as tuples of length and width. Each bed requires a spring every six inches along its entire perimeter. Calculate the total perimeter in inches and determine the baseline number of springs. Corner springs take double tension. Calculate the total tension rating required for each bed by multiplying the number of springs by forty pounds, adding an extra forty pounds for each of the four corners. Return a list of the total tension ratings for each bed. Example: [(10, 10)] returns [3360].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d236",
+  "title": "Drywall Mud Drying Time",
+  "spec": "Write a function `estimate(conditions)` that receives a list of tuples containing room temperature in Fahrenheit, relative humidity percentage, and coat thickness in millimeters. The base drying time is twenty-four hours for a two-millimeter coat at seventy degrees and fifty percent humidity. For every five degrees below seventy, add two hours. For every ten percent humidity above fifty, add three hours. Multiply the final adjusted time by the coat thickness divided by two. Return a list of estimated drying times in hours for each room condition. Example: [(65, 70, 4)] returns [64.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d237",
+  "title": "Aquaponics Fish Feed Ratio",
+  "spec": "Write a function `calculate(tanks)` that processes a list of fish tanks, each a tuple of fish count, average fish weight in grams, and water nitrate level. Fish eat two percent of their body weight daily. The total feed amount is the fish count multiplied by the daily feed per fish. If the nitrate level exceeds forty parts per million, reduce the total feed by twenty-five percent to improve water quality. Calculate the total grams of feed for each tank and sum them up for the whole system. Return a tuple containing the system total feed and a list of individual tank feeds. Example: [(100, 50, 45), (50, 100, 20)] returns (175.0, [75.0, 100.0]).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d238",
+  "title": "Concrete Slab Expansion Joints",
+  "spec": "Write a function `plan(slabs)` that takes a list of concrete slab lengths in feet. A slab needs an expansion joint every fifteen feet. Calculate how many cuts are needed for each slab. Furthermore, the total length of sealant required equals the number of cuts multiplied by the slab width, which is assumed to be twelve feet. Calculate the total linear feet of sealant required across all slabs, and count how many slabs require more than three cuts. Return a tuple with the total sealant length and the count of large slabs. Example: [(20), (50), (10)] returns (48, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d239",
+  "title": "Roof Shingle Bundle Estimator",
+  "spec": "Write a function `estimate(roofs)` that accepts a list of roof plane dimensions, each a tuple of length and width in feet. Calculate the total square footage for each plane. A bundle of shingles covers thirty-three and one third square feet. Divide the square footage by this coverage to get the number of bundles, adding a waste factor of ten percent to the square footage before dividing. Round up to the nearest whole bundle for each roof plane. Return a list of the required bundles for each plane. Example: [(20, 10)] returns [7].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d240",
+  "title": "Ice Resurfacer Water Volume",
+  "spec": "Write a function `compute(rinks)` that processes a list of ice rink resurfacing jobs, each a tuple of rink length, rink width, and the desired ice buildup thickness in inches. First, convert the thickness to feet by dividing by twelve. Multiply length, width, and thickness to get the volume in cubic feet. Water expands by nine percent when freezing, so divide the cubic feet by one point zero nine to get the required liquid water volume. Multiply by seven point four eight to convert to gallons. Return a list of gallons required per rink, rounded to the nearest whole number. Example: [(200, 85, 0.25)] returns [2430].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d241",
+  "title": "CNC Milling Cutter Speeds",
+  "spec": "Write a function `optimize(materials)` that takes a list of tuples containing material hardness and cutter diameter in inches. Calculate the spindle speed in revolutions per minute. The surface speed for soft materials under one hundred hardness is four hundred feet per minute, and for hard materials is two hundred. Spindle speed is calculated by multiplying the surface speed by three point eight two, then dividing by the cutter diameter. Also, calculate the feed rate by multiplying the spindle speed by a chip load of zero point zero zero two and four flutes. Return a list of tuples containing spindle speed and feed rate, both rounded to integers. Example: [(90, 0.5), (150, 0.25)] returns [(3056, 24), (3056, 24)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d242",
+  "title": "Chain-link Fence Materials",
+  "spec": "Write a function `calculate(runs)` that takes a list of fence line lengths in feet. A line post is required every ten feet. Calculate the number of line posts for each run by dividing the length by ten and rounding down. Terminal posts are needed at the start and end of each run. Calculate the total feet of top rail needed, which equals the total length of all runs. Calculate the total number of line posts and terminal posts across all runs. Return a tuple of total line posts, total terminal posts, and total top rail length. Example: [(45, 20)] returns (6, 4, 65).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d243",
+  "title": "High Jump Bar Raising Protocol",
+  "spec": "Write a function `progress(heights)` that accepts a starting height in centimeters and a list of remaining athletes. For each round, if more than three athletes remain, the bar is raised by five centimeters. If three or fewer remain, the bar is raised by three centimeters. Determine the sequence of heights for the next five rounds based on a simulated progression where one athlete drops out every round until only one is left. Return a list of the next five bar heights. Example: given a starting height of 200 and 6 athletes, return [205, 210, 215, 218, 221].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d244",
+  "title": "Drone Spraying Battery Swaps",
+  "spec": "Write a function `plan(fields)` that takes a list of agricultural fields, each specified by its area in acres. A drone can spray two acres on a single battery charge. Calculate the number of battery swaps required for each field. A field starts with a fresh battery, so swaps are only needed if the area exceeds the remaining capacity. Calculate the total number of batteries depleted across all fields and the total number of mid-field swaps required. Return a tuple of total fully depleted batteries and mid-field swaps. Example: [(5, 1.5)] returns (3, 2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d245",
+  "title": "Meat Smoking Temperature Log",
+  "spec": "Write a function `analyze(logs)` that takes a list of internal temperature readings taken every thirty minutes during a briskets smoking process. The meat stalls when the temperature rises by less than two degrees over three consecutive readings. Find the index of the first reading where the stall begins. Also, calculate the total time in hours it took to reach the target temperature of one hundred ninety-five degrees. Return a tuple with the stall start index and the total hours to target. If no stall or target is reached, return negative one for that value. Example: [(150, 160, 161, 162, 163, 195)] returns (1, 2.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d246",
+  "title": "Chandelier Crystal Strand Lengths",
+  "spec": "Write a function `design(tiers)` that takes the number of tiers in a chandelier and a base strand length in inches. The first tier uses the base length. Each subsequent tier drops an additional three and a half inches. Calculate the strand lengths for all tiers. Then calculate the total weight of the crystals, assuming each inch of strand weighs point two pounds. Count the total number of strands if the first tier has eight strands, and each subsequent tier has four more than the previous tier. Return a tuple of the total weight and total strand count. Example: given 3 tiers and a base of 10, returns (46.8, 36).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d247",
+  "title": "Paper Mill Roll Slitting",
+  "spec": "Write a function `slit(orders)` that takes a master roll width in inches and a list of requested slit widths. Attempt to pack the requested widths into the master roll greedily from left to right. Sum the widths until adding the next would exceed the master width. Any remaining master width after packing the maximum number of requested widths is considered edge trim waste. Return a tuple containing a list of the fulfilled requested widths and the edge trim waste amount. Example: for master roll 100 and orders [30, 40, 35, 20], return ([30, 40, 20], 10).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d248",
+  "title": "Asphalt Driveway Paving",
+  "spec": "Write a function `estimate(driveways)` that receives a list of tuples containing driveway length, width, and desired asphalt depth in inches. Convert the depth to feet by dividing by twelve. Multiply length, width, and depth in feet to find the cubic feet of asphalt. A cubic foot of compacted asphalt weighs one hundred and forty-five pounds. Convert the total weight to tons by dividing by two thousand. Sum the total tons needed for all driveways and find the largest single driveway tonnage. Return a tuple with the total tons and the maximum single driveway tons, both rounded to two decimal places. Example: [(50, 10, 3)] returns (9.06, 9.06).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d249",
+  "title": "Church Bell Peal Validation",
+  "spec": "The entry point is `validate(sequence)`. The input is a list of tuples containing integers that represent bell numbers. A valid change ringing sequence must include all available bells exactly once per row. Furthermore, consecutive rows can only swap adjacent bells, and no individual bell can remain in the exact same position for more than two consecutive rows. Return a tuple containing a boolean for overall validity and the row index of the first failure, or negative one if the entire sequence is valid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d250",
+  "title": "Fiber Optic Link Attenuation",
+  "spec": "The entry point is `evaluate(splices)`. The input provides a list of fiber segment distances in kilometers. The total signal loss consists of a baseline signal loss per kilometer of optical fiber, a fixed insertion loss per splice connection, and an additional penalty multiplier if the distance between any two consecutive splices is under a minimum spatial threshold. Calculate the overall decibel loss across the entire link. Return a list of splice indices that violate the minimum distance rule, paired with the total signal loss rounded to two decimal places.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d251",
+  "title": "Foraged Mushroom Toxicity Score",
+  "spec": "The entry point is `score(specimens)`. The input is a list of tuples detailing cap diameter, gill spacing, and a color warning index for various fungi. The logic must first filter out any specimens with a color index indicating acute toxicity. For the remaining safe fungi, calculate a safety rating based on the mathematical ratio of the cap diameter to the gill spacing. Sort these safe specimens by their safety rating in descending order and return a list of their original sequence indices.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d252",
+  "title": "Tram Overhead Wire Friction",
+  "spec": "The entry point is `analyze(segments)`. Analyzes a tram route provided as a list of route segments, where each segment is a tuple of the local speed limit and overhead wire tension. Calculates cumulative physical wear on the pantograph carbon strip, which increases quadratically with transit speed and linearly with physical tension. Apply a special acceleration multiplier if wire tension drops below a critical safety margin. Return the total estimated wear alongside the count of critical low-tension segments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d253",
+  "title": "Studio Lighting Color Shift",
+  "spec": "The entry point is `calculate(lights)`. Receives a list of lighting fixtures, each represented as a tuple of a base color temperature in kelvin and a list of applied gel filter values. Each filter shifts the temperature by a specific kelvin amount and simultaneously reduces the light output by a percentage factor. Determine the final color temperature and the resulting output intensity for each individual fixture. Return a list of tuples containing these two calculated values per fixture.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d254",
+  "title": "Holographic Beam Path Matching",
+  "spec": "The entry point is `match(paths)`. Inputs are two lists of tuples representing optical components in the reference beam and object beam, detailing physical thickness and refractive index. Compute the total optical path length for both beams by factoring in the physical distance traversed in the air and the delay introduced by traversing glass components. Return the absolute difference in optical path lengths and a boolean indicating if this difference falls strictly within the laser coherence threshold.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d255",
+  "title": "Woodcut Press Ink Transfer",
+  "spec": "The entry point is `stamp(blocks)`. Inputs are tuples of carving block area, applied mechanical pressure, and ink viscosity. Calculate the ink transfer efficiency for each block based on the pressure exerted per unit of area, constrained by strict viscosity limits where overly thick ink reduces transfer rates exponentially. Identify the blocks that fall below a minimum acceptable transfer threshold. Return the average transfer efficiency and a list of the failed block indices.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d256",
+  "title": "Falcon Stoop Dynamics",
+  "spec": "The entry point is `estimate(dives)`. Given a list of bird dives represented by starting altitude, bird mass, and aerodynamic drag coefficient, calculate the terminal velocity of each descent. The downward acceleration is a function of gravity and mass, constantly opposed by aerodynamic drag which scales with the square of the current velocity. Determine which dive achieved the highest theoretical maximum velocity and return its index along with the calculated top speed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d257",
+  "title": "Fountain Pen Nib Smoothing",
+  "spec": "The entry point is `grind(nibs)`. Inputs are tuples representing tipping material hardness, abrasive grit size, and total grind time in seconds. Calculate the physical reduction in tipping width based on grit friction against the material hardness, and compute the resulting ink flow rating which increases as the tip flattens. Filter out any nibs where the width reduction exceeds a structural safety limit. Return a list of flow ratings for the surviving nibs.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d258",
+  "title": "Furniture Veneer Patch Sizing",
+  "spec": "The entry point is `measure(defects)`. A list of veneer defects is provided as tuples of bounding width, bounding height, and an integer representing grain direction. To cut stable patches, the bounding box of each defect must be expanded by a standard margin. If the grain direction is diagonal, the required patch area must be calculated using a specialized geometry multiplier to allow for pattern matching. Return the total required area of replacement veneer and the number of patches that exceed a maximum size threshold.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d259",
+  "title": "Keyboard Switch Lubrication",
+  "spec": "The entry point is `lubricate(switches)`. Inputs represent batches of mechanical switches detailing base actuation force, internal stem friction, and the applied lubricant viscosity. Calculate the adjusted bottom out force, which is reduced based on lubrication but hindered by high internal friction. Detect over-lubed switches that become sluggish because the applied viscosity exceeds the structural constraints of the switch spring. Return the adjusted actuation forces and a total count of the sluggish switches.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d260",
+  "title": "Surfboard Fin Lift and Drag",
+  "spec": "The entry point is `compute(fins)`. Evaluates a list of surfboard fin configurations given as tuples of base length, physical depth, and trailing sweep angle. Hydrodynamic lift is generated proportionally to base length and depth, while drag forces increase exponentially with the sweep angle. Calculate the lift to drag ratio for each fin configuration. Return the exact configuration tuple that yields the highest overall efficiency ratio.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d261",
+  "title": "Alpaca Fleece Quality Sort",
+  "spec": "The entry point is `grade(fleeces)`. Receives a list of fleece samples detailed by fiber diameter in microns, staple length, and crimps per inch. Fleeces are categorized into premium, standard, or coarse based on strict micron thresholds, with heavy mathematical penalties applied if the staple length is too short for commercial spinning. Return a list containing the total counts for each category alongside the average crimp frequency specifically calculated for the premium fleeces.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d262",
+  "title": "Kite Sail Pull Force",
+  "spec": "The entry point is `tension(measurements)`. The input provides a list of wind gusts detailing wind speed, kite surface area, and angle of attack. The aerodynamic pull force is calculated using lift equations where force scales with the square of the wind speed and the mathematical sine of the attack angle. Identify specific gusts that produce a pull force exceeding a standard rider weight limit. Return the absolute maximum force recorded and the integer count of overpowering gusts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d263",
+  "title": "Trumpet Valve Maintenance",
+  "spec": "The entry point is `schedule(valves)`. Evaluates a list of instrument valves characterized by casing gap tolerance, hours played since last oiling, and the oil viscosity rating. Thinner oils deplete significantly faster, and tighter gap tolerances require more frequent lubrication to prevent mechanical sticking. Calculate the remaining playing hours before sticking occurs for each individual valve. Return a list of these remaining time values sorted from most urgent to least urgent.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d264",
+  "title": "Hide Tanning Penetration",
+  "spec": "The entry point is `process(batches)`. Each batch in the input is a tuple of average hide thickness, drum rotation speed, and tanning agent concentration. The chemical penetration rate increases linearly with higher concentration and optimal rotation speed, but excessively fast rotation causes mechanical fiber damage. Compute the required processing time in hours for full chemical penetration for each batch. Return a list of required times, inserting a negative one for any batch where mechanical damage is detected.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d265",
+  "title": "Ratite Egg Hatchability",
+  "spec": "The entry point is `monitor(eggs)`. Input consists of daily incubation logs featuring egg mass, environmental temperature, and turning frequency. Successful hatching requires steady daily weight loss from moisture evaporation and consistent physical turning to prevent inner membrane adhesion. Calculate the total weight loss percentage and flag any egg that experienced inadequate turning on more than two calendar days. Return a list of indices representing the viable eggs.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d266",
+  "title": "Bionic Leg Gait Symmetry",
+  "spec": "The entry point is `align(strides)`. Takes a list of stride measurements containing stance phase duration, swing phase duration, and ground reaction force. A symmetrical gait requires the ratio of stance to swing duration to match closely across consecutive strides, while impact forces must remain below a mechanical joint stress limit. Determine the average symmetry variance across the session and the number of individual steps exceeding the impact threshold, returning them together as a tuple.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

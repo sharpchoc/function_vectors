@@ -1822,5 +1822,908 @@
   "spec": "Write an entry function `weave(rows)` that operates an industrial textile weaving machine class. The class internally tracks warp thread tension, shuttle position, and current fabric length. For the given number of rows, the class must coordinate several hidden actions per row: raising the alternate warp threads, firing the horizontal shuttle across the shed, and beating the new thread into place with a reed. Each internal action updates the tension dynamically and adds to the length. Return the final length of the woven cloth.",
   "designed_by": "google/gemini-3.1-pro-preview",
   "v2": true
+ },
+ {
+  "id": "d266",
+  "title": "Commercial Dishwasher Controller",
+  "spec": "Write a class to control a commercial dishwasher. The entry function `wash(commands)` accepts a list of string instructions. The machine tracks internal temperature starting at twenty, detergent level starting at one hundred, current cycle phase starting at idle, and runtime minutes starting at zero. When receiving a heat command, it increases temperature by fifteen degrees up to a maximum of eighty. A wash command consumes twenty units of detergent, increases runtime by ten, and requires the temperature to be at least sixty; if not, it automatically forces a heating phase first. A drain command resets the cycle phase to idle and temperature to twenty. The function should return a tuple of the final temperature, remaining detergent, and total runtime.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d267",
+  "title": "Deep Space Probe Antenna Aligner",
+  "spec": "Implement a class to maintain signal lock for a deep space probe. The entry function `align(adjustments)` takes a list of numerical tuples representing target changes in azimuth and elevation. The system tracks current azimuth starting at zero, current elevation starting at zero, signal strength starting at one hundred, and lock status starting as true. For each adjustment, both angles are modified. If the absolute difference between azimuth and elevation exceeds thirty, signal strength drops by ten; otherwise it increases by five up to one hundred. If signal strength falls below fifty, the lock status becomes false and all subsequent adjustments are ignored until a manual recalibrate command string is received, which resets angles to zero and restores signal lock. Return the final azimuth, elevation, and signal strength.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d268",
+  "title": "Commercial Laundry Washing Machine",
+  "spec": "Design a class that operates an industrial washing machine. The entry function `launder(events)` processes a list of action strings. The machine maintains internal states for drum speed starting at zero, water level starting at empty, load weight starting at zero, and unbalance detection starting as false. Adding clothes increases load weight; if it exceeds fifty, unbalance detection triggers. A fill command sets water level to full if weight is under fifty, but only to half if an unbalance is detected. A spin command increases drum speed by four hundred if balanced, or by one hundred if unbalanced. A drain command resets water level to empty and drum speed to zero. Return a tuple containing the final drum speed, water level string, and load weight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d269",
+  "title": "High Speed Rail Suspension Tuner",
+  "spec": "Create a class to manage the active suspension of a high speed train. The entry function `tune(readings)` takes a list of integers representing track curvature severities. The system tracks left bogie pressure starting at fifty, right bogie pressure starting at fifty, tilt angle starting at zero, and passenger comfort index starting at one hundred. For each reading, the system leans into the curve: if the reading is positive, left pressure increases by the reading and right pressure decreases by the reading, adjusting the tilt angle proportionally. If the tilt angle exceeds twenty, the comfort index drops by five. The system must automatically rebalance pressures towards fifty after every three readings to prevent permanent list. Return the final left pressure, right pressure, and comfort index.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d270",
+  "title": "Seawater Desalination Plant Simulator",
+  "spec": "Write a class simulating a reverse osmosis desalination unit. The entry function `desalinate(operations)` accepts a list of commands. The unit tracks membrane pressure starting at one hundred, salinity output starting at zero, filter health starting at one hundred, and fresh water produced starting at zero. A pump command increases pressure by ten and produces five units of fresh water, but decreases filter health by two. A backwash command reduces pressure by twenty and restores filter health by ten. If filter health drops below fifty, salinity output increases by five for every subsequent pump command. If pressure exceeds one hundred and fifty, the system enters an emergency bypass, preventing any water production until a reset command is issued. Return the total water produced, final filter health, and final salinity.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d271",
+  "title": "Jet Engine Thrust Reverser",
+  "spec": "Implement a class to manage a jet engine thrust reverser deployment. The entry function `reverse(telemetry)` processes a list of integers representing airspeed. The system monitors cowl position starting at closed, lock actuator status starting at engaged, engine speed starting at idle, and structural stress starting at zero. To open the cowl, the airspeed must be below one hundred and sixty; if above, structural stress increases by twenty and the cowl remains closed. When a valid speed is encountered, the lock actuator disengages, the cowl position transitions to open, and engine speed ramps up to maximum reverse over the next three telemetry readings. If structural stress reaches one hundred, a fault is triggered, instantly reverting all states to starting values. Return the final cowl position, engine speed, and structural stress.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d272",
+  "title": "Industrial Wood Chipper Controller",
+  "spec": "Build a class that controls a heavy duty wood chipper. The function `chip(loads)` receives a list of integers representing the density of incoming wood pieces. The machine tracks drum speed starting at two thousand, hydraulic feed rate starting at ten, engine load starting at zero, and jam status starting as false. For each wood piece, engine load increases by the density and drum speed drops by double the density. If engine load exceeds one hundred, the jam status becomes true, feed rate drops to zero, and the drum speed drops to zero. A reverse command string clears the jam and resets engine load to zero. Whenever drum speed falls below one thousand without jamming, the machine must auto throttle by increasing speed by five hundred. Return the final drum speed, feed rate, and jam status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d273",
+  "title": "Milk Pasteurization Vat",
+  "spec": "Create a class to control a dairy pasteurization process. The entry function `pasteurize(phases)` handles a list of string directives. The vat tracks internal temperature starting at four, agitator speed starting at zero, holding time starting at zero, and pasteurization status starting as incomplete. A heat command increases temperature by twenty and starts the agitator at thirty. A hold command adds ten to holding time; if temperature is exactly seventy two and holding time reaches fifteen, the status becomes complete. If temperature ever exceeds eighty, the milk is scorched, setting holding time to zero and forcing a cool command to lower temperature back to four. Return the final temperature, agitator speed, and a string representing whether pasteurization is complete or incomplete.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d274",
+  "title": "Automated Car Wash Bay",
+  "spec": "Write a class governing an automatic drive through car wash. The entry function `wash(sensors)` reads a list of strings representing vehicle positions. The bay tracks conveyor speed starting at zero, soap level starting at two hundred, brush speed starting at zero, and blower intensity starting at zero. When a vehicle enters, conveyor speed becomes five. As it reaches the soap zone, soap level decreases by thirty and brush speed jumps to one hundred. In the rinse zone, brush speed drops to zero. In the dry zone, blower intensity rises to maximum. If a stall string is detected, conveyor speed halts, brushes stop, and blowers turn off for safety until a resume string is read. Return the remaining soap, final conveyor speed, and final blower intensity.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d275",
+  "title": "Hyperbaric Oxygen Chamber",
+  "spec": "Develop a class for a medical hyperbaric chamber. The function `treat(commands)` takes a list of string commands. The system tracks atmospheric pressure starting at one, oxygen concentration starting at twenty one, compression rate starting at zero, and patient heart rate starting at eighty. A pressurize command increases pressure by one and compression rate by two; if pressure exceeds three, patient heart rate increases by ten. An enrich command boosts oxygen concentration by ten up to a maximum of one hundred. A decompress command reduces pressure by one, but if oxygen concentration is above fifty during decompression, pressure drops by two instead to prevent toxicity. Return the final pressure, oxygen concentration, and patient heart rate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d276",
+  "title": "Electric Vehicle Charging Station",
+  "spec": "Implement a class for a rapid charging terminal. The entry function `charge(intervals)` accepts a list of integers representing current draw requests. The terminal tracks battery charge level starting at ten, output voltage starting at four hundred, cooling fluid flow starting at zero, and cable temperature starting at twenty. For each request, charge level increases by five and cable temperature rises by the request amount. If cable temperature exceeds fifty, the station must activate cooling, increasing fluid flow by ten and dropping temperature by fifteen. If the charge level reaches eighty, the output voltage drops to two hundred to trickle charge, and any subsequent requests only increase charge level by one. Return the final charge level, output voltage, and cable temperature.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d277",
+  "title": "Helicopter Rotor Pitch Controller",
+  "spec": "Create a class managing a helicopter swashplate. The entry function `pitch(inputs)` accepts a list of tuples containing collective and cyclic stick movements. The controller tracks main collective angle starting at ten, lateral cyclic starting at zero, longitudinal cyclic starting at zero, and hydraulic pressure starting at three thousand. Each input alters the respective angles. If the combined absolute change in any step exceeds fifteen, hydraulic pressure drops by two hundred. If pressure falls below two thousand, control response becomes sluggish, and subsequent angle changes are halved. A pump command string restores pressure to three thousand. Return the final collective angle, longitudinal cyclic, and hydraulic pressure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d278",
+  "title": "Industrial Plastic Injection Molder",
+  "spec": "Design a class for an injection molding machine. The entry function `mold(cycles)` takes a list of string commands. The machine tracks barrel temperature starting at two hundred, plastic viscosity starting at high, injection pressure starting at zero, and clamp force starting at zero. A heat command increases temperature by twenty, which changes viscosity to low if temperature exceeds two hundred forty. A clamp command sets clamp force to maximum. An inject command increases pressure to one hundred, but if viscosity is high, pressure spikes to two hundred and triggers a safety abort, resetting clamp force and pressure to zero. A cool command reduces temperature by thirty. Return the final barrel temperature, clamp force, and injection pressure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d279",
+  "title": "Commercial Bread Proofer Chamber",
+  "spec": "Write a class for a bakery proofer. The function `proof(readings)` processes a list of integers representing ambient humidity shifts. The chamber tracks internal humidity starting at sixty, internal temperature starting at thirty, yeast gas concentration starting at zero, and fan speed starting at zero. For each positive shift, humidity increases; for each negative shift, it decreases. If humidity rises above eighty, temperature increases by two and yeast gas concentration goes up by five. To prevent overproofing, if gas concentration exceeds twenty, the fan speed sets to high, dropping humidity by ten and gas concentration to zero. Return the final humidity, internal temperature, and fan speed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d280",
+  "title": "Particle Detector Calorimeter",
+  "spec": "Implement a class tracking a high energy physics calorimeter. The entry function `detect(events)` takes a list of integers representing particle energy deposits. The system monitors total absorbed energy starting at zero, trigger rate starting at zero, cooling flow starting at base level, and sensor bias voltage starting at one hundred. Each event adds to absorbed energy and increments the trigger rate. If five consecutive events occur, cooling flow switches to maximum to prevent thermal noise. If a massive deposit over one thousand is detected, the sensor overloads, dropping bias voltage to zero, and the system ignores events until a reset command string is given. Return the total absorbed energy, final bias voltage, and cooling flow state.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d281",
+  "title": "Automatic Tire Inflation System",
+  "spec": "Create a class managing a dynamic tire pressure system. The entry function `inflate(changes)` receives a list of string conditions. The system tracks current pressure starting at thirty five, target pressure starting at thirty five, compressor load starting at zero, and release valve status starting at closed. A highway condition sets target pressure to forty; sand sets it to twenty; mud sets it to twenty five. The system adjusts current pressure by five units per step towards the target. Pumping increases compressor load by ten per step. Releasing air opens the valve and resets compressor load to zero. If load exceeds fifty, a cooldown cycle pauses inflation for one step. Return the final current pressure, compressor load, and valve status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d282",
+  "title": "Wind Tunnel Airflow Modulator",
+  "spec": "Design a class for a supersonic wind tunnel. The function `modulate(commands)` processes a list of string commands. The tunnel tracks main fan pitch starting at zero, air velocity starting at zero, turbulence grid status starting at retracted, and test section pressure starting at one hundred. A spool command increases fan pitch by ten and velocity by fifty. A choke command drops test section pressure by twenty to simulate high altitude. If velocity exceeds two hundred, the turbulence grid must be deployed automatically, which drops velocity by twenty but increases pressure by ten. A vent command resets velocity to zero and retracts the grid. Return the final fan pitch, air velocity, and turbulence grid status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d283",
+  "title": "Automated Bowling Alley Pinsetter",
+  "spec": "Write a class simulating a pinsetter machine. The entry function `bowl(rolls)` takes a list of integers representing pins knocked down. The machine tracks standing pins starting at ten, sweep bar position starting at up, table height starting at high, and ball return mechanism status starting at idle. For each roll, standing pins are reduced. The sweep bar drops to clear dead wood, triggering the ball return to active. If standing pins reach zero, the table lowers to place a new set of ten pins, and the sweep bar returns up. If a foul string is encountered, the sweep bar immediately resets all ten pins regardless of the roll, and the return mechanism jams until a reset string is provided. Return the final standing pins, sweep bar position, and table height.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d284",
+  "title": "Tunnel Boring Machine Operator",
+  "spec": "Implement a class for a tunnel boring machine. The entry function `bore(strata)` processes a list of strings representing rock types. The machine tracks thrust cylinder pressure starting at five hundred, cutterhead speed starting at ten, muck removal rate starting at zero, and shield position starting at zero. Soft dirt increases muck rate by twenty and advances the shield by two. Hard rock decreases cutterhead speed by three and increases thrust pressure by one hundred to advance the shield by one. If thrust pressure exceeds eight hundred, an overload occurs, stopping the cutterhead and setting muck rate to zero. A maintenance string restores speed and pressure to default values. Return the final thrust pressure, cutterhead speed, and total shield advance.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d285",
+  "title": "Magnetic Resonance Imaging Scanner",
+  "spec": "Create a class for an MRI machine controller. The function `scan(sequences)` accepts a list of integers representing radio frequency pulse durations. The scanner maintains magnetic field strength starting at one, gradient coil temperature starting at twenty, helium level starting at one hundred, and image resolution starting at zero. Each pulse adds to the image resolution but increases coil temperature by half the pulse duration. If temperature exceeds eighty, helium level drops by ten to cool the coils back to forty. If helium level falls below twenty, the magnetic field quenches, dropping strength to zero and halting all further scans to prevent catastrophic failure. Return the final image resolution, coil temperature, and helium level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d286",
+  "title": "Geothermal Power Plant Turbine",
+  "spec": "Write a class to govern a geothermal steam turbine. The entry function `generate(pressures)` receives a list of integers representing incoming steam pressure surges. The plant tracks internal steam pressure starting at fifty, rotor revolutions starting at three thousand, generator output starting at one hundred, and vibration frequency starting at ten. A surge adds to internal pressure and increases rotor revolutions by fifty times the surge. Generator output scales with revolutions. However, if revolutions exceed four thousand, vibration frequency doubles. A vibration over fifty triggers a bypass valve, venting steam, dropping internal pressure to ten, and halving revolutions. Return the final generator output, internal pressure, and vibration frequency.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d287",
+  "title": "Industrial Meat Slicer Controller",
+  "spec": "Develop a class for an automated meat deli slicer. The entry function `slice(requests)` takes a list of string thickness settings. The slicer monitors blade speed starting at zero, carriage tempo starting at zero, slice count starting at zero, and safety guard lock starting as engaged. A power on string sets blade speed to high and carriage tempo to medium. A thick request produces one slice but slows the carriage tempo. A thin request produces two slices and increases carriage tempo. If the requested setting changes three times in a row, the motor overheats, dropping blade speed to zero and disengaging the safety lock. Return the total slice count, blade speed, and safety guard lock status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d288",
+  "title": "Passenger Airplane Flap Actuator",
+  "spec": "Implement a class for an aircraft trailing edge flap system. The function `adjust(airspeeds)` processes a list of integers. The system tracks flap angle starting at zero, left hydraulic pressure starting at full, right hydraulic pressure starting at full, and asymmetry lock starting at false. As airspeed drops below two hundred, flap angle increases by ten for every twenty unit drop. Extending flaps consumes hydraulic pressure equally. If left and right pressures differ by more than ten, the asymmetry lock engages, freezing the flap angle to prevent structural twisting. A pump command string equalizes and refills both pressures. Return the final flap angle, left hydraulic pressure, and asymmetry lock status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d289",
+  "title": "Concert Stage Lighting Rig",
+  "spec": "Design a class for an intelligent moving head light. The entry function `illuminate(cues)` accepts a list of string color commands. The rig tracks pan angle starting at center, tilt angle starting at level, color wheel position starting at white, and shutter status starting at open. A red cue shifts the color wheel and pans left by ten degrees. A blue cue shifts the color wheel and tilts up by fifteen degrees. A blackout cue snaps the shutter to closed and resets pan and tilt. If the pan angle goes beyond fifty degrees from center, a limit switch triggers, forcing the shutter closed and freezing motion until a home cue is received. Return the final pan angle, tilt angle, and shutter status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d290",
+  "title": "Robotic Surgical Arm Calibrator",
+  "spec": "Write a class for a micro surgery robotic arm. The entry function `operate(movements)` takes a list of integers representing millimeter shifts. The arm maintains absolute x position starting at zero, absolute y position starting at zero, force feedback threshold starting at low, and safety clamp status starting at open. Positive shifts add to x, negative shifts subtract from y. If a single shift exceeds ten millimeters, the movement is considered erratic: the safety clamp closes instantly, and force feedback threshold switches to high. While the clamp is closed, all subsequent movements are ignored until an unlock string is processed. Return the final x position, y position, and clamp status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d291",
+  "title": "Mechanical Metronome Tracker",
+  "spec": "Model a mechanical metronome that maintains its internal state. It tracks spring tension starting at zero, swing amplitude starting at twenty, and a direction multiplier starting at one. The entry function `simulate(commands)` processes a list of numbers and strings. A number adds to the tension, capping at one hundred. A string command is the word tick. During a tick, a baseline friction reduces tension by one. Then, if tension remains strictly positive, tension decreases by three and amplitude increases by two, capped at forty. If tension is zero or less, amplitude decreases by four, with a minimum of zero. After these adjustments, the direction multiplier changes sign, and the current position is recorded as the product of direction and amplitude. Return a list of positions recorded at each tick. Example: input of ten, the string tick, and the string tick outputs negative twenty two and twenty four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d292",
+  "title": "Mine Cart Brake System",
+  "spec": "Model a stateful mine cart navigating a steep track. The cart maintains speed starting at zero, brake pad thickness starting at one hundred, and shoe heat starting at zero. The entry function `descend(segments)` processes a list of track slope numbers. For each slope, the cart speed increases by the slope value. If the speed exceeds twenty, the brakes automatically engage. Engaging brakes reduces speed by ten, reduces brake pad thickness by two, and increases shoe heat by fifteen. If shoe heat exceeds fifty, the brake effectiveness drops, reducing speed by only five instead of ten, while still consuming the pad and adding heat. If the pad thickness reaches zero, brakes fail and cannot engage. Return a list of speeds at the end of each track segment. Example: input of five, twenty, and fifteen outputs five, fifteen, and twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d293",
+  "title": "Waterwheel Mill Operator",
+  "spec": "Model a stateful waterwheel that drives a grinding stone. The wheel maintains water momentum starting at zero, stone rotation speed starting at zero, and flour produced starting at zero. The entry function `grind(flows)` receives a list of water flow rates. For each flow rate, momentum increases by the flow and then decreases by a natural drag of two, down to a minimum of zero. The stone speed adjusts to match half of the current momentum, rounded down. If the stone speed is above five, it produces flour equal to the stone speed minus five, adding to the total. After processing all flows, return the total flour produced and the final stone speed as a tuple. Example: input of ten, fifteen, and zero outputs a tuple of ten and four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d294",
+  "title": "Funicular Rail Ascender",
+  "spec": "Model a stateful funicular rail ascender mechanism. It tracks grip tension starting at zero, jaw wear starting at zero, and carriage speed starting at zero. The entry function `operate(actions)` takes a list of strings: tighten, loosen, or coast. The string tighten increases grip tension by five. The string loosen decreases it by five. Coasting applies track friction. When tension is above ten, the jaw wear increases by one per action and carriage speed increases by two up to a maximum of twenty. When tension is ten or below, speed decreases by three per action due to friction, down to zero. If jaw wear exceeds twenty, tightening only increases tension by three. Return the final speed and jaw wear as a tuple after processing the sequence. Example: input of seven tightens and three coasts outputs twenty and ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d295",
+  "title": "Parachute Deployment Tracker",
+  "spec": "Model a stateful skydiver and parachute system. It tracks altitude starting at ten thousand, freefall speed starting at zero, and canopy spread percent starting at zero. The entry function `descend(actions)` processes a list where each element is either a number of seconds to fall, or the string pull. For a number of seconds, altitude drops by the speed multiplied by seconds, while speed increases by ten every second up to a terminal velocity of one hundred twenty. If the string pull is encountered, the canopy spread increases by twenty percent per second in subsequent falls. The terminal velocity decreases by one for every percent of canopy spread. Return the altitude when it reaches zero or below, or the final altitude if the sequence ends before reaching the ground. Example: input of ten, the string pull, and five outputs eight thousand eight hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d296",
+  "title": "Windmill Grindstone Controller",
+  "spec": "Model a stateful windmill adjusting to wind conditions. It maintains blade pitch angle starting at zero, wind efficiency starting at ten, and structural stress starting at zero. The entry function `process(gusts)` takes a list of wind speeds. For each wind speed, if it exceeds fifty, the pitch angle increases by five to spill wind, and structural stress increases by the speed minus fifty. If the wind speed is below twenty, the pitch angle decreases by two to catch more wind, bounded at a minimum of zero. Wind efficiency is calculated as one hundred minus the pitch angle. Return a list of wind efficiencies after each gust. Example: input of sixty, fifteen, and seventy outputs ninety, ninety two, and eighty two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d297",
+  "title": "Trebuchet Launch Calculator",
+  "spec": "Model a stateful siege trebuchet preparing for launch. It tracks counterweight mass starting at five hundred, sling length starting at ten, and beam pivot stress starting at zero. The entry function `launch(adjustments)` takes a list of numbers representing payload weights. For each payload, the mechanism attempts a test swing. The swing generates pivot stress equal to the payload weight multiplied by the sling length, divided by ten. If this stress exceeds the counterweight mass, the swing fails and sling length is reduced by one to compensate for the next attempt. Otherwise, the swing succeeds and counterweight mass drops by five due to lost ballast. Return the number of successful swings. Example: input of three hundred, six hundred, and four hundred outputs two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d298",
+  "title": "Crossbow Tension Tracker",
+  "spec": "Model a stateful heavy crossbow mechanism. It maintains bowstring draw distance starting at zero, material fatigue starting at zero, and stored energy starting at zero. The entry function `fire(cranks)` takes a list of integers representing turns of the winding winch. Each turn increases the draw distance by two and the stored energy by the current draw distance. However, every turn also adds one to material fatigue. If material fatigue reaches ten, subsequent turns only increase draw distance by one and add no stored energy due to micro fractures in the prod. Return a list of stored energy values after each set of winch turns is fully applied. Example: input containing three and then two outputs twelve and thirty two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d299",
+  "title": "Steamboat Paddlewheel",
+  "spec": "Model a stateful river steamboat paddlewheel. It tracks boiler pressure starting at fifty, paddle depth starting at five, and distance traveled starting at zero. The entry function `navigate(commands)` takes a list of strings: either stoke or paddle. The string stoke increases boiler pressure by twenty. The string paddle consumes ten boiler pressure to rotate the wheel, moving the boat forward by a distance equal to the paddle depth. If boiler pressure falls below ten, paddle commands have no effect. If boiler pressure exceeds one hundred, the safety valve vents, reducing pressure to fifty and reducing paddle depth by one due to the jarring vibration. Return the total distance traveled after all commands. Example: input of stoke, paddle, and paddle outputs ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d300",
+  "title": "Rowboat Oar Synchronizer",
+  "spec": "Model a stateful rowboat maintaining a straight course. It tracks heading angle starting at zero, left side momentum starting at zero, and right side momentum starting at zero. The entry function `row(strokes)` takes a list of pairs, where each pair contains the left oar force and right oar force. For each stroke, the left momentum increases by the left force and right momentum by the right force. Both momentums then decay by ten percent, rounded down. The heading angle changes by the difference between right and left momentum. Return a list of heading angles after each stroke. Example: input with a pair of ten and ten, then a pair of twelve and eight outputs zero and negative three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d301",
+  "title": "Sandglass Timer Simulator",
+  "spec": "Model a stateful sandglass hour glass. It tracks upper sand volume starting at one hundred, lower sand volume starting at zero, and a clogged state which is initially false. The entry function `measure(intervals)` processes a list of time increments in seconds. For each second in an interval, one unit of sand moves from upper to lower. If an interval exceeds fifty seconds, the neck becomes clogged at the end of that interval, and no sand will flow in subsequent intervals until it is cleared. An interval exactly equal to zero acts as a tap, clearing the clogged state. Return the lower sand volume at the end. Example: input of sixty, ten, zero, and five outputs sixty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d302",
+  "title": "Hand Crank Siren",
+  "spec": "Model a stateful mechanical warning siren. It maintains rotor inertia starting at zero, sound pitch starting at zero, and heat starting at zero. The entry function `crank(efforts)` takes a list of numbers representing cranking force applied over sequential minutes. Each minute, the rotor inertia increases by the cranking force and then decays by five due to air resistance, with a minimum of zero. The sound pitch equals the resulting inertia multiplied by two. If inertia exceeds fifty, the bearings generate heat equal to the excess inertia, which accumulates over time. If accumulated heat reaches one hundred, the bearings seize, and pitch becomes zero for all remaining minutes regardless of effort. Return a list of pitch values for each minute. Example: input of twenty and sixty outputs thirty and one hundred forty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d303",
+  "title": "Binocular Focus Mechanism",
+  "spec": "Model a stateful binocular optical system. It maintains left diopter position starting at zero, right diopter position starting at zero, and central bridge angle starting at ninety. The entry function `focus(adjustments)` takes a list of strings: left, right, or center. The string left increases the left diopter by one. The string right increases the right diopter by one. The string center increases both diopters by two and decreases the bridge angle by five. If the absolute difference between left and right diopters exceeds three, the image becomes permanently distorted and all subsequent commands have no effect on the diopters. Return the sum of the final left and right diopters. Example: input of left, center, and center outputs nine.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d304",
+  "title": "Rope Making Twister",
+  "spec": "Model a stateful rope twister machine. It tracks strand count starting at three, twist tension starting at zero, and rope length starting at zero. The entry function `twist(cycles)` takes a list of integers representing revolutions. For each cycle of revolutions, the twist tension increases by the revolutions multiplied by the strand count. If the resulting twist tension is one hundred or greater, a segment of rope is formed: rope length increases by one, the twist tension is reduced by one hundred, and the strand count decreases by one. If the strand count drops below one, no more rope can be formed. Return the final rope length and the remaining twist tension as a tuple. Example: input of thirty and twenty outputs a tuple of one and fifty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d305",
+  "title": "Bellows Forge Aerator",
+  "spec": "Model a stateful leather bellows pumping air into a blacksmith forge. It maintains chamber volume starting at twenty, ember temperature starting at five hundred, and metal heat starting at zero. The entry function `pump(strokes)` processes a list of integers representing push distances. Each stroke first fills the chamber to a volume of twenty, then decreases the volume by the push distance, pushing that much air into the forge. The ember temperature increases by twice the pushed air, then naturally cools by ten. The metal heat increases by ten percent of the current ember temperature, rounded down. Return a list of metal heat values after each stroke. Example: input of ten and fifteen outputs fifty one and one hundred four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d306",
+  "title": "Motorized Unicycle Balancer",
+  "spec": "Model a stateful motorized unicycle. It tracks lean angle starting at zero, wheel speed starting at zero, and battery level starting at one hundred. The entry function `balance(tilts)` processes a list of integers representing external tilt forces. For each tilt, the lean angle increases by the tilt force. To compensate, the motor activates, reducing the lean angle by half of its current value rounded down. This motor activation increases the wheel speed by the amount of angle reduced, and consumes one battery level for every ten units of speed reached. If the battery level drops to zero, the motor fails, the wheel speed drops to zero, and the lean angle absorbs the full tilt without compensation. Return a list of lean angles after each tilt. Example: input of ten and twenty outputs five and thirteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d307",
+  "title": "Pneumatic Tube Dispatcher",
+  "spec": "Model a stateful pneumatic tube network capsule. It maintains internal pressure starting at ten, current speed starting at zero, and distance traveled starting at zero. The entry function `dispatch(segments)` takes a list of integers representing suction power applied. For each segment, the speed increases by the suction power minus the internal pressure, with a minimum speed of zero. The distance increases by the new speed. After moving, friction increases the internal pressure by two. If internal pressure exceeds twenty, a relief valve vents it back to ten, which also halves the current speed rounded down. Return the total distance traveled. Example: input of fifteen and twenty outputs eighteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d308",
+  "title": "Hurdy Gurdy Wheel Resonator",
+  "spec": "Model a stateful hurdy gurdy stringed instrument. It maintains rosin coating starting at ten, wheel speed starting at zero, and string tension starting at five. The entry function `play(turns)` takes a list of crank speeds. For each crank speed, wheel speed updates to match it. If wheel speed exceeds tension, the string sounds, consuming one unit of rosin. A sounding string produces an acoustic drone value equal to wheel speed multiplied by rosin coating. If rosin falls to zero, no drone is produced regardless of speed. Return a list of acoustic drone values for the turns that produced sound. Example: input of four, six, and eight outputs fifty four and sixty four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d309",
+  "title": "Garage Door Opener Mechanism",
+  "spec": "Write a class simulating a garage door mechanism. The door has an internal position from zero to one hundred, a motor temperature, and a moving direction. The main entry function `operate(commands)` processes a list of plain strings like button press, obstacle detected, or wait. If moving, position changes by ten units per wait command until fully open or closed. The motor temperature increases by one for every unit of movement and decreases by two when waiting. If temperature exceeds fifty, the motor stops and ignores commands until it cools below twenty. An obstacle reverses the current direction, and the function must return a list of positions after processing all commands.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d310",
+  "title": "Automatic Pool Cleaner Tracker",
+  "spec": "Simulate an automatic pool cleaning robot. The robot maintains its current water depth, filter dirt capacity, and battery charge level. The `clean(actions)` function takes a list of integer pairs representing movement distances and dirt encountered. Moving costs one unit of battery per distance unit, while sucking up dirt adds to the filter capacity and uses two units of battery per dirt unit. When the battery drops below ten percent, it must spend three turns recharging to full instead of processing the next three actions. If the filter reaches one hundred units, it must run a backwash sequence, draining twenty dirt units per turn for five turns while ignoring actions. Return a tuple containing the final battery and filter dirt level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d311",
+  "title": "Arcade Claw Machine",
+  "spec": "Create a simulation for an arcade claw machine. The machine tracks the horizontal position of the claw, the vertical drop state, and the grip strength which randomly fluctuates but can be bounded by a payout rate. The `play(inputs)` function receives a string of directional inputs and drop commands. The claw moves horizontally up to a maximum boundary of fifty. Upon a drop command, the claw descends, grabs an item whose weight is based on the horizontal position modulo five, and ascends. If the internal grip strength drops below the item weight, the item falls, and the grip strength decreases slightly after every drop. Return the total number of successfully retrieved items.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d312",
+  "title": "Ferris Wheel Loading Sequence",
+  "spec": "Model the operation of a Ferris wheel with twelve passenger gondolas. The wheel tracks the currently boarding gondola at the bottom, the total weight of each gondola, and a momentum value. The `rotate(groups)` function takes a list of integers representing passenger group weights waiting to board. The wheel advances by one gondola position to load each group, skipping any group that exceeds the maximum gondola capacity of four hundred. The wheel momentum increases by the weight imbalance between the left and right halves of the wheel. If the momentum exceeds a safety threshold, the wheel must run a balancing rotation cycle of three empty positions. Return a list of gondola weights when all groups are processed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d313",
+  "title": "Cash Register Receipt Printer",
+  "spec": "Simulate a receipt printer mechanism tracking paper roll length, ink ribbon saturation, and print head heat. The `transact(items)` function takes a list of item name strings and their integer prices. For each character printed, ink saturation drops and print head heat increases. The paper unrolls by one line per item. If the heat exceeds a maximum threshold, the printer must rest for a cooling period, inserting a blank line in the output. If ink drops below a minimum, a ribbon advance routine triggers, restoring ink but consuming three lines of paper. Return a list of integers representing the paper length consumed for each transaction block.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d314",
+  "title": "Cement Mixer Truck Drum",
+  "spec": "Model a cement mixer drum tracking wetness, aggregate consistency, rotation speed, and total volume. The `mix(operations)` function accepts a list of string commands like add water, add cement, spin fast, spin slow, and pour. Adding materials increases volume and alters wetness. Spinning fast increases consistency but heats up the hydraulic motor, while spinning slow cools the motor and maintains consistency. If consistency is too low during a pour, the output is rejected. If the motor overheats, the drum stops for three operations, and the function should return the total volume of perfectly mixed cement successfully poured.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d315",
+  "title": "Air Hockey Table Blower",
+  "spec": "Simulate an air hockey table tracking the fan motor rotations per minute, air pressure in the plenum chamber, and filter cleanliness. The `blow(events)` function processes a list of integers representing puck impact force. High impact forces require a temporary boost in fan speed to maintain hover pressure, and each boost degrades the filter cleanliness. When the filter drops below a threshold, the maximum achievable fan speed is reduced, lowering the baseline air pressure. The fan cools down during periods of no impacts, allowing the motor to stabilize. Return a sequence of air pressure readings taken after each event.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d316",
+  "title": "Bungee Cord Tension Simulator",
+  "spec": "Create a simulation for a bungee jumping platform. The system tracks the cord elasticity, the number of micro tears in the rubber, and the current elongation distance. The `jump(weights)` function takes a list of jumper weights. For each jump, the cord stretches to a maximum elongation calculated from the weight and current elasticity, followed by rebound cycles that dissipate the energy. Heavier weights cause more micro tears, and when tears accumulate past a safety limit, elasticity permanently decreases by five percent. A jump exceeding the absolute maximum stretch triggers a rejection, and the function must return a list of the maximum elongation reached for each accepted jump.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d317",
+  "title": "Snowblower Chute Director",
+  "spec": "Model a robotic snowblower tracking the chute angle, impeller speed, and snow intake volume. The `clear(conditions)` function receives a list of tuples containing snow density and wind direction. The blower adjusts its chute angle to counteract the wind. High density snow requires the impeller speed to increase; otherwise, the internal chute clogs. If a clog occurs, an automatic clearing routine runs, stopping all intake for three cycles. The chute angle cannot change while a clog is being cleared, and the function should return the total volume of snow successfully cleared without clogging.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d318",
+  "title": "Sewing Machine Bobbin Winder",
+  "spec": "Simulate an industrial sewing machine tracking the upper thread tension, bobbin thread remaining, and needle sharpness. The `sew(stitches)` function takes a list of integers representing fabric thickness for each stitch sequence. Thicker fabric dulls the needle faster and requires higher thread tension. If tension exceeds the mechanical limit, the thread breaks, requiring a rethreading routine that skips two stitches. When the bobbin thread runs out, an auto winder engages, consuming thread from the main spool and skipping five stitches. Return the total count of successful stitches made.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d319",
+  "title": "Chainsaw Engine Governor",
+  "spec": "Model a chainsaw engine governor tracking throttle position, engine revolutions, and chain oil level. The `cut(loads)` function takes a list of wood resistance values. The governor attempts to maintain a target rotation speed by opening the throttle when high wood resistance causes a drop. Running at high throttle consumes chain oil rapidly. If oil runs out, friction spikes, heavily reducing speed regardless of throttle position. If the engine drops below the stall threshold, a restart sequence is required, taking four cycles of zero cutting progress. Return a list of cutting depths achieved per cycle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d320",
+  "title": "Drafting Plotter Pen Controller",
+  "spec": "Simulate a mechanical pen plotter tracking pen vertical state, ink reservoir level, grid coordinates, and stepper motor temperature. The `plot(vectors)` function takes a list of coordinate pairs to draw lines towards. The pen must be lowered before drawing and raised before seeking new starting points. Drawing consumes ink proportional to distance, and rapid continuous drawing heats the stepper motors. If motors overheat, the plotter pauses for cooling, raising the pen automatically. If ink is empty, lines are not drawn, and the function should return a list of the actual lengths of ink lines drawn on the paper.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d321",
+  "title": "Toaster Pop-up Mechanism",
+  "spec": "Create a state machine for a mechanical toaster tracking heating coil temperature, bread moisture, and spring latch tension. The `toast(cycles)` function takes a list of integers representing requested browning levels. For each cycle, the heating element ramps up temperature, evaporating bread moisture before actual browning occurs. The spring latch holding the bread down weakens slightly with continuous high temperatures. If the latch tension fails before the cycle completes, the bread pops up early. Coils must cool between cycles, and the function must return a list of final browning levels for each slice.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d322",
+  "title": "Record Player Tonearm Mechanism",
+  "spec": "Simulate a vintage record player tracking the tonearm angle, stylus wear, and turntable platter speed. The `play(tracks)` function receives a list of track durations in seconds. The tonearm advances its angle based on the duration, while the platter must maintain exactly thirty three revolutions per minute. Dust on the record randomly causes speed fluctuations. The stylus wears down over time, increasing the chance of skipping, which advances the tonearm abruptly and reduces the played duration of that track. A return mechanism resets the arm after the last track, and the function should return the total actual playback time.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d323",
+  "title": "Movie Clapboard Synchronizer",
+  "spec": "Model a digital smart clapboard tracking the timecode frame rate, internal battery, and slate hinge angle. The `sync(takes)` function takes a list of recording durations. Closing the hinge stamps the timecode and emits a synchronization beep, consuming battery. During the take, the internal timecode advances linearly. If battery falls below twenty percent, the screen dims and the beep volume drops to save power. If the battery dies during a take, synchronization is lost for that take, and the function must return a list of valid timecode stamps successfully generated.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d324",
+  "title": "Roller Coaster Brake Block",
+  "spec": "Simulate a roller coaster safety block system tracking brake pad wear, pneumatic pressure, and block occupancy. The `brake(trains)` function receives a list of approaching train speeds. When a train enters, if the next block is occupied, pneumatic pressure applies the brakes to stop the train. Higher speeds consume more brake pad material and require more pressure to stop safely. The compressor slowly refills pressure between trains. If pressure is too low, the brakes cannot fully stop a fast train, triggering an emergency fault state that halts all operations, and the function should return the final speed of each train as it exits the block.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d325",
+  "title": "Paint Shaker Machine",
+  "spec": "Create a simulation for a hardware store paint shaker tracking clamp pressure, motor vibration amplitude, and base stability. The `shake(cans)` function processes a list of can weights. Heavier cans require higher clamp pressure and increase base instability during shaking. The machine shakes each can for a standard duration. If base stability drops too low, the motor reduces vibration amplitude to prevent tipping, which results in a poorly mixed can. A calibration cycle resets stability and clamp wear, and the function should return a list of boolean values indicating whether each can was perfectly mixed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d326",
+  "title": "Glassblowing Lathe Rotator",
+  "spec": "Model a glassblowing lathe tracking the chuck rotation speed, glass tube temperature, and structural sag. The `rotate(commands)` function takes a list of strings like heat, blow, speed up, or slow down. Heating increases temperature and causes the glass to sag. Sag is counteracted by increasing rotation speed, but spinning too fast while hot causes the glass to flare out uncontrollably. Blowing expands the glass only if the temperature is optimal. If sag reaches a critical point, the glass collapses, and the function must return the final diameter of the glass tube.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d327",
+  "title": "Mechanical Bull Operator",
+  "spec": "Simulate a mechanical bull ride tracking the pitch angle, yaw spin speed, and hydraulic fluid temperature. The `buck(riders)` function receives a list of integers representing rider skill levels. The bull increases pitch and yaw randomly to challenge the rider. Highly skilled riders force the bull to run longer, heating the hydraulic fluid. If the fluid overheats, the pitch and yaw speeds are severely reduced until it cools down. A sudden drop in pitch while yaw is maximum simulates a throw, ending the ride, and the function should return the duration in seconds each rider lasted before being thrown.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d328",
+  "title": "Gumball Machine Dispenser",
+  "spec": "Model a mechanical gumball machine tracking the coin slot jam status, internal gumball spiral track position, and globe inventory. The `vend(coins)` function takes a list of integers representing coin values. A valid coin advances the dispensing gear, while invalid coins increase the risk of jamming the slot. Once jammed, all subsequent coins are rejected until a maintenance reset clears it. Successfully dispensed gumballs reduce the globe inventory, and if the inventory is empty, the coin is swallowed but nothing dispenses. Return a list of boolean values representing successful vends.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d329",
+  "title": "Cuckoo Clock Bellows",
+  "spec": "Simulate a mechanical cuckoo clock tracking the mainspring tension, bellows air capacity, and bird door state. The `chime(hours)` function takes a list of hours to strike. Each strike requires the bellows to fill and compress, emitting a chirp, and the door to open. The mainspring loses tension with every strike and hour passed. If tension is too low, the bellows only partially compress, producing a muffled chirp, and the bird door fails to fully open. Rewinding restores tension, and the function must return the count of clear, successful chirps emitted.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d330",
+  "title": "Bicycle Dynamo Lighting",
+  "spec": "Create a simulation for a bicycle dynamo hub tracking wheel rotations, capacitor charge, and light brightness. The `pedal(speeds)` function processes a list of speeds in kilometers per hour. High speeds spin the hub, generating electricity that lights the bulb and charges the capacitor. At low speeds or full stops, the capacitor discharges to keep the light on temporarily. If the capacitor drains completely, the light turns off. Extreme high speeds risk blowing the bulb if the internal voltage regulator overheats, requiring a cooldown period, and the function should return a list of brightness levels for each speed segment.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d331",
+  "title": "Slinky Stair Descent Simulator",
+  "spec": "Model the physics of a toy slinky going down stairs, tracking momentum, coil tangle state, and center of gravity. The `descend(steps)` function takes a list of stair heights. The toy transfers momentum from the back coil to the front as it steps down. High momentum on steep stairs increases the chance of the coils tangling, which halts movement immediately. If momentum drops too low on shallow stairs, it fails to clear the step and stops. Return the number of steps successfully navigated before stopping or reaching the end.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d332",
+  "title": "Mechanical Pencil Lead Dispenser",
+  "spec": "Simulate a mechanical pencil tracking lead length, graphite hardness, and eraser wear. The `write(strokes)` function takes a list of integers representing characters to write. Each character consumes a fraction of the exposed lead. If the exposed lead is completely used, writing fails unless a click command is received to advance more lead from the internal tube. High hardness graphite writes fainter but consumes lead slower, while mistakes require erasing, which consumes the eraser based on graphite hardness. If the tube is empty, clicking does nothing, and the function should return the total number of characters successfully written.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d333",
+  "title": "Water Slide Pump Controller",
+  "spec": "Model a water slide tracking the top pool water level, main pump flow rate, and filter pressure. The `pump(riders)` function takes a list of rider weights. Each rider pushes a volume of water down the slide, lowering the top pool level. The pump constantly refills the pool from the catch basin, but heavy riders displace more water than the pump can instantly replace. If the top pool level drops too low, the slide closes temporarily to refill. Leaves from riders clog the filter, increasing pressure and reducing the pump flow rate until backwashed. Return the number of times the slide had to close for refilling.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d334",
+  "title": "Observatory Mirror Calibrator",
+  "spec": "Write a class to simulate a primary mirror actuator array. The entry function `align(readings)` receives a list of tuples containing temperature changes and tilt errors. The system must maintain internal values for fifty actuator extensions, thermal expansion coefficients, and a calibration offset. For each reading, the system updates the baseline temperature, calculates the required extension adjustment to counteract the tilt, and applies a thermal correction factor. If an actuator exceeds its physical limit, an internal flag is set and the system triggers a safety retraction. Return a list of average actuator positions after processing each reading.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d335",
+  "title": "Automated Pill Dispenser",
+  "spec": "Write a system to manage daily medication sorting. The entry function `dispense(requests)` processes a list of times and user interactions. The logic must track internal inventories for four different compartments, a log of missed doses, and the current scheduled delivery window. When a request arrives, the system must check the time against the delivery window, decrease the compartment inventory if valid, and trigger an internal alarm state if a dose is skipped. It also needs to calculate the remaining supply percentage to warn of low stock. The function should return a list of string messages for each processed event, such as dispensed or alarm triggered.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d336",
+  "title": "RFID Pet Door Controller",
+  "spec": "Implement a logic controller for an electronic pet door. The function `operate(events)` processes a list of tag readings and time changes. The class must maintain internal lists of authorized tag numbers, the current lock mode, curfew start and end times, and a battery level indicator. Upon receiving an event, the system checks if the tag is authorized, evaluates if the current time falls within curfew restrictions, and deducts battery life for every unlock action. If the battery falls below ten percent, it permanently engages the lock. Return a list of boolean values indicating whether the door opened for each event.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d337",
+  "title": "Barista Tamper Simulator",
+  "spec": "Create a simulator for an automatic coffee tamping machine. The main function `tamp(sensors)` takes a list of resistance measurements during a compression cycle. The system tracks the current downward pressure, the targeted compression depth, the number of tamps performed today, and a calibration baseline. For each measurement, the logic computes the difference between current and target resistance, adjusts the pressure incrementally, and flags a polishing phase when the target is reached. If the resistance spikes too quickly, an internal abort sequence is triggered to prevent cup breakage. Return a list of final pressure values applied for each cycle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d338",
+  "title": "Whale Tracking Glider",
+  "spec": "Design a controller for a buoyancy driven ocean glider. The entry function `navigate(telemetry)` receives a list of depth and salinity pairs. The glider must maintain its internal oil bladder volume, battery capacity, current pitch angle, and acoustic ping interval. The logic adjusts the oil volume to change buoyancy based on target depth and current salinity density. It also calculates battery drain from every pump activation and modifies the acoustic ping frequency if whales are detected via sudden depth anomalies. The function returns a list of resulting pitch angles and battery percentages after each step.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d339",
+  "title": "Skyscraper Window Washer",
+  "spec": "Model the state of a vertical window cleaning robot. The function `clean(movements)` accepts a list of directional commands and dirt sensor readings. The object needs to store its horizontal and vertical coordinates, squeegee moisture level, vacuum suction power, and a mapping of cleaned areas. For each step, it consumes moisture to wipe the glass, increases suction if high dirt levels are detected, and updates its internal map. If it reaches a frame boundary, it initiates an internal pivot maneuver. The function should return a list containing the total number of square units cleaned and the remaining moisture percentage for each step.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d340",
+  "title": "Currency Sorting Machine",
+  "spec": "Write a logic controller for a high-speed banknote counter. The entry function `sort(notes)` evaluates a list of bill dimensions and ultraviolet reflection values. The machine must keep track of running totals for different denominations, a counterfeit detection counter, internal hopper capacity, and motor jam status. When a note is processed, the system identifies its denomination based on size, checks the ultraviolet value against an authenticity threshold, and increments the appropriate bin. If a note is flagged as suspect or the hopper fills up, an internal diversion sequence moves the bill to a reject tray. Return a list of accepted denomination values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d341",
+  "title": "Smart Inhaler Dosage Tracker",
+  "spec": "Implement a tracker for a connected asthma inhaler. The entry function `medicate(breaths)` takes a list of inhalation durations and timestamps. The class maintains internal state for the number of remaining puffs, the time of the last usage, a rolling daily counter, and the actuator flow rate. For each breath, the logic determines if the duration meets the minimum threshold for a valid dose. It then updates the remaining puffs, checks if the daily limit is exceeded to issue a warning, and resets the daily counter if a new day is detected. Return a list of statuses such as dose delivered, partial breath, or limit reached.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d342",
+  "title": "Ice Rink Resurfacer",
+  "spec": "Create a simulation for a skating rink resurfacer. The function `resurface(actions)` takes a list of speeds and ice temperature readings. The machine must track its internal water tank volume, blade cutting depth, wash water temperature, and distance traveled. The logic adjusts the blade depth based on the ice temperature and calculates the amount of hot water dispensed per unit of distance. If the water tank runs low, the machine raises the blade and stops dispensing. The function should return a list of tuples containing the remaining water volume and current blade depth for each action.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d343",
+  "title": "Roller Shutter Door Controller",
+  "spec": "Simulate the motor controller for an industrial warehouse door. The main function `operate(commands)` processes a list of up, down, and stop signals. The system must internally track the door height, maximum travel limit, motor coil temperature, and an obstruction sensor state. The logic moves the door incrementally while monitoring the limits, heating up the motor during continuous operation. If the motor overheats or an obstruction is detected during a downward movement, an emergency halt is triggered and the door reverses direction slightly. Return a list of door heights after each command is processed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d344",
+  "title": "High Speed Camera Trigger",
+  "spec": "Model the capture sequence of a motion sensitive scientific camera. The entry function `capture(frames)` receives a list of light intensity and pixel change values. The camera must store its current shutter speed, memory buffer capacity, trigger sensitivity threshold, and consecutive frames captured. The logic evaluates the pixel change against the threshold to initiate a capture burst, dynamically adjusting the shutter speed based on the light intensity. It also manages the memory buffer, pausing capture if the buffer fills up until space clears. Return a list of the number of frames successfully saved to memory for each input.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d345",
+  "title": "Guitar Looper Pedal",
+  "spec": "Write a state manager for a multitrack audio looper. The function `loop(footbeats)` takes a list of pedal presses and audio signal levels. The device tracks the active recording track, the overdub layer count, playback volume, and loop duration. When a press indicates recording, it logs the duration until the next press. Subsequent presses toggle between playback and overdub modes. The logic must also apply an internal volume decay to older layers during overdubbing to prevent distortion. Return a list of the active track states and current overdub layer counts after each pedal press.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d346",
+  "title": "Industrial Potato Peeler",
+  "spec": "Simulate a centrifugal vegetable peeling machine. The function `peel(batches)` evaluates a list of batch weights and processing times. The machine internally tracks drum rotation speed, abrasive lining wear, fresh water flow rate, and a waste collection bin level. For each batch, the system calculates the optimal rotation speed based on the weight, decrements the abrasive lining lifespan, and adds to the waste bin. If the waste bin fills up or the abrasive lining becomes too smooth, it triggers a maintenance cycle. Return a list containing the total water used and the final wear percentage for each batch.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d347",
+  "title": "Digital Billboard Rotator",
+  "spec": "Design a controller for a roadside electronic display. The entry function `display(ticks)` receives a list of ambient light levels and audience detection counts. The system must maintain an internal schedule of advertisements, the current active index, display duration counters, and panel temperature. The logic brightens the display during high ambient light and switches to the next advertisement when the duration expires. If audience detection is high, it extends the display time of the current advertisement slightly. It also dims the display if the panel temperature exceeds a safety limit. Return a list of active advertisement indices shown.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d348",
+  "title": "Photovoltaic Array Aligner",
+  "spec": "Create an alignment controller for a solar panel mast. The function `track(sunlight)` processes a list of sun azimuth angles and wind speeds. The mast maintains internal variables for its current azimuth, elevation, motor temperature, and a wind stowage flag. The logic computes the shortest rotation path to align with the sun and simulates the motor heating up during movement. If the wind speed exceeds thirty units, it sets the stowage flag and forces the array into a flat horizontal orientation to prevent structural damage. Return a list of the final azimuth and elevation angles after each update.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d349",
+  "title": "Microfiche Digitizer",
+  "spec": "Design a state tracker for an automated microfilm scanner. The function `digitize(frames)` receives a list of image contrasts and motor advance distances. The device internally maintains its current frame index, lens focus offset, backlight intensity, and a dust detection flag. The logic advances the film, adjusts the backlight based on the image contrast, and fine-tunes the focus. If the contrast drops sharply, it toggles the dust flag and triggers an internal air blast mechanism before retrying the scan. Return a list of final backlight intensities for each successfully processed frame.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d350",
+  "title": "Orbital Thruster Allocator",
+  "spec": "Write a logic engine for a satellite attitude control system. The entry function `thrust(commands)` takes a list of desired pitch and yaw adjustments. The spacecraft internally tracks remaining hydrazine fuel, current spatial orientation, thruster nozzle temperatures, and a momentum wheel speed. For each command, the logic first attempts to use the momentum wheel to adjust orientation. If the wheel approaches its maximum speed, it fires the chemical thrusters to desaturate the wheel, which consumes fuel and increases nozzle temperature. Return a list of remaining fuel amounts after processing the commands.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d351",
+  "title": "Plasma Cutter Torch Controller",
+  "spec": "Create a movement and power controller for a metal cutter. The entry function `cut(instructions)` receives a list of travel distances and material thicknesses. The machine must track its current coordinate geometry, torch plasma arc voltage, nozzle lifespan, and gas pressure. For each instruction, the logic computes the required gas pressure based on the thickness, adjusts the arc voltage to maintain a stable cut, and adds wear to the nozzle. If the nozzle wear reaches a critical limit, an internal replacement cycle pauses operations. Return a list of applied voltages for each segment.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d352",
+  "title": "Maglev Track Switch Simulator",
+  "spec": "Implement a simulator for a magnetic levitation track junction. The entry function `route(trains)` processes a list of approaching train weights. The system tracks the current switch position, a lock engagement status, a motor temperature, a maintenance cycle counter, and a power reserve level. For each train, the system must determine the required switch position, initiate an unlock sequence, move the switch, and re-engage the lock. Moving the switch increases the motor temperature and depletes the power reserve. The system must verify the power reserve is sufficient before unlocking, trigger a cooling sequence if the temperature exceeds a threshold, and log a maintenance required state every ten moves. Return a list of the remaining power reserve levels after each train is processed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d353",
+  "title": "Holographic Projector Matrix",
+  "spec": "Design a controller for a volumetric display. The entry function `project(frames)` processes a sequence of image depth values. The hardware maintains the active laser intensity, a spinning mirror rotation angle, a cooling fluid level, an error correction offset, and a thermal limit state. Each frame requires calculating the distance from the center, applying the error correction offset, adjusting the laser intensity, and stepping the mirror angle. It must track fluid depletion and automatically refill the fluid when it drops below ten percent, pausing the projection for that frame. It must also monitor thermal limits and reduce intensity by half if overheating. Return a list of the final projected intensities for each frame.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d354",
+  "title": "Robotic Exoskeleton Gait Stabilizer",
+  "spec": "Create a stabilizing system for a lower body exoskeleton. The function `stabilize(steps)` receives a sequence of terrain angles. The suit tracks the left leg joint tension, right leg joint tension, an internal balance gyro score, a battery charge level, and a user fatigue estimate. For each step, it must process the terrain angle to adjust both joint tensions, recalculate the balance score using a weighted average of the last three steps, decrement the battery charge based on the tension applied, and increase the fatigue estimate if the terrain is steep. If the balance score drops below a critical minimum, it must execute a bracing maneuver that maximizes both tensions and consumes extra battery. Return a list of the final balance scores after each step.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d355",
+  "title": "Kinetic Energy Recovery Flywheel",
+  "spec": "Model a flywheel energy storage unit for an electric vehicle. The function `simulate(events)` takes a sequence of acceleration and braking magnitudes. The unit tracks the current flywheel rotational speed, maximum speed limit, current energy stored, bearing temperature, and a mechanical wear index. For braking events, it must calculate the harvestable energy, spin up the flywheel while checking the maximum speed limit, and increase the bearing temperature. For acceleration events, it draws energy from the flywheel, spinning it down and cooling the bearing. It must calculate a friction loss at each step and update the mechanical wear index when the temperature fluctuates rapidly. Return a list of the stored energy levels after each event.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d356",
+  "title": "Smart Mattress Firmness Adjuster",
+  "spec": "Write a controller for a pneumatic smart bed. The entry function `adjust(movements)` takes a list of pressure sensor readings. The bed tracks six independent air chamber pressures, a target comfort profile, a silent pump operation mode flag, an air reservoir volume, and a leak detection counter. For each reading, it must compare the current pressures against the target profile, determine which chambers need inflation or deflation, check if the reservoir has enough air, and actuate the valves. If the pressure drops consistently across three readings, it must increment the leak detection counter. When operating in silent mode during the night, inflation is throttled to half speed. Return a list of the total pressure adjustments made per movement.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d357",
+  "title": "Submarine Sonar Array Processor",
+  "spec": "Build a signal processor for a passive sonar array. The function `process(signals)` accepts a list of acoustic frequency numbers. The system maintains a baseline ambient noise profile, a list of tracked acoustic signatures, a classification threshold, a hardware gain level, and a diagnostic health status. For each signal, it filters out the ambient noise, compares the prominent frequencies against known signatures, updates the tracking list, and automatically adjusts the hardware gain if the signal is too faint. It must run a diagnostic check every five signals and reset the ambient noise profile if the health status shows sensor drift. Return a list of the hardware gain levels applied to each signal.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d358",
+  "title": "Vertical Farming Climate Zone",
+  "spec": "Develop a micro-climate manager for a hydroponic tower. The entry function `manage(readings)` takes a sequence of ambient temperatures. The system tracks the current fan speed, a misting nozzle status, a nutrient pump cycle timer, a grow light intensity, and a water reservoir level. For each reading, it must evaluate the heat index, adjust the fan speed incrementally, trigger the misting nozzle if the temperature is too high, and decrement the water reservoir. It must cycle the nutrient pump every ten steps and dim the grow lights if the temperature remains high despite maximum fan speed. Return a list of the water reservoir levels after each step.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d359",
+  "title": "Automated Pastry Glazer",
+  "spec": "Model a finishing machine for a commercial bakery. The function `glaze(pastries)` accepts a list of pastry sizes. The system tracks the icing reservoir volume, a nozzle temperature, a conveyor belt speed, a drip tray capacity, and a cleaning cycle counter. For each pastry, it must calculate the required icing volume, heat the nozzle to maintain flow, dispense the icing, and adjust the conveyor belt speed to ensure even coating. Excess icing fills the drip tray, which must be emptied automatically when full. It must trigger a cleaning cycle every fifty pastries. Return a list of the dispensed icing volumes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d360",
+  "title": "Quantum Key Distribution Node",
+  "spec": "Implement a simulated node for a secure communication link. The function `exchange(photons)` takes a list of incoming photon polarizations as numbers. The node tracks a secret basis sequence, a buffer of successfully measured bits, an eavesdropper detection counter, a photon detector efficiency rating, and a dark count probability. For each photon, it must apply the current basis from the sequence, perform a measurement to get a bit, check for measurement errors caused by dark counts, and update the eavesdropper counter if the error rate spikes. If the counter exceeds a threshold, it discards the buffer and generates a new basis sequence. Return a list of the successfully agreed upon bits.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d361",
+  "title": "Deep Sea Mining Dredge",
+  "spec": "Write a controller for a robotic ocean floor harvester. The function `mine(commands)` receives a list of terrain hardness values. The dredge tracks a cutter head speed, a collection hopper fill level, a hydraulic pressure metric, an umbilical cable tension, and a sediment cloud density. For each command, it must adjust the cutter speed based on the terrain hardness, increase the hydraulic pressure to match the speed, deposit collected material into the hopper, and monitor the sediment cloud. If the sediment cloud gets too dense, it must temporarily stop cutting and reel in the umbilical cable to rise above the cloud. Return a list of the hopper fill levels after each command.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d362",
+  "title": "Laser Engraving Intensity Modulator",
+  "spec": "Create a power management system for a material engraving laser. The function `engrave(pixels)` takes a sequence of darkness values. The system tracks the current beam focus, a continuous firing time, a focal lens temperature, a stepper motor position, and an exhaust fan speed. For each pixel, it calculates the required laser power, updates the continuous firing time, increments the motor position, and adjusts the exhaust fan based on the power used. If the focal lens temperature approaches the limit, it must pause firing, increase the exhaust fan to maximum, and wait for the temperature to drop before resuming. Return a list of the actual power levels delivered for each pixel.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d363",
+  "title": "Smart Shoe Lacing System",
+  "spec": "Design a firmware module for an auto-lacing athletic shoe. The function `adjust(activities)` processes a list of user activity intensity numbers. The shoe maintains the current lace tension, a foot swelling index, a motor battery level, a pressure sensor calibration, and an emergency release flag. For each activity, it calculates the optimal tension, drives the tightening motor, estimates the resulting foot swelling over time, and drains the battery. If the swelling index gets too high, it must slightly loosen the laces. If the battery falls below five percent, it triggers the emergency release flag and loosens the laces completely. Return a list of the lace tensions applied.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d364",
+  "title": "Sailboat Hydrofoil Adjuster",
+  "spec": "Model an automated foil control system for a racing yacht. The function `trim(conditions)` takes a list of wind speed numbers. The system tracks the port foil angle, starboard foil angle, a cavitation risk factor, a hydraulic fluid pressure, and an overall drag coefficient. For each condition, it must evaluate the wind speed to deploy or retract the foils, calculate the optimal angle for lift, monitor the hull speed to predict cavitation, and adjust the hydraulic pressure to lock the foils in place. If cavitation risk is high, it must immediately flatten the foil angles to prevent a stall. Return a list of the overall drag coefficients after each adjustment.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d365",
+  "title": "Autonomous Blimp Ballast Manager",
+  "spec": "Implement an altitude control system for an unmanned airship. The entry function `navigate(altitudes)` takes a list of target altitude numbers. The airship tracks the current volume of lifting gas, a compressed air ballast weight, an envelope pressure, a solar battery charge, and a gas valve status. For each target, it calculates the altitude difference, determines whether to release lifting gas or vent compressed air, updates the envelope pressure, and checks the solar battery required to run the compressors. If the battery is too low, it stops venting air and only releases gas. Return a list of the achieved altitudes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d366",
+  "title": "Synthetic DNA Synthesizer",
+  "spec": "Write a process controller for an oligonucleotide synthesizer. The function `synthesize(bases)` receives a sequence of numerical base codes. The machine tracks the current chain length, a wash buffer volume, a reagent temperature, an error rate estimator, and a coupling efficiency metric. For each base, it must inject the correct reagent, perform a wash step depleting the buffer, increment the chain length, and update the reagent temperature. It must recalculate the coupling efficiency after every addition and trigger an emergency flush if the efficiency drops below ninety percent, stopping the synthesis early. Return a list of the chain lengths successfully built.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d367",
+  "title": "Avalanche Airbag Deployment System",
+  "spec": "Design the trigger logic for a skier safety backpack. The function `monitor(readings)` processes a sequence of downward acceleration numbers. The system tracks a freefall timer, a tumbling rotation count, a compressed nitrogen cylinder pressure, an arming pin status, and a deployment readiness score. For each reading, it analyzes the acceleration to detect freefall, counts rapid rotations to identify tumbling, and calculates the readiness score. If the score exceeds the critical threshold, it must verify the arming pin is removed, check the nitrogen pressure, and execute the inflation sequence. Return a list of boolean values indicating whether inflation occurred at each step.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d368",
+  "title": "High Altitude Weather Balloon Telemetry",
+  "spec": "Model a data logger for a stratospheric balloon. The function `record(samples)` takes a list of atmospheric pressure measurements. The logger maintains the current transmission rate, an internal heater status, a localized ice buildup estimate, a solid state storage capacity, and a battery voltage. For each sample, it must compress the data, write it to storage, adjust the transmission rate based on battery voltage, and monitor the temperature based on pressure changes. If the temperature drops too low, it must activate the internal heater, which drains the battery faster. It also tracks ice buildup and pulses the heater to melt it if it exceeds a limit. Return a list of the remaining storage capacities.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d369",
+  "title": "Solar Panel Cleaning Robot",
+  "spec": "Implement a navigation module for an autonomous solar array cleaner. The function `clean(sensors)` receives a list of edge detection distance values. The robot tracks its current vertical position, horizontal position, a brush rotation speed, a water tank level, and a wheel slip indicator. For each sensor reading, it must decide whether to move sideways or turn around, dispense a squirt of water, update its position grid, and check the wheel slip to ensure it is not stuck. Every turn requires slowing down the brush rotation. If the water runs out, it must navigate back to the charging dock. Return a list of the horizontal positions visited.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d370",
+  "title": "Automated Sushi Conveyor Router",
+  "spec": "Write a routing simulator for a modern conveyor belt restaurant. The function `route(plates)` takes a list of target table numbers. The system tracks a main belt speed, a diverter arm position, a queue of waiting plates, a track congestion metric, and a customer satisfaction score. For each plate, it must calculate the arrival time, engage the diverter arm to push the plate to the target table branch, update the track congestion, and reset the arm. If the track is too congested, it leaves the plate on the main belt to loop around, decreasing the customer satisfaction score. Return a list of the customer satisfaction scores after each plate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d371",
+  "title": "Automatic Watch Winder Carousel",
+  "spec": "Model a display winder for multiple automatic timepieces. The function `wind(schedule)` processes a list of target rotation counts for the active slot. The device maintains a carousel position, an active motor torque, a daily rotation tally, a gear lubrication index, and a rest phase timer. For each schedule item, it rotates the carousel to the correct slot, applies torque to spin the watch, updates the daily tally, and decrements the gear lubrication index. If a slot hits its daily maximum, it refuses further rotations. The device must enter a rest phase every hundred rotations to prevent mechanical wear. Return a list of the applied rotation counts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d372",
+  "title": "Snowcat Groomer Tiller Controller",
+  "spec": "Develop a control module for a snow groomer machine. The entry function `groom(depths)` takes a list of snow depth measurements. The system tracks the tiller cutting depth, the hydraulic down pressure, the spinning drum speed, a blade wear indicator, and an engine load factor. For each measurement, it must adjust the cutting depth, modulate the down pressure to match the snow resistance, increase the drum speed if the snow is deep, and update the engine load. Prolonged high engine load must trigger a temporary reduction in drum speed. It also calculates blade wear based on pressure. Return a list of the engine load factors at each step.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d373",
+  "title": "Smart Prosthetic Hand Grip Controller",
+  "spec": "Create an actuator management system for a bionic hand. The function `grasp(weights)` takes a list of object weight numbers. The hand maintains the current finger position, an applied grip force, a slip detection threshold, a motor temperature, and a battery life percentage. For each object, it calculates the initial grip force based on weight, monitors the slip threshold, and incrementally increases force if slipping is likely. It must update the motor temperature and drain the battery for each operation. If the motor overheats, it must loosen the grip slightly to cool down. Return a list of the final grip forces applied.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d374",
+  "title": "Agricultural Optical Sorting Machine",
+  "spec": "Model a high speed sorter for removing defective coffee beans. The function `sort(beans)` processes a list of bean color intensity values. The system tracks a compressed air tank pressure, an ejector valve status, a successful sort counter, a camera calibration offset, and a hopper feed rate. For each bean, it applies the calibration offset to the color intensity, decides if the bean is defective, triggers the ejector valve using compressed air, and updates the success counter. It must automatically slow the hopper feed rate if the air tank pressure drops too low, and trigger a camera recalibration every thousand beans. Return a list of boolean values indicating whether each bean was kept or ejected.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d375",
+  "title": "Industrial Waffle Iron Controller",
+  "spec": "Write a controller for a commercial waffle production line. The function `bake(orders)` receives a list of batter consistency scores. The system tracks the top plate temperature, bottom plate temperature, a batter dispenser volume, a locking hinge pressure, and a steam vent status. For each order, it must calculate the required cooking time based on batter consistency, dispense the batter, lock the plates, monitor the steam vent to prevent pressure buildup, and pop open the hinge when done. If the plate temperatures drop too much between orders, it must pause to reheat before dispensing. Return a list of the final cooking times used for each order.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d376",
+  "title": "Automated Archival Book Scanner",
+  "spec": "Implement a page turning and scanning mechanism simulator. The function `scan(pages)` takes a list of page thickness values. The scanner maintains a vacuum arm suction level, a page lifting height, a glass flattener pressure, a camera focus depth, and a double-page error counter. For each page, it adjusts the suction based on thickness, lifts the page, lowers the glass flattener, focuses the camera, and captures the image. If the thickness suggests two pages were lifted, it aborts the scan, increments the error counter, blows air to separate them, and tries again. Return a list of the applied camera focus depths.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d377",
+  "title": "Cave Diving Navigation Tracker",
+  "spec": "The logic tracks a diver moving through a complex underwater cave network. The diver starts at depth zero, distance zero, with a hundred percent oxygen and zero decompression penalty. Write the entry function `navigate(actions)` where the input is a list of text commands like dive, ascend, swim forward, swim backward, and rest. Diving increases depth by ten and decompression penalty by two, consuming five percent oxygen. Ascending decreases depth by ten, consuming five percent oxygen, but is only allowed if the decompression penalty is zero or the diver rests first. Resting decreases the penalty by five and consumes two percent oxygen. Swimming changes distance by twenty and uses eight percent oxygen. The logic must track the current depth, oxygen, distance, and penalty. If oxygen hits zero or depth exceeds fifty, return a failure message. Otherwise, return a text summary of the final depth and distance.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d378",
+  "title": "Shipyard Gantry Crane",
+  "spec": "A massive steel crane moves cargo containers across a shipping yard. Write the entry function `operate(commands)` to process a list of actions such as move left, move right, lower hoist, lift weight, raise hoist, and wind gust. The crane has a maximum weight limit of fifty tons. Lifting a load updates the current engaged weight. Moving the trolley left or right by a given distance shifts the horizontal position. If a wind gust exceeds thirty knots, the crane must automatically drop its load if the hoist is raised above twenty meters to prevent tipping over. The logic must maintain the trolley position, hoist height, engaged weight, and wind safety lock status throughout the sequence. Return the final horizontal trolley position and the total weight successfully moved to the drop zone at position one hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d379",
+  "title": "Stained Glass Annealing Kiln",
+  "spec": "The firing process for thick stained glass requires heating to a target temperature, holding, and slowly cooling to prevent shattering. Write the entry point `fire(stages)` taking a list of instructions containing an action and a value, such as heat, hold, or cool. Heating increases the temperature by the value but increases internal glass stress by one unit for every ten degrees. Holding keeps the temperature steady and reduces stress by five units per hour of hold time. Cooling decreases the temperature, but if it drops faster than fifty degrees an hour while stress is above zero, the glass cracks. The system must monitor the current temperature, internal stress, structural integrity, and elapsed time. Return a boolean indicating whether the glass survived the process and the final remaining stress level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d380",
+  "title": "Wildlife Trail Camera",
+  "spec": "A remote camera monitors a forest trail, managing its battery and storage capacity. Write a function `monitor(events)` to process a list of events like daytime motion, nighttime motion, status check, and solar charge. The camera starts with full battery and a storage capacity of one thousand megabytes. Daytime motion uses five percent battery and saves fifty megabytes of photos. Nighttime motion activates the infrared flash, using fifteen percent battery and saving eighty megabytes. If the battery falls below twenty percent, the camera enters low power mode, automatically disabling the infrared flash and ignoring nighttime motion events. Solar charge events restore ten percent battery. Status checks consume one percent battery. The logic must continuously track battery percentage, storage space, night vision mode, and trigger counts. Return a list of recorded animal sightings, skipping any that failed due to low battery or full storage.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d381",
+  "title": "Vintage Steam Locomotive Boiler",
+  "spec": "A mechanical boiler converts coal and water into steam pressure to drive train wheels. Implement `simulate(operations)` where inputs are tuples of time elapsed and an action like add coal, add water, open valve, or brake. Burning coal consumes ten units of water and creates twenty units of pressure per hour. Adding coal or water replenishes the respective reserves. Opening the steam valve consumes thirty pressure units and increases train speed by fifteen. If water drops to zero while coal is burning, the boiler overheats and stops functioning permanently. If pressure exceeds one hundred, a mechanical safety release vents fifty pressure units automatically. Keep track of coal levels, water volume, steam pressure, and forward speed. Return the maximum speed reached during the journey and the final distance traveled.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d382",
+  "title": "Rotary Combination Safe",
+  "spec": "A heavy bank safe has a numbered dial with one hundred positions and three internal mechanical tumblers. Write a function `unlock(turns)` that takes a sequence of directions and numbers, such as left twenty or right fifty. Moving right advances the dial clockwise, while moving left goes counterclockwise. A full rotation resets the mechanism entirely. To unlock, the sequence must match three secret numbers in alternating directions without passing the target number. The logic must track the current dial position, which tumbler is currently engaging, and whether a mistake has triggered a mechanical lockout. If a lockout occurs, only a full left rotation clears it. Return a simple text string stating whether the safe ends up open or remains locked.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d383",
+  "title": "Centrifugal Honey Extractor",
+  "spec": "A beekeeping machine spins wooden frames to pull out honey using centrifugal force. Write the function `extract(cycles)` to process spinning speed increases, holding times, and frame adjustments. Increasing speed quickly extracts more honey but adds motor heat and reduces the physical frame balance. If the balance drops below a safe threshold, the machine begins to vibrate violently, requiring an immediate shutdown. Holding a steady speed cools the motor slightly and slowly pulls out remaining honey. Pausing allows the operator to manually restore frame balance. The logic must continuously evaluate rotation speed, motor heat, frame balance, and extracted volume. Return the total volume of honey successfully collected and the peak motor temperature reached during the operation.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d384",
+  "title": "Subterranean Seismograph",
+  "spec": "A deep earth monitoring device records ground vibrations to detect earthquakes while filtering out background noise. Create `record(vibrations)` where the input is a sequence of numerical amplitude readings. The system maintains a rolling average of the last five readings to determine the baseline noise level. If a new reading exceeds the baseline by fifty units, the device enters active recording mode and logs the next ten readings. Prolonged periods of very low vibrations slowly cause the sensor calibration to drift, requiring an automatic reset if the baseline drops below five. The logic must closely track the baseline, the drift factor, the current recording mode, and the collected data points. Return a list of all vibration spikes logged during active recording periods.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d385",
+  "title": "Churro Dough Extruder",
+  "spec": "A commercial kitchen machine pumps sweet dough through a star shaped nozzle into a hot oil fryer. Write the function `process(commands)` to handle text instructions like add dough, heat oil, pressurize, and extrude. Extruding requires the oil to be at least one hundred eighty degrees and the nozzle pressure to be above twenty. Each successful extrusion consumes fifteen units of dough and drops the pressure by five. Pressurizing increases nozzle pressure, but if it goes over fifty, the nozzle jams and requires a cleaning command to fix. Heating the oil increases its temperature, but the vat loses two degrees for every extrusion due to the cold dough. The system must track dough volume, pressure, oil temperature, and jam status. Return the total count of perfectly fried churros.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d386",
+  "title": "Marionette String Controller",
+  "spec": "A wooden puppet has a complex rig of strings attached to its limbs. Create the function `animate(movements)` to process directions to pull or release specific strings by a certain length. Pulling an arm string raises the arm and increases overall rig tension. Releasing lowers the arm. If the difference in height between the left and right arms exceeds forty units, the strings cross, increasing the tangle risk. If the tangle risk reaches ten, the puppet is tangled and no further movements register until a detangle command is issued. Walking alternates the leg strings, which naturally consumes built up tension. The logic must track limb coordinates, string tension, and tangle status. Return the final vertical position of both arms and the total number of times the strings became tangled.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d387",
+  "title": "Lever Espresso Machine",
+  "spec": "Operating a manual lever espresso machine requires careful management of heat, pressure, and flow. Write `brew(actions)` to evaluate a sequence of actions like fill water, heat, pull lever, hold lever, and release. Heating increases boiler pressure and grouphead temperature. Pulling the lever introduces water to the coffee puck, increasing its saturation level. Holding the lever pre infuses the coffee, requiring at least three consecutive steps of holding for proper extraction. Releasing the lever pushes water through the puck using the accumulated pressure, yielding a shot of espresso. If pressure is too high, the shot is marked bitter. If saturation is too low, the shot is sour. Track internal pressure, temperature, saturation, and water volume. Return a list of text descriptions for the quality of each brewed shot.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d388",
+  "title": "Glacier Ice Core Driller",
+  "spec": "A motorized drill extracts scientific ice samples from deep within a polar glacier. Implement `drill(operations)` where operations consist of drilling a specified number of meters, replacing the bit, or resting. Drilling through dense ice generates friction, raising the motor temperature and wearing out the drill bit. As depth increases, the ice naturally becomes denser. If the bit wear reaches one hundred percent, it breaks, ruining the current sample section. If the motor temperature exceeds ninety degrees, the drill halts automatically to cool down. Resting reduces the temperature without making progress. Keep track of current depth, bit wear percentage, motor heat, and sample integrity. Return the final depth reached and the total meters of intact ice core successfully collected.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d389",
+  "title": "Alpine Gondola System",
+  "spec": "A cable car system pulls passenger cabins up a steep mountain peak. Provide the function `operate(intervals)` to handle weather changes and speed adjustments over time. High wind gusts increase the cabin sway angle. If sway exceeds twenty degrees, the massive drive wheel must be slowed down to half speed. Speeding up the wheel increases cable tension. If tension exceeds maximum safety limits, an emergency brake engages, stopping the system entirely. Regular operation requires monitoring the spacing between cabins, which shifts slightly when the speed changes abruptly. The logic must maintain the continuous state of cable tension, wheel speed, cabin sway, and safe spacing. Return the total distance traveled by the cabins and whether the emergency brake was triggered during the day.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d390",
+  "title": "Clockwork Amusement Carousel",
+  "spec": "A spring driven antique carousel features jumping horses and an integrated mechanical organ. Write `run(commands)` to process winding the crank, boarding riders, and starting the ride. Winding the crank increases the main spring tension. Boarding riders on only one side increases the structural imbalance, which causes drag and heavily reduces rotation speed. Starting the ride converts spring tension into rotation until the spring completely unwinds. The music box can be turned on, which drains the spring ten percent faster. If the rotation speed falls below a minimum threshold, the ride stops early regardless of remaining tension. The system must track tension, speed, drag imbalance, and the music state. Return the total duration the carousel spun before stopping.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d391",
+  "title": "Atmospheric Diving Suit",
+  "spec": "A heavily armored suit allows a pilot to safely explore the crushing depths of the ocean floor. Write the entry point `dive(events)` to handle descending, walking, deploying a tool, and ascending. Descending increases external water pressure, which degrades the outer hull integrity slightly over time. Walking heavily consumes oxygen scrubber life due to the pilot exerting effort. Deploying a heavy tool drops ballast weight, causing the suit to become naturally buoyant and automatically ascend a few meters. If hull integrity drops below twenty percent, an automated emergency ascent is triggered. If the scrubber dies, the pilot blacks out. The logic evaluates external pressure, integrity, air quality, and buoyancy. Return a text string describing the pilot condition and the maximum depth achieved.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d392",
+  "title": "Ski Jump Flight Tracker",
+  "spec": "A physics simulation calculates a ski jumper flight path from the moment they leave the takeoff ramp. Create `simulate(frames)` where inputs are a sequence of body movements, such as lean forward, pull up, or tuck. Leaning forward reduces wind drag but drops the pitch angle. Pulling up catches the air, increasing drag but slowing the vertical descent. Tucking maximizes forward speed but offers zero lift. The jumper starts at a high altitude and high forward speed. Gravity continuously reduces altitude, while drag reduces forward speed. A proper pitch angle slows the altitude drop by creating aerodynamic lift. The logic must track speed, altitude, drag coefficient, and pitch angle. Return the total horizontal distance traveled before the altitude hits zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d393",
+  "title": "Bonsai Cultivation Tracker",
+  "spec": "Cultivating a miniature tree requires balancing slow growth and careful pruning over several seasons. Write `grow(seasons)` to process weather conditions and caretaker actions like prune, repot, water, or fertilize. Sunny weather increases branch length and leaf density but adds water stress to the plant. Watering clears water stress completely. If leaf density gets too high, the inner branches die back. Pruning reduces branch length and density, shaping the tree nicely. Over time, the roots grow until the tree becomes root bound, completely halting all new growth until a repot action clears the root bound level. Track branches, leaves, root growth, and stress factors. Return the final aesthetic score of the tree based on its branch to leaf ratio.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d394",
+  "title": "Pinwheel Mechanical Calculator",
+  "spec": "A brass desktop machine performs arithmetic through physical gears and hand cranks. Provide the function `calculate(cranks)` to process actions like set number, crank forward, crank backward, and clear. Setting a number places it in the mechanical input register. Cranking forward adds the input register to the main accumulator gear. Cranking backward subtracts it. If the accumulator goes above nine thousand nine hundred ninety nine, it overflows, triggering a mechanical carry flag that physically locks the crank until a clear action is performed. The rotation counter tracks how many times the crank was turned, which is useful for long division. The logic tracks the register, accumulator, counter, and mechanical lock state. Return the final number shown on the accumulator and the total crank rotations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

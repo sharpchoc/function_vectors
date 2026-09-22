@@ -8860,6 +8860,529 @@
 "regen": "regen8"
 },
 {
+"doc_id": "js_strict_eq__d038",
+"family": "js_strict_eq",
+"topic": "Plant Growth Simulator",
+"angle": "code",
+"text_es": "Implement a `grow(conditions)` function. The input is a list of string weather and environmental conditions. The plant starts with a state of exactly the word seed and a health score of exactly five. Iterate the conditions. If the state is exactly the word seed and the condition is exactly the word rain, change the state to the word sprout. If the state is exactly the word sprout and the condition is exactly the word sun, change the state to the word leaf. If the state is exactly the word leaf and the condition is exactly the word frost, decrease health by two. If the state is exactly the word dead and the condition is exactly the word rain, do nothing. If the health is exactly zero and the condition is exactly the word drought, change the state to the word dead. If the condition is exactly the word fertilizer and the state is exactly the word leaf, increase health by three. If the condition is exactly the word bugs and the state is exactly the word sprout, decrease health by one. Return a list of the final state and health score.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "'use strict';\n\nconst KNOWN_CONDITIONS = ['rain', 'sun', 'frost', 'drought', 'fertilizer', 'bugs'];\n\nfunction normalizeCondition(condition) {\n  if (typeof condition !== 'string') {\n    throw new TypeError('each condition must be a string');\n  }\n  const cleaned = condition.trim().toLowerCase();\n  if (cleaned === '') {\n    throw new RangeError('conditions must not be blank');\n  }\n  return cleaned;\n}\n\nfunction isKnownCondition(condition) {\n  return KNOWN_CONDITIONS.indexOf(condition) !== -1;\n}\n\nfunction grow(conditions) {\n  if (!Array.isArray(conditions)) {\n    throw new TypeError('conditions must be an array');\n  }\n  let state = 'seed';\n  let health = 5;\n  for (const raw of conditions) {\n    const condition = normalizeCondition(raw);\n    if (state === 'dead') {\n      if (condition === 'rain') {\n        continue;\n      }\n    }\n    if (state === 'seed') {\n      if (condition === 'rain') {\n        state = 'sprout';\n      }\n    } else if (state === 'sprout') {\n      if (condition === 'sun') {\n        state = 'leaf';\n      }\n    } else if (state === 'leaf') {\n      if (condition === 'frost') {\n        health -= 2;\n      }\n    }\n    if (health === 0) {\n      if (condition === 'drought') {\n        state = 'dead';\n      }\n    }\n    if (condition === 'fertilizer') {\n      if (state === 'leaf') {\n        health += 3;\n      }\n    } else if (condition === 'bugs') {\n      if (state === 'sprout') {\n        health -= 1;\n      }\n    }\n  }\n  return [state, health];\n}\n\nfunction describe(conditions) {\n  const unknown = conditions\n    .map(normalizeCondition)\n    .filter((condition) => !isKnownCondition(condition));\n  const [state, health] = grow(conditions);\n  const note = unknown.length === 0 ? 'all conditions recognized' : `unrecognized: ${unknown.join(', ')}`;\n  const vitality = state === 'dead' ? 'no vitality' : `health ${health}`;\n  return `${conditions.length} step(s) -> ${state} (${vitality}); ${note}`;\n}\n\nfunction main() {\n  const trials = [\n    ['rain', 'sun', 'fertilizer'],\n    ['rain', 'bugs', 'bugs', 'sun', 'frost', 'frost', 'frost', 'drought', 'rain'],\n    ['hail', 'rain', 'sun', 'frost'],\n    []\n  ];\n  for (const trial of trials) {\n    console.log(describe(trial));\n  }\n}\n\nmain();\n\nmodule.exports = { grow, describe, normalizeCondition, isKnownCondition };\n",
+"text_alt": "'use strict';\n\nconst KNOWN_CONDITIONS = ['rain', 'sun', 'frost', 'drought', 'fertilizer', 'bugs'];\n\nfunction normalizeCondition(condition) {\n  if (typeof condition != 'string') {\n    throw new TypeError('each condition must be a string');\n  }\n  const cleaned = condition.trim().toLowerCase();\n  if (cleaned == '') {\n    throw new RangeError('conditions must not be blank');\n  }\n  return cleaned;\n}\n\nfunction isKnownCondition(condition) {\n  return KNOWN_CONDITIONS.indexOf(condition) != -1;\n}\n\nfunction grow(conditions) {\n  if (!Array.isArray(conditions)) {\n    throw new TypeError('conditions must be an array');\n  }\n  let state = 'seed';\n  let health = 5;\n  for (const raw of conditions) {\n    const condition = normalizeCondition(raw);\n    if (state == 'dead') {\n      if (condition == 'rain') {\n        continue;\n      }\n    }\n    if (state == 'seed') {\n      if (condition == 'rain') {\n        state = 'sprout';\n      }\n    } else if (state == 'sprout') {\n      if (condition == 'sun') {\n        state = 'leaf';\n      }\n    } else if (state == 'leaf') {\n      if (condition == 'frost') {\n        health -= 2;\n      }\n    }\n    if (health == 0) {\n      if (condition == 'drought') {\n        state = 'dead';\n      }\n    }\n    if (condition == 'fertilizer') {\n      if (state == 'leaf') {\n        health += 3;\n      }\n    } else if (condition == 'bugs') {\n      if (state == 'sprout') {\n        health -= 1;\n      }\n    }\n  }\n  return [state, health];\n}\n\nfunction describe(conditions) {\n  const unknown = conditions\n    .map(normalizeCondition)\n    .filter((condition) => !isKnownCondition(condition));\n  const [state, health] = grow(conditions);\n  const note = unknown.length == 0 ? 'all conditions recognized' : `unrecognized: ${unknown.join(', ')}`;\n  const vitality = state == 'dead' ? 'no vitality' : `health ${health}`;\n  return `${conditions.length} step(s) -> ${state} (${vitality}); ${note}`;\n}\n\nfunction main() {\n  const trials = [\n    ['rain', 'sun', 'fertilizer'],\n    ['rain', 'bugs', 'bugs', 'sun', 'frost', 'frost', 'frost', 'drought', 'rain'],\n    ['hail', 'rain', 'sun', 'frost'],\n    []\n  ];\n  for (const trial of trials) {\n    console.log(describe(trial));\n  }\n}\n\nmain();\n\nmodule.exports = { grow, describe, normalizeCondition, isKnownCondition };\n",
+"opps": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+166,
+167
+],
+"alt_span": [
+166,
+166
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+308,
+309
+],
+"alt_span": [
+307,
+307
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+486,
+487
+],
+"alt_span": [
+484,
+484
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+757,
+758
+],
+"alt_span": [
+754,
+754
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+789,
+790
+],
+"alt_span": [
+785,
+785
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+851,
+852
+],
+"alt_span": [
+846,
+846
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+883,
+884
+],
+"alt_span": [
+877,
+877
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+954,
+955
+],
+"alt_span": [
+947,
+947
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+988,
+989
+],
+"alt_span": [
+980,
+980
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1056,
+1057
+],
+"alt_span": [
+1047,
+1047
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1088,
+1089
+],
+"alt_span": [
+1078,
+1078
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1155,
+1156
+],
+"alt_span": [
+1144,
+1144
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1182,
+1183
+],
+"alt_span": [
+1170,
+1170
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1257,
+1258
+],
+"alt_span": [
+1244,
+1244
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1291,
+1292
+],
+"alt_span": [
+1277,
+1277
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1361,
+1362
+],
+"alt_span": [
+1346,
+1346
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1389,
+1390
+],
+"alt_span": [
+1373,
+1373
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1697,
+1698
+],
+"alt_span": [
+1680,
+1680
+]
+},
+{
+"k": 18,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1797,
+1798
+],
+"alt_span": [
+1779,
+1779
+]
+}
+],
+"k_en": 19,
+"shared_fraction": 0.98,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+166,
+167
+],
+"alt_span": [
+166,
+166
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+308,
+309
+],
+"alt_span": [
+307,
+307
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+486,
+487
+],
+"alt_span": [
+484,
+484
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+757,
+758
+],
+"alt_span": [
+754,
+754
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+789,
+790
+],
+"alt_span": [
+785,
+785
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+851,
+852
+],
+"alt_span": [
+846,
+846
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+883,
+884
+],
+"alt_span": [
+877,
+877
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+954,
+955
+],
+"alt_span": [
+947,
+947
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+988,
+989
+],
+"alt_span": [
+980,
+980
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1056,
+1057
+],
+"alt_span": [
+1047,
+1047
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1088,
+1089
+],
+"alt_span": [
+1078,
+1078
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1155,
+1156
+],
+"alt_span": [
+1144,
+1144
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1182,
+1183
+],
+"alt_span": [
+1170,
+1170
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1257,
+1258
+],
+"alt_span": [
+1244,
+1244
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1291,
+1292
+],
+"alt_span": [
+1277,
+1277
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1361,
+1362
+],
+"alt_span": [
+1346,
+1346
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1389,
+1390
+],
+"alt_span": [
+1373,
+1373
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1697,
+1698
+],
+"alt_span": [
+1680,
+1680
+]
+},
+{
+"k": 18,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1797,
+1798
+],
+"alt_span": [
+1779,
+1779
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "js_strict_eq__d040",
 "family": "js_strict_eq",
 "topic": "Roman Numeral Validator",
@@ -15746,6 +16269,529 @@
 "regen": "regen8"
 },
 {
+"doc_id": "js_strict_eq__d072",
+"family": "js_strict_eq",
+"topic": "Agile Task Updater",
+"angle": "code",
+"text_es": "Write a function update(tickets) to process a list of task records containing current column, user action, and priority. If the action is start and the column is backlog, the new column is progress. If the action is review and the priority is urgent, the new column is testing. If the action is approve and the column is exactly equal to testing, the new column is done. If the action is reject and the column is testing, the new column is progress. If the action is archive and the column is exactly equal to done, the new column is archived. Return the updated columns. For example, a start action on a backlog task returns progress.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const VALID_COLUMNS = ['backlog', 'progress', 'testing', 'done', 'archived'];\nconst VALID_ACTIONS = ['start', 'review', 'approve', 'reject', 'archive'];\n\nfunction validateTicket(ticket, index) {\n  if (ticket === null) {\n    throw new TypeError('ticket at index ' + index + ' must be an object');\n  }\n  if (typeof ticket !== 'object') {\n    throw new TypeError('ticket at index ' + index + ' must be an object');\n  }\n  if (VALID_COLUMNS.indexOf(ticket.column) === -1) {\n    throw new RangeError('unknown column \"' + ticket.column + '\" at index ' + index);\n  }\n  if (VALID_ACTIONS.indexOf(ticket.action) === -1) {\n    throw new RangeError('unknown action \"' + ticket.action + '\" at index ' + index);\n  }\n  if (ticket.priority !== undefined) {\n    if (typeof ticket.priority !== 'string') {\n      throw new TypeError('priority at index ' + index + ' must be a string');\n    }\n  }\n  return ticket;\n}\n\nfunction nextColumn(ticket) {\n  const column = ticket.column;\n  const action = ticket.action;\n\n  if (action === 'start') {\n    if (column === 'backlog') {\n      return 'progress';\n    }\n  }\n  if (action === 'review') {\n    if (ticket.priority === 'urgent') {\n      return 'testing';\n    }\n  }\n  if (action === 'approve') {\n    if (column === 'testing') {\n      return 'done';\n    }\n  }\n  if (action === 'reject') {\n    if (column === 'testing') {\n      return 'progress';\n    }\n  }\n  if (action === 'archive') {\n    if (column === 'done') {\n      return 'archived';\n    }\n  }\n  return column;\n}\n\nfunction update(tickets) {\n  if (!Array.isArray(tickets)) {\n    throw new TypeError('tickets must be an array');\n  }\n  return tickets.map(function (ticket, index) {\n    return nextColumn(validateTicket(ticket, index));\n  });\n}\n\nfunction describeTransitions(tickets) {\n  const columns = update(tickets);\n  return columns.map(function (column, index) {\n    const from = tickets[index].column;\n    const id = tickets[index].id;\n    const label = id === undefined ? '#' + index : id;\n    if (column === from) {\n      return label + ': stays in ' + from;\n    }\n    return label + ': ' + from + ' -> ' + column;\n  });\n}\n\nfunction countBy(columns, target) {\n  return columns.filter(function (column) {\n    return column === target;\n  }).length;\n}\n\nconst board = [\n  { id: 'T-1', column: 'backlog', action: 'start', priority: 'low' },\n  { id: 'T-2', column: 'progress', action: 'review', priority: 'urgent' },\n  { id: 'T-3', column: 'testing', action: 'approve', priority: 'normal' },\n  { id: 'T-4', column: 'testing', action: 'reject', priority: 'urgent' },\n  { id: 'T-5', column: 'done', action: 'archive', priority: 'low' },\n  { id: 'T-6', column: 'backlog', action: 'archive', priority: 'normal' }\n];\n\nconst updated = update(board);\ndescribeTransitions(board).forEach(function (line) {\n  console.log(line);\n});\nconsole.log('in testing: ' + countBy(updated, 'testing'));\nconsole.log('archived: ' + countBy(updated, 'archived'));\n\nmodule.exports = { update, nextColumn, describeTransitions, countBy };\n",
+"text_alt": "const VALID_COLUMNS = ['backlog', 'progress', 'testing', 'done', 'archived'];\nconst VALID_ACTIONS = ['start', 'review', 'approve', 'reject', 'archive'];\n\nfunction validateTicket(ticket, index) {\n  if (ticket == null) {\n    throw new TypeError('ticket at index ' + index + ' must be an object');\n  }\n  if (typeof ticket != 'object') {\n    throw new TypeError('ticket at index ' + index + ' must be an object');\n  }\n  if (VALID_COLUMNS.indexOf(ticket.column) == -1) {\n    throw new RangeError('unknown column \"' + ticket.column + '\" at index ' + index);\n  }\n  if (VALID_ACTIONS.indexOf(ticket.action) == -1) {\n    throw new RangeError('unknown action \"' + ticket.action + '\" at index ' + index);\n  }\n  if (ticket.priority != undefined) {\n    if (typeof ticket.priority != 'string') {\n      throw new TypeError('priority at index ' + index + ' must be a string');\n    }\n  }\n  return ticket;\n}\n\nfunction nextColumn(ticket) {\n  const column = ticket.column;\n  const action = ticket.action;\n\n  if (action == 'start') {\n    if (column == 'backlog') {\n      return 'progress';\n    }\n  }\n  if (action == 'review') {\n    if (ticket.priority == 'urgent') {\n      return 'testing';\n    }\n  }\n  if (action == 'approve') {\n    if (column == 'testing') {\n      return 'done';\n    }\n  }\n  if (action == 'reject') {\n    if (column == 'testing') {\n      return 'progress';\n    }\n  }\n  if (action == 'archive') {\n    if (column == 'done') {\n      return 'archived';\n    }\n  }\n  return column;\n}\n\nfunction update(tickets) {\n  if (!Array.isArray(tickets)) {\n    throw new TypeError('tickets must be an array');\n  }\n  return tickets.map(function (ticket, index) {\n    return nextColumn(validateTicket(ticket, index));\n  });\n}\n\nfunction describeTransitions(tickets) {\n  const columns = update(tickets);\n  return columns.map(function (column, index) {\n    const from = tickets[index].column;\n    const id = tickets[index].id;\n    const label = id == undefined ? '#' + index : id;\n    if (column == from) {\n      return label + ': stays in ' + from;\n    }\n    return label + ': ' + from + ' -> ' + column;\n  });\n}\n\nfunction countBy(columns, target) {\n  return columns.filter(function (column) {\n    return column == target;\n  }).length;\n}\n\nconst board = [\n  { id: 'T-1', column: 'backlog', action: 'start', priority: 'low' },\n  { id: 'T-2', column: 'progress', action: 'review', priority: 'urgent' },\n  { id: 'T-3', column: 'testing', action: 'approve', priority: 'normal' },\n  { id: 'T-4', column: 'testing', action: 'reject', priority: 'urgent' },\n  { id: 'T-5', column: 'done', action: 'archive', priority: 'low' },\n  { id: 'T-6', column: 'backlog', action: 'archive', priority: 'normal' }\n];\n\nconst updated = update(board);\ndescribeTransitions(board).forEach(function (line) {\n  console.log(line);\n});\nconsole.log('in testing: ' + countBy(updated, 'testing'));\nconsole.log('archived: ' + countBy(updated, 'archived'));\n\nmodule.exports = { update, nextColumn, describeTransitions, countBy };\n",
+"opps": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+210,
+211
+],
+"alt_span": [
+210,
+210
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+321,
+322
+],
+"alt_span": [
+320,
+320
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+459,
+460
+],
+"alt_span": [
+457,
+457
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+604,
+605
+],
+"alt_span": [
+601,
+601
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+726,
+727
+],
+"alt_span": [
+722,
+722
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+773,
+774
+],
+"alt_span": [
+768,
+768
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1007,
+1008
+],
+"alt_span": [
+1001,
+1001
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1035,
+1036
+],
+"alt_span": [
+1028,
+1028
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1102,
+1103
+],
+"alt_span": [
+1094,
+1094
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1140,
+1141
+],
+"alt_span": [
+1131,
+1131
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1205,
+1206
+],
+"alt_span": [
+1195,
+1195
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1235,
+1236
+],
+"alt_span": [
+1224,
+1224
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1298,
+1299
+],
+"alt_span": [
+1286,
+1286
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1327,
+1328
+],
+"alt_span": [
+1314,
+1314
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1394,
+1395
+],
+"alt_span": [
+1380,
+1380
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1424,
+1425
+],
+"alt_span": [
+1409,
+1409
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1941,
+1942
+],
+"alt_span": [
+1925,
+1925
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1988,
+1989
+],
+"alt_span": [
+1971,
+1971
+]
+},
+{
+"k": 18,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2206,
+2207
+],
+"alt_span": [
+2188,
+2188
+]
+}
+],
+"k_en": 19,
+"shared_fraction": 0.985,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+210,
+211
+],
+"alt_span": [
+210,
+210
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+321,
+322
+],
+"alt_span": [
+320,
+320
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+459,
+460
+],
+"alt_span": [
+457,
+457
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+604,
+605
+],
+"alt_span": [
+601,
+601
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+726,
+727
+],
+"alt_span": [
+722,
+722
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+773,
+774
+],
+"alt_span": [
+768,
+768
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1007,
+1008
+],
+"alt_span": [
+1001,
+1001
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1035,
+1036
+],
+"alt_span": [
+1028,
+1028
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1102,
+1103
+],
+"alt_span": [
+1094,
+1094
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1140,
+1141
+],
+"alt_span": [
+1131,
+1131
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1205,
+1206
+],
+"alt_span": [
+1195,
+1195
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1235,
+1236
+],
+"alt_span": [
+1224,
+1224
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1298,
+1299
+],
+"alt_span": [
+1286,
+1286
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1327,
+1328
+],
+"alt_span": [
+1314,
+1314
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1394,
+1395
+],
+"alt_span": [
+1380,
+1380
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1424,
+1425
+],
+"alt_span": [
+1409,
+1409
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1941,
+1942
+],
+"alt_span": [
+1925,
+1925
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1988,
+1989
+],
+"alt_span": [
+1971,
+1971
+]
+},
+{
+"k": 18,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2206,
+2207
+],
+"alt_span": [
+2188,
+2188
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "js_strict_eq__d074",
 "family": "js_strict_eq",
 "topic": "Magical Weapon Forge",
@@ -19095,6 +20141,451 @@
 "regen": "regen8"
 },
 {
+"doc_id": "js_strict_eq__d087",
+"family": "js_strict_eq",
+"topic": "Bakery Oven Timer",
+"angle": "code",
+"text_es": "Implement `bake(batches)` to estimate daily production hours. The parameter is a list of three-element arrays containing a pastry string, a filling string, and a frozen boolean. Total bake time is zero. For each batch: if the pastry is croissant and the filling is none and frozen is false, add fifteen. If the pastry is croissant and the filling is chocolate and frozen is true, add twenty-five. If the pastry is muffin and the filling is berry, add twenty. If the pastry is muffin and the filling is none and frozen is false, add eighteen. If the pastry is tart and the filling is fruit, add thirty. If the pastry is tart and the filling is cream and frozen is true, add forty. If the pastry is bread and frozen is false, add forty-five. If the pastry is bread and frozen is true, add sixty. Return total bake time. Example input: [[\"croissant\", \"chocolate\", true], [\"muffin\", \"berry\", false], [\"bread\", \"none\", true]]. Example output: 105.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function validateBatch(batch, index) {\n  if (!Array.isArray(batch)) {\n    throw new TypeError(`batch ${index} must be an array`);\n  }\n  if (batch.length !== 3) {\n    throw new RangeError(`batch ${index} must have exactly three elements`);\n  }\n  const [pastry, filling, frozen] = batch;\n  if (typeof pastry !== \"string\") {\n    throw new TypeError(`batch ${index}: pastry must be a string`);\n  }\n  if (typeof filling !== \"string\") {\n    throw new TypeError(`batch ${index}: filling must be a string`);\n  }\n  if (typeof frozen !== \"boolean\") {\n    throw new TypeError(`batch ${index}: frozen must be a boolean`);\n  }\n  return [pastry.trim().toLowerCase(), filling.trim().toLowerCase(), frozen];\n}\n\nfunction batchMinutes(pastry, filling, frozen) {\n  if (pastry === \"croissant\") {\n    if (!frozen && filling === \"none\") return 15;\n    if (frozen && filling === \"chocolate\") return 25;\n    return 0;\n  }\n  if (pastry === \"muffin\") {\n    if (filling === \"berry\") return 20;\n    if (!frozen && filling === \"none\") return 18;\n    return 0;\n  }\n  if (pastry === \"tart\") {\n    if (filling === \"fruit\") return 30;\n    if (frozen && filling === \"cream\") return 40;\n    return 0;\n  }\n  if (pastry === \"bread\") {\n    return frozen ? 60 : 45;\n  }\n  return 0;\n}\n\nfunction bake(batches) {\n  if (!Array.isArray(batches)) {\n    throw new TypeError(\"batches must be an array\");\n  }\n  let total = 0;\n  batches.forEach((batch, index) => {\n    const [pastry, filling, frozen] = validateBatch(batch, index);\n    total += batchMinutes(pastry, filling, frozen);\n  });\n  return total;\n}\n\nfunction summarize(batches) {\n  const perPastry = new Map();\n  batches.forEach((batch, index) => {\n    const [pastry, filling, frozen] = validateBatch(batch, index);\n    const entry = perPastry.get(pastry) || { count: 0, minutes: 0 };\n    entry.count += 1;\n    entry.minutes += batchMinutes(pastry, filling, frozen);\n    perPastry.set(pastry, entry);\n  });\n  const lines = [];\n  for (const [pastry, entry] of perPastry) {\n    const label = entry.count === 1 ? \"batch\" : \"batches\";\n    const note = entry.minutes === 0 ? \" (no recipe match)\" : \"\";\n    lines.push(`${pastry}: ${entry.count} ${label}, ${entry.minutes} min${note}`);\n  }\n  const minutes = bake(batches);\n  lines.push(`total: ${minutes} min (${(minutes / 60).toFixed(2)} h)`);\n  return lines;\n}\n\nconst schedule = [\n  [\"croissant\", \"chocolate\", true],\n  [\"muffin\", \"berry\", false],\n  [\"bread\", \"none\", true],\n];\n\nsummarize(schedule).forEach((line) => console.log(line));\n",
+"text_alt": "function validateBatch(batch, index) {\n  if (!Array.isArray(batch)) {\n    throw new TypeError(`batch ${index} must be an array`);\n  }\n  if (batch.length != 3) {\n    throw new RangeError(`batch ${index} must have exactly three elements`);\n  }\n  const [pastry, filling, frozen] = batch;\n  if (typeof pastry != \"string\") {\n    throw new TypeError(`batch ${index}: pastry must be a string`);\n  }\n  if (typeof filling != \"string\") {\n    throw new TypeError(`batch ${index}: filling must be a string`);\n  }\n  if (typeof frozen != \"boolean\") {\n    throw new TypeError(`batch ${index}: frozen must be a boolean`);\n  }\n  return [pastry.trim().toLowerCase(), filling.trim().toLowerCase(), frozen];\n}\n\nfunction batchMinutes(pastry, filling, frozen) {\n  if (pastry == \"croissant\") {\n    if (!frozen && filling == \"none\") return 15;\n    if (frozen && filling == \"chocolate\") return 25;\n    return 0;\n  }\n  if (pastry == \"muffin\") {\n    if (filling == \"berry\") return 20;\n    if (!frozen && filling == \"none\") return 18;\n    return 0;\n  }\n  if (pastry == \"tart\") {\n    if (filling == \"fruit\") return 30;\n    if (frozen && filling == \"cream\") return 40;\n    return 0;\n  }\n  if (pastry == \"bread\") {\n    return frozen ? 60 : 45;\n  }\n  return 0;\n}\n\nfunction bake(batches) {\n  if (!Array.isArray(batches)) {\n    throw new TypeError(\"batches must be an array\");\n  }\n  let total = 0;\n  batches.forEach((batch, index) => {\n    const [pastry, filling, frozen] = validateBatch(batch, index);\n    total += batchMinutes(pastry, filling, frozen);\n  });\n  return total;\n}\n\nfunction summarize(batches) {\n  const perPastry = new Map();\n  batches.forEach((batch, index) => {\n    const [pastry, filling, frozen] = validateBatch(batch, index);\n    const entry = perPastry.get(pastry) || { count: 0, minutes: 0 };\n    entry.count += 1;\n    entry.minutes += batchMinutes(pastry, filling, frozen);\n    perPastry.set(pastry, entry);\n  });\n  const lines = [];\n  for (const [pastry, entry] of perPastry) {\n    const label = entry.count == 1 ? \"batch\" : \"batches\";\n    const note = entry.minutes == 0 ? \" (no recipe match)\" : \"\";\n    lines.push(`${pastry}: ${entry.count} ${label}, ${entry.minutes} min${note}`);\n  }\n  const minutes = bake(batches);\n  lines.push(`total: ${minutes} min (${(minutes / 60).toFixed(2)} h)`);\n  return lines;\n}\n\nconst schedule = [\n  [\"croissant\", \"chocolate\", true],\n  [\"muffin\", \"berry\", false],\n  [\"bread\", \"none\", true],\n];\n\nsummarize(schedule).forEach((line) => console.log(line));\n",
+"opps": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+155,
+156
+],
+"alt_span": [
+155,
+155
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+308,
+309
+],
+"alt_span": [
+307,
+307
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+417,
+418
+],
+"alt_span": [
+415,
+415
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+525,
+526
+],
+"alt_span": [
+522,
+522
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+759,
+760
+],
+"alt_span": [
+755,
+755
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+803,
+804
+],
+"alt_span": [
+798,
+798
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+852,
+853
+],
+"alt_span": [
+846,
+846
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+913,
+914
+],
+"alt_span": [
+906,
+906
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+943,
+944
+],
+"alt_span": [
+935,
+935
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+994,
+995
+],
+"alt_span": [
+985,
+985
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1050,
+1051
+],
+"alt_span": [
+1040,
+1040
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1078,
+1079
+],
+"alt_span": [
+1067,
+1067
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1130,
+1131
+],
+"alt_span": [
+1118,
+1118
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1183,
+1184
+],
+"alt_span": [
+1170,
+1170
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2014,
+2015
+],
+"alt_span": [
+2000,
+2000
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2072,
+2073
+],
+"alt_span": [
+2057,
+2057
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.985,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+155,
+156
+],
+"alt_span": [
+155,
+155
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+308,
+309
+],
+"alt_span": [
+307,
+307
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+417,
+418
+],
+"alt_span": [
+415,
+415
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+525,
+526
+],
+"alt_span": [
+522,
+522
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+759,
+760
+],
+"alt_span": [
+755,
+755
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+803,
+804
+],
+"alt_span": [
+798,
+798
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+852,
+853
+],
+"alt_span": [
+846,
+846
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+913,
+914
+],
+"alt_span": [
+906,
+906
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+943,
+944
+],
+"alt_span": [
+935,
+935
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+994,
+995
+],
+"alt_span": [
+985,
+985
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1050,
+1051
+],
+"alt_span": [
+1040,
+1040
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1078,
+1079
+],
+"alt_span": [
+1067,
+1067
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1130,
+1131
+],
+"alt_span": [
+1118,
+1118
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1183,
+1184
+],
+"alt_span": [
+1170,
+1170
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2014,
+2015
+],
+"alt_span": [
+2000,
+2000
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2072,
+2073
+],
+"alt_span": [
+2057,
+2057
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "js_strict_eq__d088",
 "family": "js_strict_eq",
 "topic": "Sandwich Shop Assembler",
@@ -19606,6 +21097,529 @@
 "alt_span": [
 2116,
 2116
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "js_strict_eq__d089",
+"family": "js_strict_eq",
+"topic": "Cocktail Mixer Proportions",
+"angle": "code",
+"text_es": "Write `mix(drinks)` to track liquid stock usage. The parameter is a list of three-element arrays containing a spirit string, a mixer string, and an ice boolean. Total volume is zero. For each drink: if the spirit is vodka and the mixer is juice and ice is true, add ten. If the spirit is vodka and the mixer is soda, add eight. If the spirit is gin and the mixer is tonic and ice is true, add nine. If the spirit is gin and the mixer is juice, add eleven. If the spirit is rum and the mixer is cola and ice is false, add seven. If the spirit is rum and the mixer is soda and ice is true, add eight. If the spirit is none and the mixer is juice, add twelve. If the spirit is none and the mixer is soda and ice is true, add ten. Return total volume. Example input: [[\"vodka\", \"juice\", true], [\"gin\", \"tonic\", true], [\"none\", \"juice\", false]]. Example output: 31.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function validateDrink(drink, index) {\n  if (Array.isArray(drink) !== true) {\n    throw new TypeError(\"drink \" + index + \" must be an array\");\n  }\n  if (drink.length !== 3) {\n    throw new TypeError(\"drink \" + index + \" must have exactly three elements\");\n  }\n  const [spirit, mixer, ice] = drink;\n  if (typeof spirit !== \"string\") {\n    throw new TypeError(\"drink \" + index + \" has a non-string spirit\");\n  }\n  if (typeof mixer !== \"string\") {\n    throw new TypeError(\"drink \" + index + \" has a non-string mixer\");\n  }\n  if (typeof ice !== \"boolean\") {\n    throw new TypeError(\"drink \" + index + \" has a non-boolean ice flag\");\n  }\n  return { spirit: spirit, mixer: mixer, ice: ice };\n}\n\nfunction volumeOf(spirit, mixer, ice) {\n  if (spirit === \"vodka\") {\n    if (mixer === \"juice\" && ice) {\n      return 10;\n    }\n    if (mixer === \"soda\") {\n      return 8;\n    }\n    return 0;\n  }\n  if (spirit === \"gin\") {\n    if (mixer === \"tonic\" && ice) {\n      return 9;\n    }\n    if (mixer === \"juice\") {\n      return 11;\n    }\n    return 0;\n  }\n  if (spirit === \"rum\") {\n    if (mixer === \"cola\" && !ice) {\n      return 7;\n    }\n    if (mixer === \"soda\" && ice) {\n      return 8;\n    }\n    return 0;\n  }\n  if (spirit === \"none\") {\n    if (mixer === \"juice\") {\n      return 12;\n    }\n    if (mixer === \"soda\" && ice) {\n      return 10;\n    }\n  }\n  return 0;\n}\n\nfunction mix(drinks) {\n  if (Array.isArray(drinks) !== true) {\n    throw new TypeError(\"drinks must be an array\");\n  }\n  let total = 0;\n  for (let i = 0; i < drinks.length; i += 1) {\n    const order = validateDrink(drinks[i], i);\n    total += volumeOf(order.spirit, order.mixer, order.ice);\n  }\n  return total;\n}\n\nfunction report(drinks) {\n  const lines = drinks.map(function (drink, i) {\n    const order = validateDrink(drink, i);\n    const used = volumeOf(order.spirit, order.mixer, order.ice);\n    const note = used === 0 ? \"unknown combination\" : used + \" units\";\n    const service = order.ice ? \" on ice\" : \" neat\";\n    return order.spirit + \" + \" + order.mixer + service + \": \" + note;\n  });\n  lines.push(\"total: \" + mix(drinks) + \" units\");\n  return lines.join(\"\\n\");\n}\n\nconst orders = [[\"vodka\", \"juice\", true], [\"gin\", \"tonic\", true], [\"none\", \"juice\", false]];\nconsole.log(report(orders));\n",
+"text_alt": "function validateDrink(drink, index) {\n  if (Array.isArray(drink) != true) {\n    throw new TypeError(\"drink \" + index + \" must be an array\");\n  }\n  if (drink.length != 3) {\n    throw new TypeError(\"drink \" + index + \" must have exactly three elements\");\n  }\n  const [spirit, mixer, ice] = drink;\n  if (typeof spirit != \"string\") {\n    throw new TypeError(\"drink \" + index + \" has a non-string spirit\");\n  }\n  if (typeof mixer != \"string\") {\n    throw new TypeError(\"drink \" + index + \" has a non-string mixer\");\n  }\n  if (typeof ice != \"boolean\") {\n    throw new TypeError(\"drink \" + index + \" has a non-boolean ice flag\");\n  }\n  return { spirit: spirit, mixer: mixer, ice: ice };\n}\n\nfunction volumeOf(spirit, mixer, ice) {\n  if (spirit == \"vodka\") {\n    if (mixer == \"juice\" && ice) {\n      return 10;\n    }\n    if (mixer == \"soda\") {\n      return 8;\n    }\n    return 0;\n  }\n  if (spirit == \"gin\") {\n    if (mixer == \"tonic\" && ice) {\n      return 9;\n    }\n    if (mixer == \"juice\") {\n      return 11;\n    }\n    return 0;\n  }\n  if (spirit == \"rum\") {\n    if (mixer == \"cola\" && !ice) {\n      return 7;\n    }\n    if (mixer == \"soda\" && ice) {\n      return 8;\n    }\n    return 0;\n  }\n  if (spirit == \"none\") {\n    if (mixer == \"juice\") {\n      return 12;\n    }\n    if (mixer == \"soda\" && ice) {\n      return 10;\n    }\n  }\n  return 0;\n}\n\nfunction mix(drinks) {\n  if (Array.isArray(drinks) != true) {\n    throw new TypeError(\"drinks must be an array\");\n  }\n  let total = 0;\n  for (let i = 0; i < drinks.length; i += 1) {\n    const order = validateDrink(drinks[i], i);\n    total += volumeOf(order.spirit, order.mixer, order.ice);\n  }\n  return total;\n}\n\nfunction report(drinks) {\n  const lines = drinks.map(function (drink, i) {\n    const order = validateDrink(drink, i);\n    const used = volumeOf(order.spirit, order.mixer, order.ice);\n    const note = used == 0 ? \"unknown combination\" : used + \" units\";\n    const service = order.ice ? \" on ice\" : \" neat\";\n    return order.spirit + \" + \" + order.mixer + service + \": \" + note;\n  });\n  lines.push(\"total: \" + mix(drinks) + \" units\");\n  return lines.join(\"\\n\");\n}\n\nconst orders = [[\"vodka\", \"juice\", true], [\"gin\", \"tonic\", true], [\"none\", \"juice\", false]];\nconsole.log(report(orders));\n",
+"opps": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+67,
+68
+],
+"alt_span": [
+67,
+67
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+167,
+168
+],
+"alt_span": [
+166,
+166
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+320,
+321
+],
+"alt_span": [
+318,
+318
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+431,
+432
+],
+"alt_span": [
+428,
+428
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+538,
+539
+],
+"alt_span": [
+534,
+534
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+744,
+745
+],
+"alt_span": [
+739,
+739
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+771,
+772
+],
+"alt_span": [
+765,
+765
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+830,
+831
+],
+"alt_span": [
+823,
+823
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+899,
+900
+],
+"alt_span": [
+891,
+891
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+924,
+925
+],
+"alt_span": [
+915,
+915
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+982,
+983
+],
+"alt_span": [
+972,
+972
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1053,
+1054
+],
+"alt_span": [
+1042,
+1042
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1078,
+1079
+],
+"alt_span": [
+1066,
+1066
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1136,
+1137
+],
+"alt_span": [
+1123,
+1123
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1212,
+1213
+],
+"alt_span": [
+1198,
+1198
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1238,
+1239
+],
+"alt_span": [
+1223,
+1223
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1290,
+1291
+],
+"alt_span": [
+1274,
+1274
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1405,
+1406
+],
+"alt_span": [
+1388,
+1388
+]
+},
+{
+"k": 18,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1874,
+1875
+],
+"alt_span": [
+1856,
+1856
+]
+}
+],
+"k_en": 19,
+"shared_fraction": 0.982,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+67,
+68
+],
+"alt_span": [
+67,
+67
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+167,
+168
+],
+"alt_span": [
+166,
+166
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+320,
+321
+],
+"alt_span": [
+318,
+318
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+431,
+432
+],
+"alt_span": [
+428,
+428
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+538,
+539
+],
+"alt_span": [
+534,
+534
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+744,
+745
+],
+"alt_span": [
+739,
+739
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+771,
+772
+],
+"alt_span": [
+765,
+765
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+830,
+831
+],
+"alt_span": [
+823,
+823
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+899,
+900
+],
+"alt_span": [
+891,
+891
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+924,
+925
+],
+"alt_span": [
+915,
+915
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+982,
+983
+],
+"alt_span": [
+972,
+972
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1053,
+1054
+],
+"alt_span": [
+1042,
+1042
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1078,
+1079
+],
+"alt_span": [
+1066,
+1066
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1136,
+1137
+],
+"alt_span": [
+1123,
+1123
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1212,
+1213
+],
+"alt_span": [
+1198,
+1198
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1238,
+1239
+],
+"alt_span": [
+1223,
+1223
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1290,
+1291
+],
+"alt_span": [
+1274,
+1274
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1405,
+1406
+],
+"alt_span": [
+1388,
+1388
+]
+},
+{
+"k": 18,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1874,
+1875
+],
+"alt_span": [
+1856,
+1856
 ]
 }
 ],
@@ -45483,6 +47497,503 @@
 "regen": "regen8"
 },
 {
+"doc_id": "js_strict_eq__d214",
+"family": "js_strict_eq",
+"topic": "Municipal Tax Assessor",
+"angle": "code",
+"text_es": "Determine the tax bracket for city land parcels via `assess(parcels)`. Each parcel has a primary use, a developmental stage, and an ownership type. Assign the exempt bracket if the ownership type is municipal or the primary use is religious. Assign the commercial bracket if the primary use is retail and the developmental stage is completed. If the developmental stage is vacant, assign the speculative bracket unless the primary use is agricultural, which gets the rural bracket. Assign the residential bracket if the primary use is housing and the ownership type is private. If the primary use is industrial and the developmental stage is completed, assign the heavy commercial bracket. If the primary use is educational, assign the exempt bracket. Return a list of tax brackets. For example, a completed retail parcel owned privately gets the commercial bracket.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function normalize(value) {\n  return typeof value === 'string' ? value.trim().toLowerCase() : '';\n}\n\nfunction validateParcel(parcel, index) {\n  if (!parcel || typeof parcel !== 'object') {\n    throw new TypeError('parcel at index ' + index + ' must be an object');\n  }\n  const use = normalize(parcel.primaryUse);\n  const stage = normalize(parcel.developmentalStage);\n  const ownership = normalize(parcel.ownershipType);\n  if (use === '') {\n    throw new TypeError('parcel at index ' + index + ' is missing a primary use');\n  }\n  if (stage === '') {\n    throw new TypeError('parcel at index ' + index + ' is missing a developmental stage');\n  }\n  if (ownership === '') {\n    throw new TypeError('parcel at index ' + index + ' is missing an ownership type');\n  }\n  return { use: use, stage: stage, ownership: ownership };\n}\n\nfunction classify(parcel, index) {\n  const p = validateParcel(parcel, index);\n  const completed = p.stage === 'completed';\n  if (p.ownership === 'municipal') {\n    return 'exempt';\n  }\n  if (p.use === 'religious') {\n    return 'exempt';\n  }\n  if (completed && p.use === 'retail') {\n    return 'commercial';\n  }\n  if (p.stage === 'vacant') {\n    return p.use === 'agricultural' ? 'rural' : 'speculative';\n  }\n  if (p.use === 'housing') {\n    if (p.ownership === 'private') {\n      return 'residential';\n    }\n  }\n  if (completed && p.use === 'industrial') {\n    return 'heavy commercial';\n  }\n  if (p.use === 'educational') {\n    return 'exempt';\n  }\n  return 'unclassified';\n}\n\nfunction assess(parcels) {\n  if (!Array.isArray(parcels)) {\n    throw new TypeError('parcels must be an array');\n  }\n  return parcels.map(classify);\n}\n\nfunction summarize(brackets) {\n  const counts = new Map();\n  for (const bracket of brackets) {\n    const seen = counts.get(bracket);\n    counts.set(bracket, seen === undefined ? 1 : seen + 1);\n  }\n  const lines = [];\n  for (const [bracket, count] of counts) {\n    lines.push(bracket + ': ' + count + (count === 1 ? ' parcel' : ' parcels'));\n  }\n  return lines.join('\\n');\n}\n\nconst cityParcels = [\n  { primaryUse: 'Retail', developmentalStage: 'completed', ownershipType: 'private' },\n  { primaryUse: 'housing', developmentalStage: 'vacant', ownershipType: 'private' },\n  { primaryUse: 'agricultural', developmentalStage: 'vacant', ownershipType: 'cooperative' },\n  { primaryUse: 'religious', developmentalStage: 'under construction', ownershipType: 'trust' },\n  { primaryUse: 'industrial', developmentalStage: 'completed', ownershipType: 'corporate' },\n  { primaryUse: 'educational', developmentalStage: 'completed', ownershipType: 'private' },\n  { primaryUse: 'housing', developmentalStage: 'completed', ownershipType: 'private' },\n  { primaryUse: 'parking', developmentalStage: 'completed', ownershipType: 'corporate' }\n];\n\nconst brackets = assess(cityParcels);\nbrackets.forEach(function (bracket, i) {\n  const label = bracket === 'unclassified' ? 'needs review' : bracket;\n  console.log('Parcel ' + (i + 1) + ' (' + cityParcels[i].primaryUse + ') -> ' + label);\n});\nconsole.log('---');\nconsole.log(summarize(brackets));\n",
+"text_alt": "function normalize(value) {\n  return typeof value == 'string' ? value.trim().toLowerCase() : '';\n}\n\nfunction validateParcel(parcel, index) {\n  if (!parcel || typeof parcel != 'object') {\n    throw new TypeError('parcel at index ' + index + ' must be an object');\n  }\n  const use = normalize(parcel.primaryUse);\n  const stage = normalize(parcel.developmentalStage);\n  const ownership = normalize(parcel.ownershipType);\n  if (use == '') {\n    throw new TypeError('parcel at index ' + index + ' is missing a primary use');\n  }\n  if (stage == '') {\n    throw new TypeError('parcel at index ' + index + ' is missing a developmental stage');\n  }\n  if (ownership == '') {\n    throw new TypeError('parcel at index ' + index + ' is missing an ownership type');\n  }\n  return { use: use, stage: stage, ownership: ownership };\n}\n\nfunction classify(parcel, index) {\n  const p = validateParcel(parcel, index);\n  const completed = p.stage == 'completed';\n  if (p.ownership == 'municipal') {\n    return 'exempt';\n  }\n  if (p.use == 'religious') {\n    return 'exempt';\n  }\n  if (completed && p.use == 'retail') {\n    return 'commercial';\n  }\n  if (p.stage == 'vacant') {\n    return p.use == 'agricultural' ? 'rural' : 'speculative';\n  }\n  if (p.use == 'housing') {\n    if (p.ownership == 'private') {\n      return 'residential';\n    }\n  }\n  if (completed && p.use == 'industrial') {\n    return 'heavy commercial';\n  }\n  if (p.use == 'educational') {\n    return 'exempt';\n  }\n  return 'unclassified';\n}\n\nfunction assess(parcels) {\n  if (!Array.isArray(parcels)) {\n    throw new TypeError('parcels must be an array');\n  }\n  return parcels.map(classify);\n}\n\nfunction summarize(brackets) {\n  const counts = new Map();\n  for (const bracket of brackets) {\n    const seen = counts.get(bracket);\n    counts.set(bracket, seen == undefined ? 1 : seen + 1);\n  }\n  const lines = [];\n  for (const [bracket, count] of counts) {\n    lines.push(bracket + ': ' + count + (count == 1 ? ' parcel' : ' parcels'));\n  }\n  return lines.join('\\n');\n}\n\nconst cityParcels = [\n  { primaryUse: 'Retail', developmentalStage: 'completed', ownershipType: 'private' },\n  { primaryUse: 'housing', developmentalStage: 'vacant', ownershipType: 'private' },\n  { primaryUse: 'agricultural', developmentalStage: 'vacant', ownershipType: 'cooperative' },\n  { primaryUse: 'religious', developmentalStage: 'under construction', ownershipType: 'trust' },\n  { primaryUse: 'industrial', developmentalStage: 'completed', ownershipType: 'corporate' },\n  { primaryUse: 'educational', developmentalStage: 'completed', ownershipType: 'private' },\n  { primaryUse: 'housing', developmentalStage: 'completed', ownershipType: 'private' },\n  { primaryUse: 'parking', developmentalStage: 'completed', ownershipType: 'corporate' }\n];\n\nconst brackets = assess(cityParcels);\nbrackets.forEach(function (bracket, i) {\n  const label = bracket == 'unclassified' ? 'needs review' : bracket;\n  console.log('Parcel ' + (i + 1) + ' (' + cityParcels[i].primaryUse + ') -> ' + label);\n});\nconsole.log('---');\nconsole.log(summarize(brackets));\n",
+"opps": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+50,
+51
+],
+"alt_span": [
+50,
+50
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+174,
+175
+],
+"alt_span": [
+173,
+173
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+432,
+433
+],
+"alt_span": [
+430,
+430
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+541,
+542
+],
+"alt_span": [
+538,
+538
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+660,
+661
+],
+"alt_span": [
+656,
+656
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+931,
+932
+],
+"alt_span": [
+926,
+926
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+964,
+965
+],
+"alt_span": [
+958,
+958
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1020,
+1021
+],
+"alt_span": [
+1013,
+1013
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1091,
+1092
+],
+"alt_span": [
+1083,
+1083
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1150,
+1151
+],
+"alt_span": [
+1141,
+1141
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1181,
+1182
+],
+"alt_span": [
+1171,
+1171
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1245,
+1246
+],
+"alt_span": [
+1234,
+1234
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1280,
+1281
+],
+"alt_span": [
+1268,
+1268
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1362,
+1363
+],
+"alt_span": [
+1349,
+1349
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1427,
+1428
+],
+"alt_span": [
+1413,
+1413
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1817,
+1818
+],
+"alt_span": [
+1802,
+1802
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1960,
+1961
+],
+"alt_span": [
+1944,
+1944
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2884,
+2885
+],
+"alt_span": [
+2867,
+2867
+]
+}
+],
+"k_en": 18,
+"shared_fraction": 0.985,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "=",
+"alt": "",
+"nat_span": [
+50,
+51
+],
+"alt_span": [
+50,
+50
+]
+},
+{
+"k": 1,
+"nat": "=",
+"alt": "",
+"nat_span": [
+174,
+175
+],
+"alt_span": [
+173,
+173
+]
+},
+{
+"k": 2,
+"nat": "=",
+"alt": "",
+"nat_span": [
+432,
+433
+],
+"alt_span": [
+430,
+430
+]
+},
+{
+"k": 3,
+"nat": "=",
+"alt": "",
+"nat_span": [
+541,
+542
+],
+"alt_span": [
+538,
+538
+]
+},
+{
+"k": 4,
+"nat": "=",
+"alt": "",
+"nat_span": [
+660,
+661
+],
+"alt_span": [
+656,
+656
+]
+},
+{
+"k": 5,
+"nat": "=",
+"alt": "",
+"nat_span": [
+931,
+932
+],
+"alt_span": [
+926,
+926
+]
+},
+{
+"k": 6,
+"nat": "=",
+"alt": "",
+"nat_span": [
+964,
+965
+],
+"alt_span": [
+958,
+958
+]
+},
+{
+"k": 7,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1020,
+1021
+],
+"alt_span": [
+1013,
+1013
+]
+},
+{
+"k": 8,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1091,
+1092
+],
+"alt_span": [
+1083,
+1083
+]
+},
+{
+"k": 9,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1150,
+1151
+],
+"alt_span": [
+1141,
+1141
+]
+},
+{
+"k": 10,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1181,
+1182
+],
+"alt_span": [
+1171,
+1171
+]
+},
+{
+"k": 11,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1245,
+1246
+],
+"alt_span": [
+1234,
+1234
+]
+},
+{
+"k": 12,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1280,
+1281
+],
+"alt_span": [
+1268,
+1268
+]
+},
+{
+"k": 13,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1362,
+1363
+],
+"alt_span": [
+1349,
+1349
+]
+},
+{
+"k": 14,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1427,
+1428
+],
+"alt_span": [
+1413,
+1413
+]
+},
+{
+"k": 15,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1817,
+1818
+],
+"alt_span": [
+1802,
+1802
+]
+},
+{
+"k": 16,
+"nat": "=",
+"alt": "",
+"nat_span": [
+1960,
+1961
+],
+"alt_span": [
+1944,
+1944
+]
+},
+{
+"k": 17,
+"nat": "=",
+"alt": "",
+"nat_span": [
+2884,
+2885
+],
+"alt_span": [
+2867,
+2867
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "js_strict_eq__d215",
 "family": "js_strict_eq",
 "topic": "Software Bug Triager",
@@ -48229,314 +50740,6 @@
 ],
 "task_designed_by": "google/gemini-3.1-pro-preview",
 "regen": "regen8"
-},
-{
-"doc_id": "js_strict_eq__t004",
-"family": "js_strict_eq",
-"topic": "Find Maximum in Array",
-"angle": "code",
-"text_es": "Implement a function `findMax(arr)` that takes an array of numbers and returns the largest number in the array. Input is an array of numbers, output is a number. Example: `findMax([1, 5, 2, 8, 3])` should return `8`, `findMax([-10, -2, -5])` should return `-2`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function findMax(arr) {\n  if (arr === null) {\n    return undefined;\n  }\n\n  if (arr.length === 0) {\n    return undefined;\n  }\n\n  let max = arr[0];\n\n  if (arr.length === 1) {\n    return max;\n  }\n\n  for (let i = 1; i < arr.length; i++) {\n    const currentElement = arr[i];\n\n    if (currentElement > max) {\n      max = currentElement;\n    }\n\n    const isEven = (i % 2 === 0);\n\n    if (isEven !== false) {\n      // do nothing, just an example of a comparison\n    }\n  }\n\n  const finalCheck = (max === undefined);\n\n  if (finalCheck === false) {\n    // This comparison is also on its own line.\n  }\n\n  return max;\n}\n\nconst test1 = findMax([1, 5, 2, 8, 3]);\nconst test2 = findMax([-10, -2, -5]);\nconst test3 = findMax([]);\nconst test4 = findMax([7]);\n\nif (test1 === 8) {\n  // This is good.\n}\n\nif (test2 !== -2) {\n  // This is also good.\n}\n\nif (test3 === undefined) {\n  // Good for empty array.\n}\n\nif (test4 !== 7) {\n  // Another comparison.\n}\n",
-"text_alt": "function findMax(arr) {\n  if (arr == null) {\n    return undefined;\n  }\n\n  if (arr.length == 0) {\n    return undefined;\n  }\n\n  let max = arr[0];\n\n  if (arr.length == 1) {\n    return max;\n  }\n\n  for (let i = 1; i < arr.length; i++) {\n    const currentElement = arr[i];\n\n    if (currentElement > max) {\n      max = currentElement;\n    }\n\n    const isEven = (i % 2 == 0);\n\n    if (isEven != false) {\n      // do nothing, just an example of a comparison\n    }\n  }\n\n  const finalCheck = (max == undefined);\n\n  if (finalCheck == false) {\n    // This comparison is also on its own line.\n  }\n\n  return max;\n}\n\nconst test1 = findMax([1, 5, 2, 8, 3]);\nconst test2 = findMax([-10, -2, -5]);\nconst test3 = findMax([]);\nconst test4 = findMax([7]);\n\nif (test1 == 8) {\n  // This is good.\n}\n\nif (test2 != -2) {\n  // This is also good.\n}\n\nif (test3 == undefined) {\n  // Good for empty array.\n}\n\nif (test4 != 7) {\n  // Another comparison.\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-34,
-35
-],
-"alt_span": [
-34,
-34
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-90,
-91
-],
-"alt_span": [
-89,
-89
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-164,
-165
-],
-"alt_span": [
-162,
-162
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-366,
-367
-],
-"alt_span": [
-363,
-363
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-389,
-390
-],
-"alt_span": [
-385,
-385
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-493,
-494
-],
-"alt_span": [
-488,
-488
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-525,
-526
-],
-"alt_span": [
-519,
-519
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-754,
-755
-],
-"alt_span": [
-747,
-747
-]
-},
-{
-"k": 8,
-"nat": "=",
-"alt": "",
-"nat_span": [
-794,
-795
-],
-"alt_span": [
-786,
-786
-]
-},
-{
-"k": 9,
-"nat": "=",
-"alt": "",
-"nat_span": [
-842,
-843
-],
-"alt_span": [
-833,
-833
-]
-},
-{
-"k": 10,
-"nat": "=",
-"alt": "",
-"nat_span": [
-899,
-900
-],
-"alt_span": [
-889,
-889
-]
-}
-],
-"k_en": 11,
-"shared_fraction": 0.976,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-34,
-35
-],
-"alt_span": [
-34,
-34
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-90,
-91
-],
-"alt_span": [
-89,
-89
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-164,
-165
-],
-"alt_span": [
-162,
-162
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-366,
-367
-],
-"alt_span": [
-363,
-363
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-389,
-390
-],
-"alt_span": [
-385,
-385
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-493,
-494
-],
-"alt_span": [
-488,
-488
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-525,
-526
-],
-"alt_span": [
-519,
-519
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-754,
-755
-],
-"alt_span": [
-747,
-747
-]
-},
-{
-"k": 8,
-"nat": "=",
-"alt": "",
-"nat_span": [
-794,
-795
-],
-"alt_span": [
-786,
-786
-]
-},
-{
-"k": 9,
-"nat": "=",
-"alt": "",
-"nat_span": [
-842,
-843
-],
-"alt_span": [
-833,
-833
-]
-},
-{
-"k": 10,
-"nat": "=",
-"alt": "",
-"nat_span": [
-899,
-900
-],
-"alt_span": [
-889,
-889
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "js_strict_eq__t010",
@@ -57813,288 +60016,6 @@
 ]
 },
 {
-"doc_id": "js_strict_eq__t138",
-"family": "js_strict_eq",
-"topic": "Calculate Weighted Average",
-"angle": "code",
-"text_es": "Create a function that calculates the weighted average of an array of numbers, where each number has an associated weight. The input is an array of objects `[{ value: 10, weight: 2 }, { value: 20, weight: 1 }]`. \nFunction signature: `calculateWeightedAverage(data)`.\nExample 1: `calculateWeightedAverage([{ value: 10, weight: 2 }, { value: 20, weight: 1 }])` should return `(10*2 + 20*1) / (2+1) = 13.333...`.\nExample 2: `calculateWeightedAverage([{ value: 5, weight: 3 }, { value: 15, weight: 1 }])` should return `(5*3 + 15*1) / (3+1) = 7.5`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function calculateWeightedAverage(data) {\n  let totalWeightedSum = 0;\n  let totalWeights = 0;\n\n  if (data === null) return 0;\n  if (data === undefined) return 0;\n\n  if (data.length === 0) {\n    return 0;\n  }\n\n  for (let i = 0; i < data.length; i++) {\n    const item = data[i];\n\n    if (item === null) continue;\n    if (item === undefined) continue;\n\n    const value = item.value;\n    const weight = item.weight;\n\n    if (typeof value !== 'number') continue;\n    if (typeof weight !== 'number') continue;\n\n    if (isNaN(value)) continue;\n    if (isNaN(weight)) continue;\n\n    totalWeightedSum += value * weight;\n    totalWeights += weight;\n  }\n\n  if (totalWeights === 0) {\n    return 0;\n  }\n\n  const result = totalWeightedSum / totalWeights;\n\n  if (result === Infinity) return 0;\n  if (result === -Infinity) return 0;\n\n  return result;\n}\n",
-"text_alt": "function calculateWeightedAverage(data) {\n  let totalWeightedSum = 0;\n  let totalWeights = 0;\n\n  if (data == null) return 0;\n  if (data == undefined) return 0;\n\n  if (data.length == 0) {\n    return 0;\n  }\n\n  for (let i = 0; i < data.length; i++) {\n    const item = data[i];\n\n    if (item == null) continue;\n    if (item == undefined) continue;\n\n    const value = item.value;\n    const weight = item.weight;\n\n    if (typeof value != 'number') continue;\n    if (typeof weight != 'number') continue;\n\n    if (isNaN(value)) continue;\n    if (isNaN(weight)) continue;\n\n    totalWeightedSum += value * weight;\n    totalWeights += weight;\n  }\n\n  if (totalWeights == 0) {\n    return 0;\n  }\n\n  const result = totalWeightedSum / totalWeights;\n\n  if (result == Infinity) return 0;\n  if (result == -Infinity) return 0;\n\n  return result;\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-108,
-109
-],
-"alt_span": [
-108,
-108
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-137,
-138
-],
-"alt_span": [
-136,
-136
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-181,
-182
-],
-"alt_span": [
-179,
-179
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-293,
-294
-],
-"alt_span": [
-290,
-290
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-324,
-325
-],
-"alt_span": [
-320,
-320
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-436,
-437
-],
-"alt_span": [
-431,
-431
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-481,
-482
-],
-"alt_span": [
-475,
-475
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-665,
-666
-],
-"alt_span": [
-658,
-658
-]
-},
-{
-"k": 8,
-"nat": "=",
-"alt": "",
-"nat_span": [
-757,
-758
-],
-"alt_span": [
-749,
-749
-]
-},
-{
-"k": 9,
-"nat": "=",
-"alt": "",
-"nat_span": [
-792,
-793
-],
-"alt_span": [
-783,
-783
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.97,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-108,
-109
-],
-"alt_span": [
-108,
-108
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-137,
-138
-],
-"alt_span": [
-136,
-136
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-181,
-182
-],
-"alt_span": [
-179,
-179
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-293,
-294
-],
-"alt_span": [
-290,
-290
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-324,
-325
-],
-"alt_span": [
-320,
-320
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-436,
-437
-],
-"alt_span": [
-431,
-431
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-481,
-482
-],
-"alt_span": [
-475,
-475
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-665,
-666
-],
-"alt_span": [
-658,
-658
-]
-},
-{
-"k": 8,
-"nat": "=",
-"alt": "",
-"nat_span": [
-757,
-758
-],
-"alt_span": [
-749,
-749
-]
-},
-{
-"k": 9,
-"nat": "=",
-"alt": "",
-"nat_span": [
-792,
-793
-],
-"alt_span": [
-783,
-783
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "js_strict_eq__t145",
 "family": "js_strict_eq",
 "topic": "Calculate Sphere Volume",
@@ -60893,171 +62814,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "js_strict_eq__t190",
-"family": "js_strict_eq",
-"topic": "Convert String to Kebab Case",
-"angle": "code",
-"text_es": "Write a function that converts a string from camelCase or PascalCase to kebab-case. The function should return the kebab-cased string. Implement `toKebabCase(str)`.\nExample: `toKebabCase('helloWorld')` should return `'hello-world'`.\nExample: `toKebabCase('PascalCaseString')` should return `'pascal-case-string'`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function toKebabCase(str) {\n  if (str === null) return '';\n  if (typeof str !== 'string') return '';\n\n  let result = '';\n  let i = 0;\n  const strLength = str.length;\n\n  while (i < strLength) {\n    const char = str[i];\n    if (i === 0) {\n      result += char.toLowerCase();\n    } else if (char === char.toUpperCase() && char !== char.toLowerCase()) {\n      result += '-' + char.toLowerCase();\n    } else {\n      result += char;\n    }\n    i++;\n  }\n\n  if (result === '') return '';\n\n  while (result.startsWith('-')) {\n    result = result.substring(1);\n  }\n\n  while (result.endsWith('-')) {\n    result = result.slice(0, -1);\n  }\n\n  if (result.includes('--')) {\n    result = result.replace(/--+/g, '-');\n  }\n\n  return result;\n}\n",
-"text_alt": "function toKebabCase(str) {\n  if (str == null) return '';\n  if (typeof str != 'string') return '';\n\n  let result = '';\n  let i = 0;\n  const strLength = str.length;\n\n  while (i < strLength) {\n    const char = str[i];\n    if (i == 0) {\n      result += char.toLowerCase();\n    } else if (char == char.toUpperCase() && char != char.toLowerCase()) {\n      result += '-' + char.toLowerCase();\n    } else {\n      result += char;\n    }\n    i++;\n  }\n\n  if (result == '') return '';\n\n  while (result.startsWith('-')) {\n    result = result.substring(1);\n  }\n\n  while (result.endsWith('-')) {\n    result = result.slice(0, -1);\n  }\n\n  if (result.includes('--')) {\n    result = result.replace(/--+/g, '-');\n  }\n\n  return result;\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-38,
-39
-],
-"alt_span": [
-38,
-38
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-77,
-78
-],
-"alt_span": [
-76,
-76
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-230,
-231
-],
-"alt_span": [
-228,
-228
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-295,
-296
-],
-"alt_span": [
-292,
-292
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-460,
-461
-],
-"alt_span": [
-455,
-455
-]
-}
-],
-"k_en": 5,
-"shared_fraction": 0.982,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-38,
-39
-],
-"alt_span": [
-38,
-38
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-77,
-78
-],
-"alt_span": [
-76,
-76
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-230,
-231
-],
-"alt_span": [
-228,
-228
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-295,
-296
-],
-"alt_span": [
-292,
-292
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-325,
-326
-],
-"alt_span": [
-321,
-321
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-460,
-461
-],
-"alt_span": [
-455,
-455
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "js_strict_eq__t194",
@@ -63918,236 +65674,6 @@
 ]
 },
 {
-"doc_id": "js_strict_eq__t276",
-"family": "js_strict_eq",
-"topic": "Parse URL Query Parameters",
-"angle": "code",
-"text_es": "Given a URL string, extract all query parameters and their values into an object. The function should handle multiple parameters and encoded values. Implement a function `parseQueryParams` that takes a URL string and returns an object. \nExample 1: `parseQueryParams('https://example.com/path?name=Alice&age=30')` should return `{ name: 'Alice', age: '30' }`. \nExample 2: `parseQueryParams('http://test.org/?q=hello%20world&id=123')` should return `{ q: 'hello world', id: '123' }`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const parseQueryParams = (url) => {\n  const queryStartIndex = url.indexOf('?');\n  if (queryStartIndex === -1) {\n    return {};\n  }\n\n  const queryString = url.substring(queryStartIndex + 1);\n  if (queryString === '') {\n    return {};\n  }\n\n  const params = {};\n  const pairs = queryString.split('&');\n\n  for (let i = 0; i < pairs.length; i++) {\n    const pair = pairs[i];\n    const eqIndex = pair.indexOf('=');\n\n    if (eqIndex === -1) {\n      continue;\n    }\n\n    let key = pair.substring(0, eqIndex);\n    let value = pair.substring(eqIndex + 1);\n\n    key = decodeURIComponent(key);\n    value = decodeURIComponent(value);\n\n    const keyIsEmpty = (key === '');\n    if (keyIsEmpty) {\n      continue;\n    }\n    \n    const valueIsUndefined = (value === undefined);\n    if (valueIsUndefined) {\n        value = '';\n    }\n\n    params[key] = value;\n  }\n\n  const paramsIsEmpty = Object.keys(params).length === 0;\n  if (paramsIsEmpty) {\n      return {};\n  }\n\n  const finalCheck = (typeof params === 'object');\n  if (!finalCheck) {\n      throw new Error('Expected an object result.');\n  }\n\n  const anotherCheck = (params.constructor === Object);\n  if (!anotherCheck) {\n      throw new Error('Expected a plain object.');\n  }\n\n  return params;\n};\n",
-"text_alt": "const parseQueryParams = (url) => {\n  const queryStartIndex = url.indexOf('?');\n  if (queryStartIndex == -1) {\n    return {};\n  }\n\n  const queryString = url.substring(queryStartIndex + 1);\n  if (queryString == '') {\n    return {};\n  }\n\n  const params = {};\n  const pairs = queryString.split('&');\n\n  for (let i = 0; i < pairs.length; i++) {\n    const pair = pairs[i];\n    const eqIndex = pair.indexOf('=');\n\n    if (eqIndex == -1) {\n      continue;\n    }\n\n    let key = pair.substring(0, eqIndex);\n    let value = pair.substring(eqIndex + 1);\n\n    key = decodeURIComponent(key);\n    value = decodeURIComponent(value);\n\n    const keyIsEmpty = (key == '');\n    if (keyIsEmpty) {\n      continue;\n    }\n    \n    const valueIsUndefined = (value == undefined);\n    if (valueIsUndefined) {\n        value = '';\n    }\n\n    params[key] = value;\n  }\n\n  const paramsIsEmpty = Object.keys(params).length == 0;\n  if (paramsIsEmpty) {\n      return {};\n  }\n\n  const finalCheck = (typeof params == 'object');\n  if (!finalCheck) {\n      throw new Error('Expected an object result.');\n  }\n\n  const anotherCheck = (params.constructor == Object);\n  if (!anotherCheck) {\n      throw new Error('Expected a plain object.');\n  }\n\n  return params;\n};\n",
-"opps": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-102,
-103
-],
-"alt_span": [
-102,
-102
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-208,
-209
-],
-"alt_span": [
-207,
-207
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-428,
-429
-],
-"alt_span": [
-426,
-426
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-652,
-653
-],
-"alt_span": [
-649,
-649
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-744,
-745
-],
-"alt_span": [
-740,
-740
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-898,
-899
-],
-"alt_span": [
-893,
-893
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-984,
-985
-],
-"alt_span": [
-978,
-978
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-1123,
-1124
-],
-"alt_span": [
-1116,
-1116
-]
-}
-],
-"k_en": 8,
-"shared_fraction": 0.983,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-102,
-103
-],
-"alt_span": [
-102,
-102
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-208,
-209
-],
-"alt_span": [
-207,
-207
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-428,
-429
-],
-"alt_span": [
-426,
-426
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-652,
-653
-],
-"alt_span": [
-649,
-649
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-744,
-745
-],
-"alt_span": [
-740,
-740
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-898,
-899
-],
-"alt_span": [
-893,
-893
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-984,
-985
-],
-"alt_span": [
-978,
-978
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-1123,
-1124
-],
-"alt_span": [
-1116,
-1116
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "js_strict_eq__t289",
 "family": "js_strict_eq",
 "topic": "Convert Object to Query String",
@@ -66218,249 +67744,6 @@
 "anthropic/claude-opus-5",
 "openai/gpt-5"
 ]
-},
-{
-"doc_id": "js_strict_eq__t325",
-"family": "js_strict_eq",
-"topic": "Convert String to Array of Words",
-"angle": "code",
-"text_es": "Create a function that splits a string into an array of words based on spaces. Multiple spaces should be treated as a single separator.\n\nFunction signature: `function stringToWords(str)`\n\nExample 1: `stringToWords('hello world')` should return `['hello', 'world']`\nExample 2: `stringToWords('  multiple   spaces ')` should return `['multiple', 'spaces']`",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function stringToWords(str) {\n  if (str === null) {\n    return [];\n  }\n\n  if (typeof str !== 'string') {\n    return [];\n  }\n\n  let words = [];\n  let currentWord = '';\n  let inWord = false;\n\n  for (let i = 0; i < str.length; i++) {\n    const char = str[i];\n\n    if (char === ' ') {\n      if (inWord === true) {\n        words.push(currentWord);\n        currentWord = '';\n        inWord = false;\n      }\n    } else {\n      currentWord += char;\n      if (inWord === false) {\n        inWord = true;\n      }\n    }\n  }\n\n  if (currentWord !== '') {\n    words.push(currentWord);\n  }\n\n  const result = [];\n  for (let i = 0; i < words.length; i++) {\n    if (words[i] !== '') {\n      result.push(words[i]);\n    }\n  }\n\n  if (result.length === 0 && str.trim() === '') {\n    return [];\n  }\n\n  return result;\n}\n",
-"text_alt": "function stringToWords(str) {\n  if (str == null) {\n    return [];\n  }\n\n  if (typeof str != 'string') {\n    return [];\n  }\n\n  let words = [];\n  let currentWord = '';\n  let inWord = false;\n\n  for (let i = 0; i < str.length; i++) {\n    const char = str[i];\n\n    if (char == ' ') {\n      if (inWord == true) {\n        words.push(currentWord);\n        currentWord = '';\n        inWord = false;\n      }\n    } else {\n      currentWord += char;\n      if (inWord == false) {\n        inWord = true;\n      }\n    }\n  }\n\n  if (currentWord != '') {\n    words.push(currentWord);\n  }\n\n  const result = [];\n  for (let i = 0; i < words.length; i++) {\n    if (words[i] != '') {\n      result.push(words[i]);\n    }\n  }\n\n  if (result.length == 0 && str.trim() == '') {\n    return [];\n  }\n\n  return result;\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-40,
-41
-],
-"alt_span": [
-40,
-40
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-90,
-91
-],
-"alt_span": [
-89,
-89
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-272,
-273
-],
-"alt_span": [
-270,
-270
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-298,
-299
-],
-"alt_span": [
-295,
-295
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-460,
-461
-],
-"alt_span": [
-456,
-456
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-532,
-533
-],
-"alt_span": [
-527,
-527
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-658,
-659
-],
-"alt_span": [
-652,
-652
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-728,
-729
-],
-"alt_span": [
-721,
-721
-]
-}
-],
-"k_en": 8,
-"shared_fraction": 0.975,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "=",
-"alt": "",
-"nat_span": [
-40,
-41
-],
-"alt_span": [
-40,
-40
-]
-},
-{
-"k": 1,
-"nat": "=",
-"alt": "",
-"nat_span": [
-90,
-91
-],
-"alt_span": [
-89,
-89
-]
-},
-{
-"k": 2,
-"nat": "=",
-"alt": "",
-"nat_span": [
-272,
-273
-],
-"alt_span": [
-270,
-270
-]
-},
-{
-"k": 3,
-"nat": "=",
-"alt": "",
-"nat_span": [
-298,
-299
-],
-"alt_span": [
-295,
-295
-]
-},
-{
-"k": 4,
-"nat": "=",
-"alt": "",
-"nat_span": [
-460,
-461
-],
-"alt_span": [
-456,
-456
-]
-},
-{
-"k": 5,
-"nat": "=",
-"alt": "",
-"nat_span": [
-532,
-533
-],
-"alt_span": [
-527,
-527
-]
-},
-{
-"k": 6,
-"nat": "=",
-"alt": "",
-"nat_span": [
-658,
-659
-],
-"alt_span": [
-652,
-652
-]
-},
-{
-"k": 7,
-"nat": "=",
-"alt": "",
-"nat_span": [
-728,
-729
-],
-"alt_span": [
-721,
-721
-]
-},
-{
-"k": 8,
-"nat": "=",
-"alt": "",
-"nat_span": [
-746,
-747
-],
-"alt_span": [
-738,
-738
-]
-}
-],
-"free_filter": true
 },
 {
 "doc_id": "js_strict_eq__t326",

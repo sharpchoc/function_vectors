@@ -7599,6 +7599,308 @@
 "regen": "regen8"
 },
 {
+"doc_id": "docstring_style__d029",
+"family": "docstring_style",
+"topic": "Color Space Converter",
+"angle": "code",
+"text_es": "Build a tool with an entry function `convert(colors)` that translates color values between different representations. Include helper routines to translate red green blue values to hue saturation lightness, and another to translate hue saturation lightness back to red green blue. The main routine should accept a list of tuples containing three numbers and a format label, process each using the appropriate helper, and return a list of converted tuples. For example, converting pure red from the first format should yield a hue of zero, saturation of one, and lightness of zero point five.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def normalize_label(label):\n    \"\"\"Canonicalise a color format label.\n\n    Args:\n        label (str): Format name supplied with a color triple.\n\n    Returns:\n        str: Either \"rgb\" or \"hsl\".\n    \"\"\"\n    key = label.strip().lower()\n    if key not in (\"rgb\", \"hsl\"):\n        raise ValueError(\"unknown color format: %r\" % label)\n    return key\n\ndef rgb_to_hsl(red, green, blue):\n    \"\"\"Convert an RGB triple to hue, saturation and lightness.\n\n    Args:\n        red (float): Red channel in the range 0..1.\n        green (float): Green channel in the range 0..1.\n        blue (float): Blue channel in the range 0..1.\n\n    Returns:\n        tuple: Hue in degrees, saturation and lightness.\n    \"\"\"\n    high, low = max(red, green, blue), min(red, green, blue)\n    lightness, spread = (high + low) / 2.0, high - low\n    if spread == 0:\n        return (0.0, 0.0, lightness)\n    if high == red:\n        hue = 60 * (((green - blue) / spread) % 6)\n    elif high == green:\n        hue = 60 * ((blue - red) / spread + 2)\n    else:\n        hue = 60 * ((red - green) / spread + 4)\n    return (hue, spread / (1 - abs(2 * lightness - 1)), lightness)\n\ndef hsl_to_rgb(hue, saturation, lightness):\n    \"\"\"Convert an HSL triple back to red, green and blue.\n\n    Args:\n        hue (float): Hue angle in degrees.\n        saturation (float): Saturation in the range 0..1.\n        lightness (float): Lightness in the range 0..1.\n\n    Returns:\n        tuple: Red, green and blue with each channel in 0..1.\n    \"\"\"\n    chroma = (1 - abs(2 * lightness - 1)) * saturation\n    sector = (hue % 360) / 60.0\n    second = chroma * (1 - abs(sector % 2 - 1))\n    table = [(chroma, second, 0.0), (second, chroma, 0.0), (0.0, chroma, second),\n             (0.0, second, chroma), (second, 0.0, chroma), (chroma, 0.0, second)]\n    return tuple(v + lightness - chroma / 2 for v in table[int(sector) % 6])\n\ndef convert(colors):\n    \"\"\"Convert a batch of tagged color triples to the other representation.\n\n    Args:\n        colors (iterable): Items of the form (a, b, c, label), where label\n            is \"rgb\" or \"hsl\" and names the format of the three numbers.\n\n    Returns:\n        list: Converted tuples, HSL for \"rgb\" inputs and RGB for \"hsl\"\n        inputs, in the order the inputs were given.\n    \"\"\"\n    converted = []\n    for first, second, third, label in colors:\n        helper = rgb_to_hsl if normalize_label(label) == \"rgb\" else hsl_to_rgb\n        converted.append(helper(first, second, third))\n    return converted\n\ndef format_color(triple, label):\n    \"\"\"Render a converted triple as a readable line of text.\n\n    Args:\n        triple (tuple): The three numbers produced by convert().\n        label (str): The format label of the original input.\n\n    Returns:\n        str: The output format name and its rounded components.\n    \"\"\"\n    target = \"hsl\" if normalize_label(label) == \"rgb\" else \"rgb\"\n    return \"%s(%s)\" % (target, \", \".join(\"%.4g\" % v for v in triple))\n\ndef main():\n    samples = [(1.0, 0.0, 0.0, \"rgb\"), (0.2, 0.6, 0.4, \"rgb\"),\n               (0.0, 1.0, 0.5, \"hsl\"), (210.0, 0.5, 0.25, \"hsl\")]\n    for sample, result in zip(samples, convert(samples)):\n        print(format_color(result, sample[3]))\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def normalize_label(label):\n    \"\"\"Canonicalise a color format label.\n\n    Parameters\n    ----------\n    label : str\n        Format name supplied with a color triple.\n\n    Returns\n    -------\n    str\n        Either \"rgb\" or \"hsl\".\n    \"\"\"\n    key = label.strip().lower()\n    if key not in (\"rgb\", \"hsl\"):\n        raise ValueError(\"unknown color format: %r\" % label)\n    return key\n\ndef rgb_to_hsl(red, green, blue):\n    \"\"\"Convert an RGB triple to hue, saturation and lightness.\n\n    Parameters\n    ----------\n    red : float\n        Red channel in the range 0..1.\n    green : float\n        Green channel in the range 0..1.\n    blue : float\n        Blue channel in the range 0..1.\n\n    Returns\n    -------\n    tuple\n        Hue in degrees, saturation and lightness.\n    \"\"\"\n    high, low = max(red, green, blue), min(red, green, blue)\n    lightness, spread = (high + low) / 2.0, high - low\n    if spread == 0:\n        return (0.0, 0.0, lightness)\n    if high == red:\n        hue = 60 * (((green - blue) / spread) % 6)\n    elif high == green:\n        hue = 60 * ((blue - red) / spread + 2)\n    else:\n        hue = 60 * ((red - green) / spread + 4)\n    return (hue, spread / (1 - abs(2 * lightness - 1)), lightness)\n\ndef hsl_to_rgb(hue, saturation, lightness):\n    \"\"\"Convert an HSL triple back to red, green and blue.\n\n    Parameters\n    ----------\n    hue : float\n        Hue angle in degrees.\n    saturation : float\n        Saturation in the range 0..1.\n    lightness : float\n        Lightness in the range 0..1.\n\n    Returns\n    -------\n    tuple\n        Red, green and blue with each channel in 0..1.\n    \"\"\"\n    chroma = (1 - abs(2 * lightness - 1)) * saturation\n    sector = (hue % 360) / 60.0\n    second = chroma * (1 - abs(sector % 2 - 1))\n    table = [(chroma, second, 0.0), (second, chroma, 0.0), (0.0, chroma, second),\n             (0.0, second, chroma), (second, 0.0, chroma), (chroma, 0.0, second)]\n    return tuple(v + lightness - chroma / 2 for v in table[int(sector) % 6])\n\ndef convert(colors):\n    \"\"\"Convert a batch of tagged color triples to the other representation.\n\n    Parameters\n    ----------\n    colors : iterable\n        Items of the form (a, b, c, label), where label\n        is \"rgb\" or \"hsl\" and names the format of the three numbers.\n\n    Returns\n    -------\n    list\n        Converted tuples, HSL for \"rgb\" inputs and RGB for \"hsl\"\n        inputs, in the order the inputs were given.\n    \"\"\"\n    converted = []\n    for first, second, third, label in colors:\n        helper = rgb_to_hsl if normalize_label(label) == \"rgb\" else hsl_to_rgb\n        converted.append(helper(first, second, third))\n    return converted\n\ndef format_color(triple, label):\n    \"\"\"Render a converted triple as a readable line of text.\n\n    Parameters\n    ----------\n    triple : tuple\n        The three numbers produced by convert().\n    label : str\n        The format label of the original input.\n\n    Returns\n    -------\n    str\n        The output format name and its rounded components.\n    \"\"\"\n    target = \"hsl\" if normalize_label(label) == \"rgb\" else \"rgb\"\n    return \"%s(%s)\" % (target, \", \".join(\"%.4g\" % v for v in triple))\n\ndef main():\n    samples = [(1.0, 0.0, 0.0, \"rgb\"), (0.2, 0.6, 0.4, \"rgb\"),\n               (0.0, 1.0, 0.5, \"hsl\"), (210.0, 0.5, 0.25, \"hsl\")]\n    for sample, result in zip(samples, convert(samples)):\n        print(format_color(result, sample[3]))\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        label (str): ",
+"alt": "Parameters\n    ----------\n    label : str\n        ",
+"nat_span": [
+75,
+102
+],
+"alt_span": [
+75,
+125
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        red (float): ",
+"alt": "Parameters\n    ----------\n    red : float\n        ",
+"nat_span": [
+447,
+474
+],
+"alt_span": [
+484,
+534
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        hue (float): ",
+"alt": "Parameters\n    ----------\n    hue : float\n        ",
+"nat_span": [
+1242,
+1269
+],
+"alt_span": [
+1322,
+1372
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        colors (iterable): ",
+"alt": "Parameters\n    ----------\n    colors : iterable\n        ",
+"nat_span": [
+1968,
+2001
+],
+"alt_span": [
+2091,
+2147
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        triple (tuple): ",
+"alt": "Parameters\n    ----------\n    triple : tuple\n        ",
+"nat_span": [
+2588,
+2618
+],
+"alt_span": [
+2744,
+2797
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.948,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        label (str): ",
+"alt": "Parameters\n    ----------\n    label : str\n        ",
+"nat_span": [
+75,
+102
+],
+"alt_span": [
+75,
+125
+]
+},
+{
+"k": 1,
+"nat": ":\n        str: ",
+"alt": "\n    -------\n    str\n        ",
+"nat_span": [
+156,
+171
+],
+"alt_span": [
+179,
+208
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        red (float): ",
+"alt": "Parameters\n    ----------\n    red : float\n        ",
+"nat_span": [
+447,
+474
+],
+"alt_span": [
+484,
+534
+]
+},
+{
+"k": 3,
+"nat": "\n        green (float): ",
+"alt": "\n    green : float\n        ",
+"nat_span": [
+504,
+528
+],
+"alt_span": [
+564,
+591
+]
+},
+{
+"k": 4,
+"nat": "\n        blue (float): ",
+"alt": "\n    blue : float\n        ",
+"nat_span": [
+560,
+583
+],
+"alt_span": [
+623,
+649
+]
+},
+{
+"k": 5,
+"nat": ":\n        tuple: ",
+"alt": "\n    -------\n    tuple\n        ",
+"nat_span": [
+627,
+644
+],
+"alt_span": [
+693,
+724
+]
+},
+{
+"k": 6,
+"nat": "Args:\n        hue (float): ",
+"alt": "Parameters\n    ----------\n    hue : float\n        ",
+"nat_span": [
+1242,
+1269
+],
+"alt_span": [
+1322,
+1372
+]
+},
+{
+"k": 7,
+"nat": "\n        saturation (float): ",
+"alt": "\n    saturation : float\n        ",
+"nat_span": [
+1290,
+1319
+],
+"alt_span": [
+1393,
+1425
+]
+},
+{
+"k": 8,
+"nat": "\n        lightness (float): ",
+"alt": "\n    lightness : float\n        ",
+"nat_span": [
+1348,
+1376
+],
+"alt_span": [
+1454,
+1485
+]
+},
+{
+"k": 9,
+"nat": ":\n        tuple: ",
+"alt": "\n    -------\n    tuple\n        ",
+"nat_span": [
+1417,
+1434
+],
+"alt_span": [
+1526,
+1557
+]
+},
+{
+"k": 10,
+"nat": "Args:\n        colors (iterable): ",
+"alt": "Parameters\n    ----------\n    colors : iterable\n        ",
+"nat_span": [
+1968,
+2001
+],
+"alt_span": [
+2091,
+2147
+]
+},
+{
+"k": 11,
+"nat": "\n            ",
+"alt": "\n        ",
+"nat_span": [
+2048,
+2061
+],
+"alt_span": [
+2194,
+2203
+]
+},
+{
+"k": 12,
+"nat": ":\n        list: ",
+"alt": "\n    -------\n    list\n        ",
+"nat_span": [
+2134,
+2150
+],
+"alt_span": [
+2276,
+2306
+]
+},
+{
+"k": 13,
+"nat": "Args:\n        triple (tuple): ",
+"alt": "Parameters\n    ----------\n    triple : tuple\n        ",
+"nat_span": [
+2588,
+2618
+],
+"alt_span": [
+2744,
+2797
+]
+},
+{
+"k": 14,
+"nat": "\n        label (str): ",
+"alt": "\n    label : str\n        ",
+"nat_span": [
+2658,
+2680
+],
+"alt_span": [
+2837,
+2862
+]
+},
+{
+"k": 15,
+"nat": ":\n        str: ",
+"alt": "\n    -------\n    str\n        ",
+"nat_span": [
+2732,
+2747
+],
+"alt_span": [
+2914,
+2943
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "docstring_style__d030",
 "family": "docstring_style",
 "topic": "Fraction Arithmetic Evaluator",
@@ -7980,6 +8282,438 @@
 "alt_span": [
 3136,
 3156
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "docstring_style__d031",
+"family": "docstring_style",
+"topic": "Competitor Rating Updater",
+"angle": "code",
+"text_es": "Write a rating system with an entry function `update(matches)` that adjusts player scores after a tournament. Implement helper routines to calculate the expected win probability between two ratings and to compute the new rating for a player based on their actual match result. The main routine accepts a list of matches where each match is a tuple of two current player ratings and an integer indicating the winner. It returns a list of updated rating tuples for each match. A match between a player with twelve hundred and a player with a thousand where the first wins should output their adjusted scores.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "K_FACTOR = 32\n\n\ndef expected_score(rating_a, rating_b):\n    \"\"\"Compute the probability that player A beats player B.\n\n    Args:\n        rating_a (float): Current rating of the first player.\n        rating_b (float): Current rating of the second player.\n\n    Returns:\n        float: A value between 0 and 1 giving A's expected score.\n    \"\"\"\n    return 1.0 / (1.0 + 10.0 ** ((rating_b - rating_a) / 400.0))\n\n\ndef new_rating(rating, expected, actual, k=K_FACTOR):\n    \"\"\"Adjust a single rating according to a match outcome.\n\n    Args:\n        rating (float): The player's rating before the match.\n        expected (float): The player's expected score for the match.\n        actual (float): The score actually obtained, 1 for a win, 0 for a loss.\n        k (int): Maximum number of points a single match can move a rating.\n\n    Returns:\n        int: The player's updated rating, rounded to the nearest integer.\n    \"\"\"\n    return int(round(rating + k * (actual - expected)))\n\n\ndef scores_from_winner(winner):\n    \"\"\"Translate a winner code into the pair of achieved scores.\n\n    Args:\n        winner (int): 1 if the first player won, 2 if the second player won,\n            0 for a draw.\n\n    Returns:\n        tuple of float: The actual score of each player.\n    \"\"\"\n    if winner == 1:\n        return 1.0, 0.0\n    if winner == 2:\n        return 0.0, 1.0\n    if winner == 0:\n        return 0.5, 0.5\n    raise ValueError(\"winner must be 0, 1 or 2, got %r\" % (winner,))\n\n\ndef play_match(rating_a, rating_b, winner):\n    \"\"\"Rate one match between two players.\n\n    Args:\n        rating_a (float): Rating of the first player before the match.\n        rating_b (float): Rating of the second player before the match.\n        winner (int): Winner code accepted by :func:`scores_from_winner`.\n\n    Returns:\n        tuple of int: Both updated ratings.\n    \"\"\"\n    actual_a, actual_b = scores_from_winner(winner)\n    expected_a = expected_score(rating_a, rating_b)\n    return (new_rating(rating_a, expected_a, actual_a),\n            new_rating(rating_b, 1.0 - expected_a, actual_b))\n\n\ndef update(matches):\n    \"\"\"Apply the rating system to a whole tournament.\n\n    Args:\n        matches (iterable of tuple): (rating_a, rating_b, winner) triples.\n\n    Returns:\n        list of tuple of int: Updated rating pairs, one per input match.\n    \"\"\"\n    return [play_match(a, b, winner) for a, b, winner in matches]\n\n\ndef format_match(before, after):\n    \"\"\"Render one match result as a readable line.\n\n    Args:\n        before (tuple): The (rating_a, rating_b, winner) triple played.\n        after (tuple of int): The pair of updated ratings for that match.\n\n    Returns:\n        str: A description of the rating movement of both players.\n    \"\"\"\n    rating_a, rating_b, _winner = before\n    return \"%d -> %d, %d -> %d\" % (rating_a, after[0], rating_b, after[1])\n\n\ndef main():\n    tournament = [(1200, 1000, 1), (1500, 1500, 2), (1350, 1420, 0)]\n    for before, after in zip(tournament, update(tournament)):\n        print(format_match(before, after))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "K_FACTOR = 32\n\n\ndef expected_score(rating_a, rating_b):\n    \"\"\"Compute the probability that player A beats player B.\n\n    Parameters\n    ----------\n    rating_a : float\n        Current rating of the first player.\n    rating_b : float\n        Current rating of the second player.\n\n    Returns\n    -------\n    float\n        A value between 0 and 1 giving A's expected score.\n    \"\"\"\n    return 1.0 / (1.0 + 10.0 ** ((rating_b - rating_a) / 400.0))\n\n\ndef new_rating(rating, expected, actual, k=K_FACTOR):\n    \"\"\"Adjust a single rating according to a match outcome.\n\n    Parameters\n    ----------\n    rating : float\n        The player's rating before the match.\n    expected : float\n        The player's expected score for the match.\n    actual : float\n        The score actually obtained, 1 for a win, 0 for a loss.\n    k : int\n        Maximum number of points a single match can move a rating.\n\n    Returns\n    -------\n    int\n        The player's updated rating, rounded to the nearest integer.\n    \"\"\"\n    return int(round(rating + k * (actual - expected)))\n\n\ndef scores_from_winner(winner):\n    \"\"\"Translate a winner code into the pair of achieved scores.\n\n    Parameters\n    ----------\n    winner : int\n        1 if the first player won, 2 if the second player won,\n        0 for a draw.\n\n    Returns\n    -------\n    tuple of float\n        The actual score of each player.\n    \"\"\"\n    if winner == 1:\n        return 1.0, 0.0\n    if winner == 2:\n        return 0.0, 1.0\n    if winner == 0:\n        return 0.5, 0.5\n    raise ValueError(\"winner must be 0, 1 or 2, got %r\" % (winner,))\n\n\ndef play_match(rating_a, rating_b, winner):\n    \"\"\"Rate one match between two players.\n\n    Parameters\n    ----------\n    rating_a : float\n        Rating of the first player before the match.\n    rating_b : float\n        Rating of the second player before the match.\n    winner : int\n        Winner code accepted by :func:`scores_from_winner`.\n\n    Returns\n    -------\n    tuple of int\n        Both updated ratings.\n    \"\"\"\n    actual_a, actual_b = scores_from_winner(winner)\n    expected_a = expected_score(rating_a, rating_b)\n    return (new_rating(rating_a, expected_a, actual_a),\n            new_rating(rating_b, 1.0 - expected_a, actual_b))\n\n\ndef update(matches):\n    \"\"\"Apply the rating system to a whole tournament.\n\n    Parameters\n    ----------\n    matches : iterable of tuple\n        (rating_a, rating_b, winner) triples.\n\n    Returns\n    -------\n    list of tuple of int\n        Updated rating pairs, one per input match.\n    \"\"\"\n    return [play_match(a, b, winner) for a, b, winner in matches]\n\n\ndef format_match(before, after):\n    \"\"\"Render one match result as a readable line.\n\n    Parameters\n    ----------\n    before : tuple\n        The (rating_a, rating_b, winner) triple played.\n    after : tuple of int\n        The pair of updated ratings for that match.\n\n    Returns\n    -------\n    str\n        A description of the rating movement of both players.\n    \"\"\"\n    rating_a, rating_b, _winner = before\n    return \"%d -> %d, %d -> %d\" % (rating_a, after[0], rating_b, after[1])\n\n\ndef main():\n    tournament = [(1200, 1000, 1), (1500, 1500, 2), (1350, 1420, 0)]\n    for before, after in zip(tournament, update(tournament)):\n        print(format_match(before, after))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        rating_a (float): ",
+"alt": "Parameters\n    ----------\n    rating_a : float\n        ",
+"nat_span": [
+122,
+154
+],
+"alt_span": [
+122,
+177
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        rating (float): ",
+"alt": "Parameters\n    ----------\n    rating : float\n        ",
+"nat_span": [
+527,
+557
+],
+"alt_span": [
+567,
+620
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        winner (int): ",
+"alt": "Parameters\n    ----------\n    winner : int\n        ",
+"nat_span": [
+1076,
+1104
+],
+"alt_span": [
+1162,
+1213
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        rating_a (float): ",
+"alt": "Parameters\n    ----------\n    rating_a : float\n        ",
+"nat_span": [
+1559,
+1591
+],
+"alt_span": [
+1678,
+1733
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        matches (",
+"alt": "Parameters\n    ----------\n    matches : ",
+"nat_span": [
+2152,
+2175
+],
+"alt_span": [
+2314,
+2354
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        before (tuple): ",
+"alt": "Parameters\n    ----------\n    before : tuple\n        ",
+"nat_span": [
+2485,
+2515
+],
+"alt_span": [
+2684,
+2737
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.919,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        rating_a (float): ",
+"alt": "Parameters\n    ----------\n    rating_a : float\n        ",
+"nat_span": [
+122,
+154
+],
+"alt_span": [
+122,
+177
+]
+},
+{
+"k": 1,
+"nat": "\n        rating_b (float): ",
+"alt": "\n    rating_b : float\n        ",
+"nat_span": [
+189,
+216
+],
+"alt_span": [
+212,
+242
+]
+},
+{
+"k": 2,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+265,
+282
+],
+"alt_span": [
+291,
+322
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        rating (float): ",
+"alt": "Parameters\n    ----------\n    rating : float\n        ",
+"nat_span": [
+527,
+557
+],
+"alt_span": [
+567,
+620
+]
+},
+{
+"k": 4,
+"nat": "\n        expected (float): ",
+"alt": "\n    expected : float\n        ",
+"nat_span": [
+594,
+621
+],
+"alt_span": [
+657,
+687
+]
+},
+{
+"k": 5,
+"nat": "\n        actual (float): ",
+"alt": "\n    actual : float\n        ",
+"nat_span": [
+663,
+688
+],
+"alt_span": [
+729,
+757
+]
+},
+{
+"k": 6,
+"nat": "\n        k (int): ",
+"alt": "\n    k : int\n        ",
+"nat_span": [
+743,
+761
+],
+"alt_span": [
+812,
+833
+]
+},
+{
+"k": 7,
+"nat": ":\n        int: ",
+"alt": "\n    -------\n    int\n        ",
+"nat_span": [
+832,
+847
+],
+"alt_span": [
+904,
+933
+]
+},
+{
+"k": 8,
+"nat": "Args:\n        winner (int): ",
+"alt": "Parameters\n    ----------\n    winner : int\n        ",
+"nat_span": [
+1076,
+1104
+],
+"alt_span": [
+1162,
+1213
+]
+},
+{
+"k": 9,
+"nat": "\n            ",
+"alt": "\n        ",
+"nat_span": [
+1158,
+1171
+],
+"alt_span": [
+1267,
+1276
+]
+},
+{
+"k": 10,
+"nat": ":\n        ",
+"alt": "\n    -------\n    ",
+"nat_span": [
+1197,
+1207
+],
+"alt_span": [
+1302,
+1319
+]
+},
+{
+"k": 11,
+"nat": ": ",
+"alt": "\n        ",
+"nat_span": [
+1221,
+1223
+],
+"alt_span": [
+1333,
+1342
+]
+},
+{
+"k": 12,
+"nat": "Args:\n        rating_a (float): ",
+"alt": "Parameters\n    ----------\n    rating_a : float\n        ",
+"nat_span": [
+1559,
+1591
+],
+"alt_span": [
+1678,
+1733
+]
+},
+{
+"k": 13,
+"nat": "\n        rating_b (float): ",
+"alt": "\n    rating_b : float\n        ",
+"nat_span": [
+1635,
+1662
+],
+"alt_span": [
+1777,
+1807
+]
+},
+{
+"k": 14,
+"nat": "\n        winner (int): ",
+"alt": "\n    winner : int\n        ",
+"nat_span": [
+1707,
+1730
+],
+"alt_span": [
+1852,
+1878
+]
+},
+{
+"k": 15,
+"nat": ":\n        ",
+"alt": "\n    -------\n    ",
+"nat_span": [
+1794,
+1804
+],
+"alt_span": [
+1942,
+1959
+]
+},
+{
+"k": 16,
+"nat": ": ",
+"alt": "\n        ",
+"nat_span": [
+1816,
+1818
+],
+"alt_span": [
+1971,
+1980
+]
+},
+{
+"k": 17,
+"nat": "Args:\n        matches (",
+"alt": "Parameters\n    ----------\n    matches : ",
+"nat_span": [
+2152,
+2175
+],
+"alt_span": [
+2314,
+2354
+]
+},
+{
+"k": 18,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+2192,
+2195
+],
+"alt_span": [
+2371,
+2380
+]
+},
+{
+"k": 19,
+"nat": ":\n        ",
+"alt": "\n    -------\n    ",
+"nat_span": [
+2245,
+2255
+],
+"alt_span": [
+2430,
+2447
+]
+},
+{
+"k": 20,
+"nat": ": ",
+"alt": "\n        ",
+"nat_span": [
+2275,
+2277
+],
+"alt_span": [
+2467,
+2476
+]
+},
+{
+"k": 21,
+"nat": "Args:\n        before (tuple): ",
+"alt": "Parameters\n    ----------\n    before : tuple\n        ",
+"nat_span": [
+2485,
+2515
+],
+"alt_span": [
+2684,
+2737
+]
+},
+{
+"k": 22,
+"nat": "\n        after (",
+"alt": "\n    after : ",
+"nat_span": [
+2562,
+2578
+],
+"alt_span": [
+2784,
+2797
+]
+},
+{
+"k": 23,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+2590,
+2593
+],
+"alt_span": [
+2809,
+2818
+]
+},
+{
+"k": 24,
+"nat": ":\n        str: ",
+"alt": "\n    -------\n    str\n        ",
+"nat_span": [
+2649,
+2664
+],
+"alt_span": [
+2874,
+2903
 ]
 }
 ],
@@ -14773,6 +15507,464 @@
 "regen": "regen8"
 },
 {
+"doc_id": "docstring_style__d061",
+"family": "docstring_style",
+"topic": "Flight Trajectory Calculator",
+"angle": "code",
+"text_es": "Write a navigation function `navigate(conditions)` that computes the estimated time of arrival and fuel burned for a commercial flight. The input is a list containing the distance in kilometers, cruise speed in kilometers per hour, headwind in kilometers per hour, and base fuel consumption rate. Create a helper function to calculate the ground speed by subtracting the headwind from the cruise speed. Create a second helper to compute the total flight duration in hours using the distance and ground speed. A third helper function should calculate the total fuel burned, multiplying the duration by the consumption rate, and adding a ten percent penalty if the headwind exceeds fifty kilometers per hour. The main function returns a tuple of flight hours and total fuel. For a thousand kilometers, speed five hundred, headwind zero, and rate two thousand, it returns two hours and four thousand fuel.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def parse_conditions(conditions):\n    \"\"\"Extract and validate the four flight condition values.\n\n    Args:\n        conditions (Sequence[float]): Distance (km), cruise speed (km/h),\n            headwind (km/h) and base fuel consumption rate (per hour).\n\n    Returns:\n        tuple[float, float, float, float]: Distance, cruise speed, headwind\n            and consumption rate as floats.\n\n    Raises:\n        ValueError: If the sequence length is wrong or a value is invalid.\n    \"\"\"\n    if len(conditions) != 4:\n        raise ValueError(\"expected exactly 4 condition values\")\n    distance, cruise_speed, headwind, rate = (float(v) for v in conditions)\n    if distance <= 0 or cruise_speed <= 0 or rate <= 0:\n        raise ValueError(\"distance, speed and rate must be positive\")\n    if headwind >= cruise_speed:\n        raise ValueError(\"headwind must be slower than the cruise speed\")\n    return distance, cruise_speed, headwind, rate\n\n\ndef ground_speed(cruise_speed, headwind):\n    \"\"\"Compute the speed over the ground.\n\n    Args:\n        cruise_speed (float): True airspeed of the aircraft in km/h.\n        headwind (float): Opposing wind component in km/h.\n\n    Returns:\n        float: The ground speed in km/h.\n    \"\"\"\n    return cruise_speed - headwind\n\n\ndef flight_duration(distance, speed):\n    \"\"\"Compute how long the leg takes at a given ground speed.\n\n    Args:\n        distance (float): Length of the leg in kilometers.\n        speed (float): Ground speed in km/h.\n\n    Returns:\n        float: The flight time in hours.\n    \"\"\"\n    return distance / speed\n\n\ndef fuel_burned(hours, rate, headwind):\n    \"\"\"Compute the fuel consumed during the flight.\n\n    Args:\n        hours (float): Duration of the flight in hours.\n        rate (float): Base fuel consumption per hour.\n        headwind (float): Opposing wind component in km/h, used for the penalty.\n\n    Returns:\n        float: The total fuel burned, including a ten percent penalty when\n            the headwind exceeds fifty km/h.\n    \"\"\"\n    fuel = hours * rate\n    if headwind > 50:\n        fuel *= 1.1\n    return fuel\n\n\ndef navigate(conditions):\n    \"\"\"Estimate arrival time and fuel for one flight leg.\n\n    Args:\n        conditions (Sequence[float]): Distance, cruise speed, headwind, rate.\n\n    Returns:\n        tuple[float, float]: The flight time in hours and the fuel burned.\n    \"\"\"\n    distance, cruise_speed, headwind, rate = parse_conditions(conditions)\n    speed = ground_speed(cruise_speed, headwind)\n    hours = flight_duration(distance, speed)\n    return hours, fuel_burned(hours, rate, headwind)\n\n\ndef format_report(name, conditions):\n    \"\"\"Render a one-line summary for a named flight leg.\n\n    Args:\n        name (str): Label identifying the leg.\n        conditions (Sequence[float]): Distance, cruise speed, headwind, rate.\n\n    Returns:\n        str: A human readable string with the hours and fuel for the leg.\n    \"\"\"\n    hours, fuel = navigate(conditions)\n    return \"{}: {:.2f} h, {:.1f} fuel\".format(name, hours, fuel)\n\n\ndef main():\n    legs = [\n        (\"LHR-CDG\", [1000, 500, 0, 2000]),\n        (\"JFK-LAX\", [3980, 850, 75, 2400]),\n        (\"SIN-HKG\", [2570, 900, 40, 2200]),\n    ]\n    for name, conditions in legs:\n        print(format_report(name, conditions))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_conditions(conditions):\n    \"\"\"Extract and validate the four flight condition values.\n\n    Parameters\n    ----------\n    conditions : Sequence[float]\n        Distance (km), cruise speed (km/h), headwind (km/h) and base fuel\n        consumption rate (per hour).\n\n    Returns\n    -------\n    tuple[float, float, float, float]\n        Distance, cruise speed, headwind and consumption rate as floats.\n\n    Raises\n    ------\n    ValueError\n        If the sequence length is wrong or a value is invalid.\n    \"\"\"\n    if len(conditions) != 4:\n        raise ValueError(\"expected exactly 4 condition values\")\n    distance, cruise_speed, headwind, rate = (float(v) for v in conditions)\n    if distance <= 0 or cruise_speed <= 0 or rate <= 0:\n        raise ValueError(\"distance, speed and rate must be positive\")\n    if headwind >= cruise_speed:\n        raise ValueError(\"headwind must be slower than the cruise speed\")\n    return distance, cruise_speed, headwind, rate\n\n\ndef ground_speed(cruise_speed, headwind):\n    \"\"\"Compute the speed over the ground.\n\n    Parameters\n    ----------\n    cruise_speed : float\n        True airspeed of the aircraft in km/h.\n    headwind : float\n        Opposing wind component in km/h.\n\n    Returns\n    -------\n    float\n        The ground speed in km/h.\n    \"\"\"\n    return cruise_speed - headwind\n\n\ndef flight_duration(distance, speed):\n    \"\"\"Compute how long the leg takes at a given ground speed.\n\n    Parameters\n    ----------\n    distance : float\n        Length of the leg in kilometers.\n    speed : float\n        Ground speed in km/h.\n\n    Returns\n    -------\n    float\n        The flight time in hours.\n    \"\"\"\n    return distance / speed\n\n\ndef fuel_burned(hours, rate, headwind):\n    \"\"\"Compute the fuel consumed during the flight.\n\n    Parameters\n    ----------\n    hours : float\n        Duration of the flight in hours.\n    rate : float\n        Base fuel consumption per hour.\n    headwind : float\n        Opposing wind component in km/h, used for the penalty.\n\n    Returns\n    -------\n    float\n        The total fuel burned, including a ten percent penalty when the\n        headwind exceeds fifty km/h.\n    \"\"\"\n    fuel = hours * rate\n    if headwind > 50:\n        fuel *= 1.1\n    return fuel\n\n\ndef navigate(conditions):\n    \"\"\"Estimate arrival time and fuel for one flight leg.\n\n    Parameters\n    ----------\n    conditions : Sequence[float]\n        Distance, cruise speed, headwind, rate.\n\n    Returns\n    -------\n    tuple[float, float]\n        The flight time in hours and the fuel burned.\n    \"\"\"\n    distance, cruise_speed, headwind, rate = parse_conditions(conditions)\n    speed = ground_speed(cruise_speed, headwind)\n    hours = flight_duration(distance, speed)\n    return hours, fuel_burned(hours, rate, headwind)\n\n\ndef format_report(name, conditions):\n    \"\"\"Render a one-line summary for a named flight leg.\n\n    Parameters\n    ----------\n    name : str\n        Label identifying the leg.\n    conditions : Sequence[float]\n        Distance, cruise speed, headwind, rate.\n\n    Returns\n    -------\n    str\n        A human readable string with the hours and fuel for the leg.\n    \"\"\"\n    hours, fuel = navigate(conditions)\n    return \"{}: {:.2f} h, {:.1f} fuel\".format(name, hours, fuel)\n\n\ndef main():\n    legs = [\n        (\"LHR-CDG\", [1000, 500, 0, 2000]),\n        (\"JFK-LAX\", [3980, 850, 75, 2400]),\n        (\"SIN-HKG\", [2570, 900, 40, 2200]),\n    ]\n    for name, conditions in legs:\n        print(format_report(name, conditions))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        conditions (",
+"alt": "Parameters\n    ----------\n    conditions : ",
+"nat_span": [
+101,
+127
+],
+"alt_span": [
+101,
+144
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        cruise_speed (float): ",
+"alt": "Parameters\n    ----------\n    cruise_speed : float\n        ",
+"nat_span": [
+1025,
+1061
+],
+"alt_span": [
+1059,
+1118
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        distance (float): ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+1365,
+1397
+],
+"alt_span": [
+1439,
+1494
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        hours (float): ",
+"alt": "Parameters\n    ----------\n    hours : float\n        ",
+"nat_span": [
+1665,
+1694
+],
+"alt_span": [
+1779,
+1831
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        conditions (",
+"alt": "Parameters\n    ----------\n    conditions : ",
+"nat_span": [
+2177,
+2203
+],
+"alt_span": [
+2330,
+2373
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        name (str): ",
+"alt": "Parameters\n    ----------\n    name : str\n        ",
+"nat_span": [
+2680,
+2706
+],
+"alt_span": [
+2870,
+2919
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.919,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        conditions (",
+"alt": "Parameters\n    ----------\n    conditions : ",
+"nat_span": [
+101,
+127
+],
+"alt_span": [
+101,
+144
+]
+},
+{
+"k": 1,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+142,
+145
+],
+"alt_span": [
+159,
+168
+]
+},
+{
+"k": 2,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+180,
+193
+],
+"alt_span": [
+203,
+204
+]
+},
+{
+"k": 3,
+"nat": " ",
+"alt": "\n        ",
+"nat_span": [
+222,
+223
+],
+"alt_span": [
+233,
+242
+]
+},
+{
+"k": 4,
+"nat": ":\n        ",
+"alt": "\n    -------\n    ",
+"nat_span": [
+264,
+274
+],
+"alt_span": [
+283,
+300
+]
+},
+{
+"k": 5,
+"nat": ": ",
+"alt": "\n        ",
+"nat_span": [
+307,
+309
+],
+"alt_span": [
+333,
+342
+]
+},
+{
+"k": 6,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+341,
+354
+],
+"alt_span": [
+374,
+375
+]
+},
+{
+"k": 7,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+397,
+419
+],
+"alt_span": [
+418,
+453
+]
+},
+{
+"k": 8,
+"nat": "Args:\n        cruise_speed (float): ",
+"alt": "Parameters\n    ----------\n    cruise_speed : float\n        ",
+"nat_span": [
+1025,
+1061
+],
+"alt_span": [
+1059,
+1118
+]
+},
+{
+"k": 9,
+"nat": "\n        headwind (float): ",
+"alt": "\n    headwind : float\n        ",
+"nat_span": [
+1099,
+1126
+],
+"alt_span": [
+1156,
+1186
+]
+},
+{
+"k": 10,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+1171,
+1188
+],
+"alt_span": [
+1231,
+1262
+]
+},
+{
+"k": 11,
+"nat": "Args:\n        distance (float): ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+1365,
+1397
+],
+"alt_span": [
+1439,
+1494
+]
+},
+{
+"k": 12,
+"nat": "\n        speed (float): ",
+"alt": "\n    speed : float\n        ",
+"nat_span": [
+1429,
+1453
+],
+"alt_span": [
+1526,
+1553
+]
+},
+{
+"k": 13,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+1487,
+1504
+],
+"alt_span": [
+1587,
+1618
+]
+},
+{
+"k": 14,
+"nat": "Args:\n        hours (float): ",
+"alt": "Parameters\n    ----------\n    hours : float\n        ",
+"nat_span": [
+1665,
+1694
+],
+"alt_span": [
+1779,
+1831
+]
+},
+{
+"k": 15,
+"nat": "\n        rate (float): ",
+"alt": "\n    rate : float\n        ",
+"nat_span": [
+1726,
+1749
+],
+"alt_span": [
+1863,
+1889
+]
+},
+{
+"k": 16,
+"nat": "\n        headwind (float): ",
+"alt": "\n    headwind : float\n        ",
+"nat_span": [
+1780,
+1807
+],
+"alt_span": [
+1920,
+1950
+]
+},
+{
+"k": 17,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+1874,
+1891
+],
+"alt_span": [
+2017,
+2048
+]
+},
+{
+"k": 18,
+"nat": "\n            the ",
+"alt": " the\n        ",
+"nat_span": [
+1950,
+1967
+],
+"alt_span": [
+2107,
+2120
+]
+},
+{
+"k": 19,
+"nat": "Args:\n        conditions (",
+"alt": "Parameters\n    ----------\n    conditions : ",
+"nat_span": [
+2177,
+2203
+],
+"alt_span": [
+2330,
+2373
+]
+},
+{
+"k": 20,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+2218,
+2221
+],
+"alt_span": [
+2388,
+2397
+]
+},
+{
+"k": 21,
+"nat": ":\n        ",
+"alt": "\n    -------\n    ",
+"nat_span": [
+2273,
+2283
+],
+"alt_span": [
+2449,
+2466
+]
+},
+{
+"k": 22,
+"nat": ": ",
+"alt": "\n        ",
+"nat_span": [
+2302,
+2304
+],
+"alt_span": [
+2485,
+2494
+]
+},
+{
+"k": 23,
+"nat": "Args:\n        name (str): ",
+"alt": "Parameters\n    ----------\n    name : str\n        ",
+"nat_span": [
+2680,
+2706
+],
+"alt_span": [
+2870,
+2919
+]
+},
+{
+"k": 24,
+"nat": "\n        conditions (",
+"alt": "\n    conditions : ",
+"nat_span": [
+2732,
+2753
+],
+"alt_span": [
+2945,
+2963
+]
+},
+{
+"k": 25,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+2768,
+2771
+],
+"alt_span": [
+2978,
+2987
+]
+},
+{
+"k": 26,
+"nat": ":\n        str: ",
+"alt": "\n    -------\n    str\n        ",
+"nat_span": [
+2823,
+2838
+],
+"alt_span": [
+3039,
+3068
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "docstring_style__d062",
 "family": "docstring_style",
 "topic": "Retail Discount Calculator",
@@ -20314,6 +21506,347 @@
 "regen": "regen8"
 },
 {
+"doc_id": "docstring_style__d080",
+"family": "docstring_style",
+"topic": "Ski Jumping Scorer",
+"angle": "code",
+"text_es": "Build a scoring system for a ski jump competition with the function `score(distance, kpoint, style, wind)`. The inputs are jump distance in meters, the construction point of the hill in meters, a list of five style judge scores out of twenty, and a wind compensation modifier. Break the logic into dedicated scoring functions. Create a helper to calculate distance points by starting with sixty points and adding or subtracting two points for each meter the jump falls beyond or short of the construction point. Create another helper to evaluate style by discarding the highest and lowest scores from the list and summing the remaining three. The main function sums the results of these helpers along with the wind modifier. Return the final score rounded to one decimal place. Example: scoring 125, 120, list of 18, 18.5, 17.5, 18, 19, and -5.5 should return 119.0.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "\"\"\"Scoring system for a ski jump competition.\"\"\"\n\n\ndef distance_points(distance, kpoint):\n    \"\"\"Compute the distance points for a jump.\n\n    A jump that lands exactly on the construction point is worth sixty\n    points; every metre beyond or short of it adds or removes two points.\n\n    Args:\n        distance: Length of the jump in metres.\n        kpoint: Construction point of the hill in metres.\n\n    Returns:\n        The distance points as a float.\n    \"\"\"\n    return 60.0 + 2.0 * (distance - kpoint)\n\n\ndef style_points(style):\n    \"\"\"Sum the judge marks that count towards the score.\n\n    Args:\n        style: List of five judge marks, each out of twenty.\n\n    Returns:\n        The sum of the three middle marks, the highest and the lowest\n        having been discarded.\n    \"\"\"\n    ordered = sorted(style)\n    return float(sum(ordered[1:4]))\n\n\ndef validate_marks(style):\n    \"\"\"Check that a list of judge marks can be scored.\n\n    Args:\n        style: List of judge marks to inspect.\n\n    Returns:\n        The marks as a list of floats.\n\n    Raises:\n        ValueError: If there are not exactly five marks or a mark lies\n            outside the range zero to twenty.\n    \"\"\"\n    if len(style) != 5:\n        raise ValueError(\"exactly five judge marks are required\")\n    marks = [float(mark) for mark in style]\n    if any(mark < 0.0 or mark > 20.0 for mark in marks):\n        raise ValueError(\"judge marks must be between 0 and 20\")\n    return marks\n\n\ndef score(distance, kpoint, style, wind):\n    \"\"\"Score a single ski jump.\n\n    Args:\n        distance: Length of the jump in metres.\n        kpoint: Construction point of the hill in metres.\n        style: List of five judge marks out of twenty.\n        wind: Wind compensation modifier, positive or negative.\n\n    Returns:\n        The total score rounded to one decimal place.\n    \"\"\"\n    marks = validate_marks(style)\n    total = distance_points(distance, kpoint) + style_points(marks) + wind\n    return round(total, 1)\n\n\ndef format_result(name, total):\n    \"\"\"Build a one-line report entry for a competitor.\n\n    Args:\n        name: Name of the jumper.\n        total: Score returned by :func:`score`.\n\n    Returns:\n        A string with the name left-padded to twelve characters followed\n        by the score with one decimal place.\n    \"\"\"\n    return \"{:<12}{:>7.1f}\".format(name, total)\n\n\ndef main():\n    \"\"\"Score a small start list and print the standings.\n\n    Returns:\n        The list of (name, score) pairs sorted from best to worst.\n    \"\"\"\n    start_list = [\n        (\"Nykaenen\", 125, 120, [18, 18.5, 17.5, 18, 19], -5.5),\n        (\"Schlierenzauer\", 118, 120, [17, 17.5, 18, 16.5, 17], 2.0),\n        (\"Stoch\", 132, 120, [19, 19.5, 19, 18.5, 20], -8.0),\n    ]\n    results = [\n        (name, score(distance, kpoint, marks, wind))\n        for name, distance, kpoint, marks, wind in start_list\n    ]\n    results.sort(key=lambda entry: entry[1], reverse=True)\n    for name, total in results:\n        print(format_result(name, total))\n    return results\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "\"\"\"Scoring system for a ski jump competition.\"\"\"\n\n\ndef distance_points(distance, kpoint):\n    \"\"\"Compute the distance points for a jump.\n\n    A jump that lands exactly on the construction point is worth sixty\n    points; every metre beyond or short of it adds or removes two points.\n\n    Parameters\n    ----------\n    distance : float\n        Length of the jump in metres.\n    kpoint : float\n        Construction point of the hill in metres.\n\n    Returns\n    -------\n    float\n        The distance points as a float.\n    \"\"\"\n    return 60.0 + 2.0 * (distance - kpoint)\n\n\ndef style_points(style):\n    \"\"\"Sum the judge marks that count towards the score.\n\n    Parameters\n    ----------\n    style : list\n        List of five judge marks, each out of twenty.\n\n    Returns\n    -------\n    float\n        The sum of the three middle marks, the highest and the lowest\n        having been discarded.\n    \"\"\"\n    ordered = sorted(style)\n    return float(sum(ordered[1:4]))\n\n\ndef validate_marks(style):\n    \"\"\"Check that a list of judge marks can be scored.\n\n    Parameters\n    ----------\n    style : list\n        List of judge marks to inspect.\n\n    Returns\n    -------\n    list of float\n        The marks as a list of floats.\n\n    Raises\n    ------\n    ValueError\n        If there are not exactly five marks or a mark lies\n        outside the range zero to twenty.\n    \"\"\"\n    if len(style) != 5:\n        raise ValueError(\"exactly five judge marks are required\")\n    marks = [float(mark) for mark in style]\n    if any(mark < 0.0 or mark > 20.0 for mark in marks):\n        raise ValueError(\"judge marks must be between 0 and 20\")\n    return marks\n\n\ndef score(distance, kpoint, style, wind):\n    \"\"\"Score a single ski jump.\n\n    Parameters\n    ----------\n    distance : float\n        Length of the jump in metres.\n    kpoint : float\n        Construction point of the hill in metres.\n    style : list\n        List of five judge marks out of twenty.\n    wind : float\n        Wind compensation modifier, positive or negative.\n\n    Returns\n    -------\n    float\n        The total score rounded to one decimal place.\n    \"\"\"\n    marks = validate_marks(style)\n    total = distance_points(distance, kpoint) + style_points(marks) + wind\n    return round(total, 1)\n\n\ndef format_result(name, total):\n    \"\"\"Build a one-line report entry for a competitor.\n\n    Parameters\n    ----------\n    name : str\n        Name of the jumper.\n    total : float\n        Score returned by :func:`score`.\n\n    Returns\n    -------\n    str\n        A string with the name left-padded to twelve characters followed\n        by the score with one decimal place.\n    \"\"\"\n    return \"{:<12}{:>7.1f}\".format(name, total)\n\n\ndef main():\n    \"\"\"Score a small start list and print the standings.\n\n    Returns\n    -------\n    list of tuple\n        The list of (name, score) pairs sorted from best to worst.\n    \"\"\"\n    start_list = [\n        (\"Nykaenen\", 125, 120, [18, 18.5, 17.5, 18, 19], -5.5),\n        (\"Schlierenzauer\", 118, 120, [17, 17.5, 18, 16.5, 17], 2.0),\n        (\"Stoch\", 132, 120, [19, 19.5, 19, 18.5, 20], -8.0),\n    ]\n    results = [\n        (name, score(distance, kpoint, marks, wind))\n        for name, distance, kpoint, marks, wind in start_list\n    ]\n    results.sort(key=lambda entry: entry[1], reverse=True)\n    for name, total in results:\n        print(format_result(name, total))\n    return results\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        distance: ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+288,
+312
+],
+"alt_span": [
+288,
+343
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        style: ",
+"alt": "Parameters\n    ----------\n    style : list\n        ",
+"nat_span": [
+595,
+616
+],
+"alt_span": [
+658,
+709
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        style: ",
+"alt": "Parameters\n    ----------\n    style : list\n        ",
+"nat_span": [
+938,
+959
+],
+"alt_span": [
+1052,
+1103
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        distance: ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+1536,
+1560
+],
+"alt_span": [
+1718,
+1773
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        name: ",
+"alt": "Parameters\n    ----------\n    name : str\n        ",
+"nat_span": [
+2073,
+2093
+],
+"alt_span": [
+2339,
+2388
+]
+},
+{
+"k": 5,
+"nat": ":",
+"alt": "\n    -------\n    list of tuple",
+"nat_span": [
+2432,
+2433
+],
+"alt_span": [
+2757,
+2787
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.973,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        distance: ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+288,
+312
+],
+"alt_span": [
+288,
+343
+]
+},
+{
+"k": 1,
+"nat": "\n        kpoint: ",
+"alt": "\n    kpoint : float\n        ",
+"nat_span": [
+341,
+358
+],
+"alt_span": [
+372,
+400
+]
+},
+{
+"k": 2,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+412,
+413
+],
+"alt_span": [
+454,
+476
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        style: ",
+"alt": "Parameters\n    ----------\n    style : list\n        ",
+"nat_span": [
+595,
+616
+],
+"alt_span": [
+658,
+709
+]
+},
+{
+"k": 4,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+674,
+675
+],
+"alt_span": [
+767,
+789
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        style: ",
+"alt": "Parameters\n    ----------\n    style : list\n        ",
+"nat_span": [
+938,
+959
+],
+"alt_span": [
+1052,
+1103
+]
+},
+{
+"k": 6,
+"nat": ":",
+"alt": "\n    -------\n    list of float",
+"nat_span": [
+1003,
+1004
+],
+"alt_span": [
+1147,
+1177
+]
+},
+{
+"k": 7,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+1055,
+1077
+],
+"alt_span": [
+1228,
+1263
+]
+},
+{
+"k": 8,
+"nat": "\n            ",
+"alt": "\n        ",
+"nat_span": [
+1127,
+1140
+],
+"alt_span": [
+1313,
+1322
+]
+},
+{
+"k": 9,
+"nat": "Args:\n        distance: ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+1536,
+1560
+],
+"alt_span": [
+1718,
+1773
+]
+},
+{
+"k": 10,
+"nat": "\n        kpoint: ",
+"alt": "\n    kpoint : float\n        ",
+"nat_span": [
+1589,
+1606
+],
+"alt_span": [
+1802,
+1830
+]
+},
+{
+"k": 11,
+"nat": "\n        style: ",
+"alt": "\n    style : list\n        ",
+"nat_span": [
+1647,
+1663
+],
+"alt_span": [
+1871,
+1897
+]
+},
+{
+"k": 12,
+"nat": "\n        wind: ",
+"alt": "\n    wind : float\n        ",
+"nat_span": [
+1702,
+1717
+],
+"alt_span": [
+1936,
+1962
+]
+},
+{
+"k": 13,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+1779,
+1780
+],
+"alt_span": [
+2024,
+2046
+]
+},
+{
+"k": 14,
+"nat": "Args:\n        name: ",
+"alt": "Parameters\n    ----------\n    name : str\n        ",
+"nat_span": [
+2073,
+2093
+],
+"alt_span": [
+2339,
+2388
+]
+},
+{
+"k": 15,
+"nat": "\n        total: ",
+"alt": "\n    total : float\n        ",
+"nat_span": [
+2112,
+2128
+],
+"alt_span": [
+2407,
+2434
+]
+},
+{
+"k": 16,
+"nat": ":",
+"alt": "\n    -------\n    str",
+"nat_span": [
+2173,
+2174
+],
+"alt_span": [
+2479,
+2499
+]
+},
+{
+"k": 17,
+"nat": ":",
+"alt": "\n    -------\n    list of tuple",
+"nat_span": [
+2432,
+2433
+],
+"alt_span": [
+2757,
+2787
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "docstring_style__d082",
 "family": "docstring_style",
 "topic": "Aquarium Dosing Estimator",
@@ -24625,6 +26158,831 @@
 "alt_span": [
 2218,
 2238
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "docstring_style__d097",
+"family": "docstring_style",
+"topic": "Coffee Roasting Evaluator",
+"angle": "code",
+"text_es": "Develop a bean analysis tool starting with the function `evaluate(green, roasted, duration, crack)`. The inputs are green bean weight in grams, roasted weight in grams, total roast duration in seconds, and first crack time in seconds. Separate the logic into individual helper functions. One helper calculates the weight loss percentage by finding the difference between green and roasted, dividing by green, and multiplying by one hundred. Another helper computes the development time ratio by subtracting the crack time from the duration and dividing the result by the total duration. A final helper estimates the roast level string based on the ratio, labeling it light if below zero point two, medium if up to zero point two five, and dark otherwise. The entry function returns a tuple with the loss percentage, development ratio, and roast level. Example: evaluating 1000, 850, 720, 540 should return 15.0, 0.25, medium.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def weight_loss(green, roasted):\n    \"\"\"Compute the percentage of mass lost during roasting.\n\n    Args:\n        green: Green bean weight in grams.\n        roasted: Roasted bean weight in grams.\n\n    Returns:\n        The weight loss as a percentage of the green weight.\n    \"\"\"\n    return (green - roasted) / green * 100.0\n\n\ndef development_ratio(duration, crack):\n    \"\"\"Compute the share of the roast spent after first crack.\n\n    Args:\n        duration: Total roast duration in seconds.\n        crack: Time of first crack in seconds.\n\n    Returns:\n        The development time ratio as a fraction of the total duration.\n    \"\"\"\n    return (duration - crack) / duration\n\n\ndef roast_level(ratio):\n    \"\"\"Label a roast from its development time ratio.\n\n    Args:\n        ratio: Development time ratio between 0 and 1.\n\n    Returns:\n        One of \"light\", \"medium\" or \"dark\".\n    \"\"\"\n    if ratio < 0.20:\n        return \"light\"\n    if ratio <= 0.25:\n        return \"medium\"\n    return \"dark\"\n\n\ndef validate(green, roasted, duration, crack):\n    \"\"\"Reject roast data that cannot describe a real batch.\n\n    Args:\n        green: Green bean weight in grams.\n        roasted: Roasted bean weight in grams.\n        duration: Total roast duration in seconds.\n        crack: Time of first crack in seconds.\n\n    Raises:\n        ValueError: If a weight or time is non-positive or inconsistent.\n    \"\"\"\n    if green <= 0 or duration <= 0:\n        raise ValueError(\"green weight and duration must be positive\")\n    if roasted <= 0 or roasted > green:\n        raise ValueError(\"roasted weight must be positive and at most the green weight\")\n    if crack <= 0 or crack > duration:\n        raise ValueError(\"first crack must fall inside the roast duration\")\n\n\ndef evaluate(green, roasted, duration, crack):\n    \"\"\"Analyse a single roast batch.\n\n    Args:\n        green: Green bean weight in grams.\n        roasted: Roasted bean weight in grams.\n        duration: Total roast duration in seconds.\n        crack: Time of first crack in seconds.\n\n    Returns:\n        A tuple of (loss percentage, development ratio, roast level).\n    \"\"\"\n    validate(green, roasted, duration, crack)\n    ratio = development_ratio(duration, crack)\n    return weight_loss(green, roasted), ratio, roast_level(ratio)\n\n\ndef format_report(name, result):\n    \"\"\"Render one analysed batch as a single text line.\n\n    Args:\n        name: Identifier of the batch.\n        result: Tuple returned by :func:`evaluate`.\n\n    Returns:\n        A formatted summary line for the batch.\n    \"\"\"\n    loss, ratio, level = result\n    return \"{:<10} loss {:5.1f}%  dtr {:.2f}  {}\".format(name, loss, ratio, level)\n\n\ndef main():\n    batches = [\n        (\"Ethiopia\", 1000, 850, 720, 540),\n        (\"Brazil\", 900, 765, 800, 580),\n        (\"Sumatra\", 1200, 990, 660, 530),\n    ]\n    for name, green, roasted, duration, crack in batches:\n        print(format_report(name, evaluate(green, roasted, duration, crack)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def weight_loss(green, roasted):\n    \"\"\"Compute the percentage of mass lost during roasting.\n\n    Parameters\n    ----------\n    green : float\n        Green bean weight in grams.\n    roasted : float\n        Roasted bean weight in grams.\n\n    Returns\n    -------\n    float\n        The weight loss as a percentage of the green weight.\n    \"\"\"\n    return (green - roasted) / green * 100.0\n\n\ndef development_ratio(duration, crack):\n    \"\"\"Compute the share of the roast spent after first crack.\n\n    Parameters\n    ----------\n    duration : float\n        Total roast duration in seconds.\n    crack : float\n        Time of first crack in seconds.\n\n    Returns\n    -------\n    float\n        The development time ratio as a fraction of the total duration.\n    \"\"\"\n    return (duration - crack) / duration\n\n\ndef roast_level(ratio):\n    \"\"\"Label a roast from its development time ratio.\n\n    Parameters\n    ----------\n    ratio : float\n        Development time ratio between 0 and 1.\n\n    Returns\n    -------\n    str\n        One of \"light\", \"medium\" or \"dark\".\n    \"\"\"\n    if ratio < 0.20:\n        return \"light\"\n    if ratio <= 0.25:\n        return \"medium\"\n    return \"dark\"\n\n\ndef validate(green, roasted, duration, crack):\n    \"\"\"Reject roast data that cannot describe a real batch.\n\n    Parameters\n    ----------\n    green : float\n        Green bean weight in grams.\n    roasted : float\n        Roasted bean weight in grams.\n    duration : float\n        Total roast duration in seconds.\n    crack : float\n        Time of first crack in seconds.\n\n    Raises\n    ------\n    ValueError\n        If a weight or time is non-positive or inconsistent.\n    \"\"\"\n    if green <= 0 or duration <= 0:\n        raise ValueError(\"green weight and duration must be positive\")\n    if roasted <= 0 or roasted > green:\n        raise ValueError(\"roasted weight must be positive and at most the green weight\")\n    if crack <= 0 or crack > duration:\n        raise ValueError(\"first crack must fall inside the roast duration\")\n\n\ndef evaluate(green, roasted, duration, crack):\n    \"\"\"Analyse a single roast batch.\n\n    Parameters\n    ----------\n    green : float\n        Green bean weight in grams.\n    roasted : float\n        Roasted bean weight in grams.\n    duration : float\n        Total roast duration in seconds.\n    crack : float\n        Time of first crack in seconds.\n\n    Returns\n    -------\n    tuple\n        A tuple of (loss percentage, development ratio, roast level).\n    \"\"\"\n    validate(green, roasted, duration, crack)\n    ratio = development_ratio(duration, crack)\n    return weight_loss(green, roasted), ratio, roast_level(ratio)\n\n\ndef format_report(name, result):\n    \"\"\"Render one analysed batch as a single text line.\n\n    Parameters\n    ----------\n    name : str\n        Identifier of the batch.\n    result : tuple\n        Tuple returned by :func:`evaluate`.\n\n    Returns\n    -------\n    str\n        A formatted summary line for the batch.\n    \"\"\"\n    loss, ratio, level = result\n    return \"{:<10} loss {:5.1f}%  dtr {:.2f}  {}\".format(name, loss, ratio, level)\n\n\ndef main():\n    batches = [\n        (\"Ethiopia\", 1000, 850, 720, 540),\n        (\"Brazil\", 900, 765, 800, 580),\n        (\"Sumatra\", 1200, 990, 660, 530),\n    ]\n    for name, green, roasted, duration, crack in batches:\n        print(format_report(name, evaluate(green, roasted, duration, crack)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        green: ",
+"alt": "Parameters\n    ----------\n    green : float\n        ",
+"nat_span": [
+98,
+119
+],
+"alt_span": [
+98,
+150
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        duration: ",
+"alt": "Parameters\n    ----------\n    duration : float\n        ",
+"nat_span": [
+432,
+456
+],
+"alt_span": [
+495,
+550
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        ratio: ",
+"alt": "Parameters\n    ----------\n    ratio : float\n        ",
+"nat_span": [
+756,
+777
+],
+"alt_span": [
+882,
+934
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        green: ",
+"alt": "Parameters\n    ----------\n    green : float\n        ",
+"nat_span": [
+1105,
+1126
+],
+"alt_span": [
+1281,
+1333
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        green: ",
+"alt": "Parameters\n    ----------\n    green : float\n        ",
+"nat_span": [
+1835,
+1856
+],
+"alt_span": [
+2088,
+2140
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        name: ",
+"alt": "Parameters\n    ----------\n    name : str\n        ",
+"nat_span": [
+2376,
+2396
+],
+"alt_span": [
+2714,
+2763
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.965,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        green: ",
+"alt": "Parameters\n    ----------\n    green : float\n        ",
+"nat_span": [
+98,
+119
+],
+"alt_span": [
+98,
+150
+]
+},
+{
+"k": 1,
+"nat": "\n        roasted: ",
+"alt": "\n    roasted : float\n        ",
+"nat_span": [
+146,
+164
+],
+"alt_span": [
+177,
+206
+]
+},
+{
+"k": 2,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+206,
+207
+],
+"alt_span": [
+248,
+270
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        duration: ",
+"alt": "Parameters\n    ----------\n    duration : float\n        ",
+"nat_span": [
+432,
+456
+],
+"alt_span": [
+495,
+550
+]
+},
+{
+"k": 4,
+"nat": "\n        crack: ",
+"alt": "\n    crack : float\n        ",
+"nat_span": [
+488,
+504
+],
+"alt_span": [
+582,
+609
+]
+},
+{
+"k": 5,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+548,
+549
+],
+"alt_span": [
+653,
+675
+]
+},
+{
+"k": 6,
+"nat": "Args:\n        ratio: ",
+"alt": "Parameters\n    ----------\n    ratio : float\n        ",
+"nat_span": [
+756,
+777
+],
+"alt_span": [
+882,
+934
+]
+},
+{
+"k": 7,
+"nat": ":",
+"alt": "\n    -------\n    str",
+"nat_span": [
+829,
+830
+],
+"alt_span": [
+986,
+1006
+]
+},
+{
+"k": 8,
+"nat": "Args:\n        green: ",
+"alt": "Parameters\n    ----------\n    green : float\n        ",
+"nat_span": [
+1105,
+1126
+],
+"alt_span": [
+1281,
+1333
+]
+},
+{
+"k": 9,
+"nat": "\n        roasted: ",
+"alt": "\n    roasted : float\n        ",
+"nat_span": [
+1153,
+1171
+],
+"alt_span": [
+1360,
+1389
+]
+},
+{
+"k": 10,
+"nat": "\n        duration: ",
+"alt": "\n    duration : float\n        ",
+"nat_span": [
+1200,
+1219
+],
+"alt_span": [
+1418,
+1448
+]
+},
+{
+"k": 11,
+"nat": "\n        crack: ",
+"alt": "\n    crack : float\n        ",
+"nat_span": [
+1251,
+1267
+],
+"alt_span": [
+1480,
+1507
+]
+},
+{
+"k": 12,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+1310,
+1332
+],
+"alt_span": [
+1550,
+1585
+]
+},
+{
+"k": 13,
+"nat": "Args:\n        green: ",
+"alt": "Parameters\n    ----------\n    green : float\n        ",
+"nat_span": [
+1835,
+1856
+],
+"alt_span": [
+2088,
+2140
+]
+},
+{
+"k": 14,
+"nat": "\n        roasted: ",
+"alt": "\n    roasted : float\n        ",
+"nat_span": [
+1883,
+1901
+],
+"alt_span": [
+2167,
+2196
+]
+},
+{
+"k": 15,
+"nat": "\n        duration: ",
+"alt": "\n    duration : float\n        ",
+"nat_span": [
+1930,
+1949
+],
+"alt_span": [
+2225,
+2255
+]
+},
+{
+"k": 16,
+"nat": "\n        crack: ",
+"alt": "\n    crack : float\n        ",
+"nat_span": [
+1981,
+1997
+],
+"alt_span": [
+2287,
+2314
+]
+},
+{
+"k": 17,
+"nat": ":",
+"alt": "\n    -------\n    tuple",
+"nat_span": [
+2041,
+2042
+],
+"alt_span": [
+2358,
+2380
+]
+},
+{
+"k": 18,
+"nat": "Args:\n        name: ",
+"alt": "Parameters\n    ----------\n    name : str\n        ",
+"nat_span": [
+2376,
+2396
+],
+"alt_span": [
+2714,
+2763
+]
+},
+{
+"k": 19,
+"nat": "\n        result: ",
+"alt": "\n    result : tuple\n        ",
+"nat_span": [
+2420,
+2437
+],
+"alt_span": [
+2787,
+2815
+]
+},
+{
+"k": 20,
+"nat": ":",
+"alt": "\n    -------\n    str",
+"nat_span": [
+2485,
+2486
+],
+"alt_span": [
+2863,
+2883
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "docstring_style__d098",
+"family": "docstring_style",
+"topic": "Harmograph Curve Generator",
+"angle": "code",
+"text_es": "Create a geometric drawing script with the function `generate(frequency, decay, amplitude, phase)`. The inputs are frequency multiplier, decay rate, initial amplitude, and phase shift in radians. Write helper functions to handle the mathematical steps. One helper computes the current displacement at a given time by multiplying the amplitude by the exponential of negative decay times time, and then by the sine of frequency times time plus phase. Another helper iterates over a time range from zero to ten seconds in steps of one second, calling the displacement helper and accumulating the results into a list. A third helper finds the maximum absolute displacement from that list. The main function returns a tuple of the displacement list rounded to two decimal places and the maximum value. Example: generating 1.0, 0.1, 100, 0.0 should return a list of values and the maximum.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import math\n\n\ndef validate_parameters(frequency, decay, amplitude):\n    \"\"\"Check that the oscillator parameters describe a physical system.\n\n    Args:\n        frequency: Frequency multiplier applied to the time variable.\n        decay: Exponential decay rate; must not be negative.\n        amplitude: Initial amplitude of the oscillation.\n\n    Returns:\n        A tuple of the three parameters converted to floats.\n\n    Raises:\n        ValueError: If the decay rate is negative or the amplitude is zero.\n    \"\"\"\n    if decay < 0:\n        raise ValueError(\"decay rate must be non-negative\")\n    if amplitude == 0:\n        raise ValueError(\"amplitude must be non-zero\")\n    return float(frequency), float(decay), float(amplitude)\n\n\ndef displacement_at(time, frequency, decay, amplitude, phase):\n    \"\"\"Compute the displacement of a damped oscillator at one instant.\n\n    Args:\n        time: Elapsed time in seconds.\n        frequency: Frequency multiplier applied to the time variable.\n        decay: Exponential decay rate of the envelope.\n        amplitude: Initial amplitude of the oscillation.\n        phase: Phase shift in radians.\n\n    Returns:\n        The signed displacement at the requested time.\n    \"\"\"\n    envelope = amplitude * math.exp(-decay * time)\n    return envelope * math.sin(frequency * time + phase)\n\n\ndef sample_displacements(frequency, decay, amplitude, phase):\n    \"\"\"Sample the displacement once per second from zero to ten seconds.\n\n    Args:\n        frequency: Frequency multiplier applied to the time variable.\n        decay: Exponential decay rate of the envelope.\n        amplitude: Initial amplitude of the oscillation.\n        phase: Phase shift in radians.\n\n    Returns:\n        A list of eleven raw displacement values, one per whole second.\n    \"\"\"\n    return [displacement_at(t, frequency, decay, amplitude, phase)\n            for t in range(11)]\n\n\ndef peak_absolute(values):\n    \"\"\"Find the largest magnitude present in a sequence of displacements.\n\n    Args:\n        values: Sequence of signed displacement values.\n\n    Returns:\n        The maximum absolute displacement found in the sequence.\n    \"\"\"\n    return max(abs(value) for value in values)\n\n\ndef generate(frequency, decay, amplitude, phase):\n    \"\"\"Generate the damped oscillation curve used by the drawing script.\n\n    Args:\n        frequency: Frequency multiplier applied to the time variable.\n        decay: Exponential decay rate of the envelope.\n        amplitude: Initial amplitude of the oscillation.\n        phase: Phase shift in radians.\n\n    Returns:\n        A tuple holding the per-second displacements rounded to two decimal\n        places and the maximum absolute displacement.\n    \"\"\"\n    frequency, decay, amplitude = validate_parameters(frequency, decay, amplitude)\n    raw = sample_displacements(frequency, decay, amplitude, float(phase))\n    return [round(value, 2) for value in raw], peak_absolute(raw)\n\n\ndef format_report(values, peak):\n    \"\"\"Render the sampled curve as a plain-text table.\n\n    Args:\n        values: Rounded displacement values, one per whole second.\n        peak: Maximum absolute displacement of the curve.\n\n    Returns:\n        A multi-line string with one row per sample and a summary line.\n    \"\"\"\n    rows = [\"t={:>2}s  {:>8.2f}\".format(t, value) for t, value in enumerate(values)]\n    rows.append(\"peak   {:>8.2f}\".format(peak))\n    return \"\\n\".join(rows)\n\n\ndef main():\n    curve, peak = generate(1.0, 0.1, 100, 0.0)\n    print(format_report(curve, peak))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import math\n\n\ndef validate_parameters(frequency, decay, amplitude):\n    \"\"\"Check that the oscillator parameters describe a physical system.\n\n    Parameters\n    ----------\n    frequency : float\n        Frequency multiplier applied to the time variable.\n    decay : float\n        Exponential decay rate; must not be negative.\n    amplitude : float\n        Initial amplitude of the oscillation.\n\n    Returns\n    -------\n    tuple\n        A tuple of the three parameters converted to floats.\n\n    Raises\n    ------\n    ValueError\n        If the decay rate is negative or the amplitude is zero.\n    \"\"\"\n    if decay < 0:\n        raise ValueError(\"decay rate must be non-negative\")\n    if amplitude == 0:\n        raise ValueError(\"amplitude must be non-zero\")\n    return float(frequency), float(decay), float(amplitude)\n\n\ndef displacement_at(time, frequency, decay, amplitude, phase):\n    \"\"\"Compute the displacement of a damped oscillator at one instant.\n\n    Parameters\n    ----------\n    time : float\n        Elapsed time in seconds.\n    frequency : float\n        Frequency multiplier applied to the time variable.\n    decay : float\n        Exponential decay rate of the envelope.\n    amplitude : float\n        Initial amplitude of the oscillation.\n    phase : float\n        Phase shift in radians.\n\n    Returns\n    -------\n    float\n        The signed displacement at the requested time.\n    \"\"\"\n    envelope = amplitude * math.exp(-decay * time)\n    return envelope * math.sin(frequency * time + phase)\n\n\ndef sample_displacements(frequency, decay, amplitude, phase):\n    \"\"\"Sample the displacement once per second from zero to ten seconds.\n\n    Parameters\n    ----------\n    frequency : float\n        Frequency multiplier applied to the time variable.\n    decay : float\n        Exponential decay rate of the envelope.\n    amplitude : float\n        Initial amplitude of the oscillation.\n    phase : float\n        Phase shift in radians.\n\n    Returns\n    -------\n    list\n        A list of eleven raw displacement values, one per whole second.\n    \"\"\"\n    return [displacement_at(t, frequency, decay, amplitude, phase)\n            for t in range(11)]\n\n\ndef peak_absolute(values):\n    \"\"\"Find the largest magnitude present in a sequence of displacements.\n\n    Parameters\n    ----------\n    values : sequence of float\n        Sequence of signed displacement values.\n\n    Returns\n    -------\n    float\n        The maximum absolute displacement found in the sequence.\n    \"\"\"\n    return max(abs(value) for value in values)\n\n\ndef generate(frequency, decay, amplitude, phase):\n    \"\"\"Generate the damped oscillation curve used by the drawing script.\n\n    Parameters\n    ----------\n    frequency : float\n        Frequency multiplier applied to the time variable.\n    decay : float\n        Exponential decay rate of the envelope.\n    amplitude : float\n        Initial amplitude of the oscillation.\n    phase : float\n        Phase shift in radians.\n\n    Returns\n    -------\n    tuple\n        A tuple holding the per-second displacements rounded to two decimal\n        places and the maximum absolute displacement.\n    \"\"\"\n    frequency, decay, amplitude = validate_parameters(frequency, decay, amplitude)\n    raw = sample_displacements(frequency, decay, amplitude, float(phase))\n    return [round(value, 2) for value in raw], peak_absolute(raw)\n\n\ndef format_report(values, peak):\n    \"\"\"Render the sampled curve as a plain-text table.\n\n    Parameters\n    ----------\n    values : list of float\n        Rounded displacement values, one per whole second.\n    peak : float\n        Maximum absolute displacement of the curve.\n\n    Returns\n    -------\n    str\n        A multi-line string with one row per sample and a summary line.\n    \"\"\"\n    rows = [\"t={:>2}s  {:>8.2f}\".format(t, value) for t, value in enumerate(values)]\n    rows.append(\"peak   {:>8.2f}\".format(peak))\n    return \"\\n\".join(rows)\n\n\ndef main():\n    curve, peak = generate(1.0, 0.1, 100, 0.0)\n    print(format_report(curve, peak))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        frequency: ",
+"alt": "Parameters\n    ----------\n    frequency : float\n        ",
+"nat_span": [
+145,
+170
+],
+"alt_span": [
+145,
+201
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+868,
+888
+],
+"alt_span": [
+955,
+1006
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        frequency: ",
+"alt": "Parameters\n    ----------\n    frequency : float\n        ",
+"nat_span": [
+1461,
+1486
+],
+"alt_span": [
+1644,
+1700
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        values: ",
+"alt": "Parameters\n    ----------\n    values : sequence of float\n        ",
+"nat_span": [
+1989,
+2011
+],
+"alt_span": [
+2256,
+2321
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        frequency: ",
+"alt": "Parameters\n    ----------\n    frequency : float\n        ",
+"nat_span": [
+2315,
+2340
+],
+"alt_span": [
+2646,
+2702
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        values: ",
+"alt": "Parameters\n    ----------\n    values : list of float\n        ",
+"nat_span": [
+3012,
+3034
+],
+"alt_span": [
+3428,
+3489
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.964,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        frequency: ",
+"alt": "Parameters\n    ----------\n    frequency : float\n        ",
+"nat_span": [
+145,
+170
+],
+"alt_span": [
+145,
+201
+]
+},
+{
+"k": 1,
+"nat": "\n        decay: ",
+"alt": "\n    decay : float\n        ",
+"nat_span": [
+220,
+236
+],
+"alt_span": [
+251,
+278
+]
+},
+{
+"k": 2,
+"nat": "\n        amplitude: ",
+"alt": "\n    amplitude : float\n        ",
+"nat_span": [
+281,
+301
+],
+"alt_span": [
+323,
+354
+]
+},
+{
+"k": 3,
+"nat": ":",
+"alt": "\n    -------\n    tuple",
+"nat_span": [
+351,
+352
+],
+"alt_span": [
+404,
+426
+]
+},
+{
+"k": 4,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+425,
+447
+],
+"alt_span": [
+499,
+534
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+868,
+888
+],
+"alt_span": [
+955,
+1006
+]
+},
+{
+"k": 6,
+"nat": "\n        frequency: ",
+"alt": "\n    frequency : float\n        ",
+"nat_span": [
+912,
+932
+],
+"alt_span": [
+1030,
+1061
+]
+},
+{
+"k": 7,
+"nat": "\n        decay: ",
+"alt": "\n    decay : float\n        ",
+"nat_span": [
+982,
+998
+],
+"alt_span": [
+1111,
+1138
+]
+},
+{
+"k": 8,
+"nat": "\n        amplitude: ",
+"alt": "\n    amplitude : float\n        ",
+"nat_span": [
+1037,
+1057
+],
+"alt_span": [
+1177,
+1208
+]
+},
+{
+"k": 9,
+"nat": "\n        phase: ",
+"alt": "\n    phase : float\n        ",
+"nat_span": [
+1094,
+1110
+],
+"alt_span": [
+1245,
+1272
+]
+},
+{
+"k": 10,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+1146,
+1147
+],
+"alt_span": [
+1308,
+1330
+]
+},
+{
+"k": 11,
+"nat": "Args:\n        frequency: ",
+"alt": "Parameters\n    ----------\n    frequency : float\n        ",
+"nat_span": [
+1461,
+1486
+],
+"alt_span": [
+1644,
+1700
+]
+},
+{
+"k": 12,
+"nat": "\n        decay: ",
+"alt": "\n    decay : float\n        ",
+"nat_span": [
+1536,
+1552
+],
+"alt_span": [
+1750,
+1777
+]
+},
+{
+"k": 13,
+"nat": "\n        amplitude: ",
+"alt": "\n    amplitude : float\n        ",
+"nat_span": [
+1591,
+1611
+],
+"alt_span": [
+1816,
+1847
+]
+},
+{
+"k": 14,
+"nat": "\n        phase: ",
+"alt": "\n    phase : float\n        ",
+"nat_span": [
+1648,
+1664
+],
+"alt_span": [
+1884,
+1911
+]
+},
+{
+"k": 15,
+"nat": ":",
+"alt": "\n    -------\n    list",
+"nat_span": [
+1700,
+1701
+],
+"alt_span": [
+1947,
+1968
+]
+},
+{
+"k": 16,
+"nat": "Args:\n        values: ",
+"alt": "Parameters\n    ----------\n    values : sequence of float\n        ",
+"nat_span": [
+1989,
+2011
+],
+"alt_span": [
+2256,
+2321
+]
+},
+{
+"k": 17,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+2063,
+2064
+],
+"alt_span": [
+2373,
+2395
+]
+},
+{
+"k": 18,
+"nat": "Args:\n        frequency: ",
+"alt": "Parameters\n    ----------\n    frequency : float\n        ",
+"nat_span": [
+2315,
+2340
+],
+"alt_span": [
+2646,
+2702
+]
+},
+{
+"k": 19,
+"nat": "\n        decay: ",
+"alt": "\n    decay : float\n        ",
+"nat_span": [
+2390,
+2406
+],
+"alt_span": [
+2752,
+2779
+]
+},
+{
+"k": 20,
+"nat": "\n        amplitude: ",
+"alt": "\n    amplitude : float\n        ",
+"nat_span": [
+2445,
+2465
+],
+"alt_span": [
+2818,
+2849
+]
+},
+{
+"k": 21,
+"nat": "\n        phase: ",
+"alt": "\n    phase : float\n        ",
+"nat_span": [
+2502,
+2518
+],
+"alt_span": [
+2886,
+2913
+]
+},
+{
+"k": 22,
+"nat": ":",
+"alt": "\n    -------\n    tuple",
+"nat_span": [
+2554,
+2555
+],
+"alt_span": [
+2949,
+2971
+]
+},
+{
+"k": 23,
+"nat": "Args:\n        values: ",
+"alt": "Parameters\n    ----------\n    values : list of float\n        ",
+"nat_span": [
+3012,
+3034
+],
+"alt_span": [
+3428,
+3489
+]
+},
+{
+"k": 24,
+"nat": "\n        peak: ",
+"alt": "\n    peak : float\n        ",
+"nat_span": [
+3084,
+3099
+],
+"alt_span": [
+3539,
+3565
+]
+},
+{
+"k": 25,
+"nat": ":",
+"alt": "\n    -------\n    str",
+"nat_span": [
+3155,
+3156
+],
+"alt_span": [
+3621,
+3641
 ]
 }
 ],
@@ -32327,6 +34685,347 @@
 "regen": "regen8"
 },
 {
+"doc_id": "docstring_style__d130",
+"family": "docstring_style",
+"topic": "Aquaponics Ammonia Tracker",
+"angle": "code",
+"text_es": "The function ammonia(measurements) processes a list of daily water tests, each containing temperature in celsius, potential hydrogen level, and total ammonia nitrogen in milligrams per liter. The toxic un-ionized ammonia fraction is calculated by first finding the acid dissociation constant which depends on temperature, and then using the potential hydrogen level to find the fraction. Specifically, the constant is zero point zero nine zero one eight plus twenty seven twenty nine point ninety two divided by the temperature in kelvin. The fraction is one divided by ten to the power of the constant minus the potential hydrogen level, plus one. Multiply this fraction by the total ammonia nitrogen to get the toxic concentration. Return a list of boolean values, true if the toxic concentration exceeds zero point zero five milligrams per liter, and false otherwise. For example, given [(25, 8.0, 2.0)], return [True].",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "CELSIUS_TO_KELVIN = 273.15\nTOXICITY_THRESHOLD = 0.05\n\n\ndef to_kelvin(celsius):\n    \"\"\"Convert a temperature from degrees Celsius to Kelvin.\n\n    Args:\n        celsius (float): Temperature in degrees Celsius.\n\n    Returns:\n        float: The equivalent absolute temperature in Kelvin.\n    \"\"\"\n    return celsius + CELSIUS_TO_KELVIN\n\n\ndef dissociation_constant(celsius):\n    \"\"\"Compute the ammonia acid dissociation constant for a temperature.\n\n    Args:\n        celsius (float): Water temperature in degrees Celsius.\n\n    Returns:\n        float: The pKa value 0.09018 + 2729.92 / T(K).\n    \"\"\"\n    return 0.09018 + 2729.92 / to_kelvin(celsius)\n\n\ndef unionized_fraction(celsius, ph):\n    \"\"\"Compute the fraction of total ammonia that is un-ionized.\n\n    Args:\n        celsius (float): Water temperature in degrees Celsius.\n        ph (float): Potential hydrogen level of the sample.\n\n    Returns:\n        float: The un-ionized fraction, between 0 and 1.\n    \"\"\"\n    pka = dissociation_constant(celsius)\n    return 1.0 / (10.0 ** (pka - ph) + 1.0)\n\n\ndef toxic_concentration(celsius, ph, total_ammonia_nitrogen):\n    \"\"\"Compute the toxic un-ionized ammonia concentration of a sample.\n\n    Args:\n        celsius (float): Water temperature in degrees Celsius.\n        ph (float): Potential hydrogen level of the sample.\n        total_ammonia_nitrogen (float): Total ammonia nitrogen in mg/L.\n\n    Returns:\n        float: The un-ionized ammonia concentration in mg/L.\n    \"\"\"\n    return unionized_fraction(celsius, ph) * total_ammonia_nitrogen\n\n\ndef ammonia(measurements):\n    \"\"\"Flag daily water tests whose toxic ammonia level is unsafe.\n\n    Args:\n        measurements (iterable): Triples of temperature in Celsius,\n            potential hydrogen level and total ammonia nitrogen in mg/L.\n\n    Returns:\n        list: Booleans, True where the toxic un-ionized ammonia\n            concentration exceeds 0.05 mg/L and False otherwise.\n    \"\"\"\n    return [toxic_concentration(*sample) > TOXICITY_THRESHOLD\n            for sample in measurements]\n\n\ndef format_report(measurements, flags):\n    \"\"\"Build a human readable line for every measured day.\n\n    Args:\n        measurements (list): The triples that were tested.\n        flags (list): The boolean results returned by ammonia.\n\n    Returns:\n        list: Formatted strings, one per measurement.\n    \"\"\"\n    lines = []\n    for day, ((celsius, ph, tan), unsafe) in enumerate(zip(measurements, flags), 1):\n        level = toxic_concentration(celsius, ph, tan)\n        status = \"UNSAFE\" if unsafe else \"safe\"\n        lines.append(\"Day %d: %.1f C, pH %.1f, TAN %.2f -> NH3 %.4f mg/L [%s]\"\n                     % (day, celsius, ph, tan, level, status))\n    return lines\n\n\ndef main():\n    samples = [(25, 8.0, 2.0), (18, 7.2, 1.5), (30, 8.6, 0.4), (22, 6.8, 5.0)]\n    flags = ammonia(samples)\n    for line in format_report(samples, flags):\n        print(line)\n    print(\"Unsafe days: %d of %d\" % (sum(flags), len(flags)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "CELSIUS_TO_KELVIN = 273.15\nTOXICITY_THRESHOLD = 0.05\n\n\ndef to_kelvin(celsius):\n    \"\"\"Convert a temperature from degrees Celsius to Kelvin.\n\n    Parameters\n    ----------\n    celsius : float\n        Temperature in degrees Celsius.\n\n    Returns\n    -------\n    float\n        The equivalent absolute temperature in Kelvin.\n    \"\"\"\n    return celsius + CELSIUS_TO_KELVIN\n\n\ndef dissociation_constant(celsius):\n    \"\"\"Compute the ammonia acid dissociation constant for a temperature.\n\n    Parameters\n    ----------\n    celsius : float\n        Water temperature in degrees Celsius.\n\n    Returns\n    -------\n    float\n        The pKa value 0.09018 + 2729.92 / T(K).\n    \"\"\"\n    return 0.09018 + 2729.92 / to_kelvin(celsius)\n\n\ndef unionized_fraction(celsius, ph):\n    \"\"\"Compute the fraction of total ammonia that is un-ionized.\n\n    Parameters\n    ----------\n    celsius : float\n        Water temperature in degrees Celsius.\n    ph : float\n        Potential hydrogen level of the sample.\n\n    Returns\n    -------\n    float\n        The un-ionized fraction, between 0 and 1.\n    \"\"\"\n    pka = dissociation_constant(celsius)\n    return 1.0 / (10.0 ** (pka - ph) + 1.0)\n\n\ndef toxic_concentration(celsius, ph, total_ammonia_nitrogen):\n    \"\"\"Compute the toxic un-ionized ammonia concentration of a sample.\n\n    Parameters\n    ----------\n    celsius : float\n        Water temperature in degrees Celsius.\n    ph : float\n        Potential hydrogen level of the sample.\n    total_ammonia_nitrogen : float\n        Total ammonia nitrogen in mg/L.\n\n    Returns\n    -------\n    float\n        The un-ionized ammonia concentration in mg/L.\n    \"\"\"\n    return unionized_fraction(celsius, ph) * total_ammonia_nitrogen\n\n\ndef ammonia(measurements):\n    \"\"\"Flag daily water tests whose toxic ammonia level is unsafe.\n\n    Parameters\n    ----------\n    measurements : iterable\n        Triples of temperature in Celsius,\n        potential hydrogen level and total ammonia nitrogen in mg/L.\n\n    Returns\n    -------\n    list\n        Booleans, True where the toxic un-ionized ammonia\n        concentration exceeds 0.05 mg/L and False otherwise.\n    \"\"\"\n    return [toxic_concentration(*sample) > TOXICITY_THRESHOLD\n            for sample in measurements]\n\n\ndef format_report(measurements, flags):\n    \"\"\"Build a human readable line for every measured day.\n\n    Parameters\n    ----------\n    measurements : list\n        The triples that were tested.\n    flags : list\n        The boolean results returned by ammonia.\n\n    Returns\n    -------\n    list\n        Formatted strings, one per measurement.\n    \"\"\"\n    lines = []\n    for day, ((celsius, ph, tan), unsafe) in enumerate(zip(measurements, flags), 1):\n        level = toxic_concentration(celsius, ph, tan)\n        status = \"UNSAFE\" if unsafe else \"safe\"\n        lines.append(\"Day %d: %.1f C, pH %.1f, TAN %.2f -> NH3 %.4f mg/L [%s]\"\n                     % (day, celsius, ph, tan, level, status))\n    return lines\n\n\ndef main():\n    samples = [(25, 8.0, 2.0), (18, 7.2, 1.5), (30, 8.6, 0.4), (22, 6.8, 5.0)]\n    flags = ammonia(samples)\n    for line in format_report(samples, flags):\n        print(line)\n    print(\"Unsafe days: %d of %d\" % (sum(flags), len(flags)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+145,
+176
+],
+"alt_span": [
+145,
+199
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+447,
+478
+],
+"alt_span": [
+484,
+538
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+752,
+783
+],
+"alt_span": [
+826,
+880
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+1185,
+1216
+],
+"alt_span": [
+1299,
+1353
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        measurements (iterable): ",
+"alt": "Parameters\n    ----------\n    measurements : iterable\n        ",
+"nat_span": [
+1638,
+1677
+],
+"alt_span": [
+1795,
+1857
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        measurements (list): ",
+"alt": "Parameters\n    ----------\n    measurements : list\n        ",
+"nat_span": [
+2144,
+2179
+],
+"alt_span": [
+2330,
+2388
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.924,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+145,
+176
+],
+"alt_span": [
+145,
+199
+]
+},
+{
+"k": 1,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+220,
+237
+],
+"alt_span": [
+243,
+274
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+447,
+478
+],
+"alt_span": [
+484,
+538
+]
+},
+{
+"k": 3,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+528,
+545
+],
+"alt_span": [
+588,
+619
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+752,
+783
+],
+"alt_span": [
+826,
+880
+]
+},
+{
+"k": 5,
+"nat": "\n        ph (float): ",
+"alt": "\n    ph : float\n        ",
+"nat_span": [
+820,
+841
+],
+"alt_span": [
+917,
+941
+]
+},
+{
+"k": 6,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+893,
+910
+],
+"alt_span": [
+993,
+1024
+]
+},
+{
+"k": 7,
+"nat": "Args:\n        celsius (float): ",
+"alt": "Parameters\n    ----------\n    celsius : float\n        ",
+"nat_span": [
+1185,
+1216
+],
+"alt_span": [
+1299,
+1353
+]
+},
+{
+"k": 8,
+"nat": "\n        ph (float): ",
+"alt": "\n    ph : float\n        ",
+"nat_span": [
+1253,
+1274
+],
+"alt_span": [
+1390,
+1414
+]
+},
+{
+"k": 9,
+"nat": "\n        total_ammonia_nitrogen (float): ",
+"alt": "\n    total_ammonia_nitrogen : float\n        ",
+"nat_span": [
+1313,
+1354
+],
+"alt_span": [
+1453,
+1497
+]
+},
+{
+"k": 10,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+1398,
+1415
+],
+"alt_span": [
+1541,
+1572
+]
+},
+{
+"k": 11,
+"nat": "Args:\n        measurements (iterable): ",
+"alt": "Parameters\n    ----------\n    measurements : iterable\n        ",
+"nat_span": [
+1638,
+1677
+],
+"alt_span": [
+1795,
+1857
+]
+},
+{
+"k": 12,
+"nat": "\n            ",
+"alt": "\n        ",
+"nat_span": [
+1711,
+1724
+],
+"alt_span": [
+1891,
+1900
+]
+},
+{
+"k": 13,
+"nat": ":\n        list: ",
+"alt": "\n    -------\n    list\n        ",
+"nat_span": [
+1797,
+1813
+],
+"alt_span": [
+1973,
+2003
+]
+},
+{
+"k": 14,
+"nat": "\n            ",
+"alt": "\n        ",
+"nat_span": [
+1862,
+1875
+],
+"alt_span": [
+2052,
+2061
+]
+},
+{
+"k": 15,
+"nat": "Args:\n        measurements (list): ",
+"alt": "Parameters\n    ----------\n    measurements : list\n        ",
+"nat_span": [
+2144,
+2179
+],
+"alt_span": [
+2330,
+2388
+]
+},
+{
+"k": 16,
+"nat": "\n        flags (list): ",
+"alt": "\n    flags : list\n        ",
+"nat_span": [
+2208,
+2231
+],
+"alt_span": [
+2417,
+2443
+]
+},
+{
+"k": 17,
+"nat": ":\n        list: ",
+"alt": "\n    -------\n    list\n        ",
+"nat_span": [
+2284,
+2300
+],
+"alt_span": [
+2496,
+2526
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "docstring_style__d134",
 "family": "docstring_style",
 "topic": "Baking Sugar Replacement Calculator",
@@ -33013,6 +35712,295 @@
 "alt_span": [
 1950,
 1979
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "docstring_style__d138",
+"family": "docstring_style",
+"topic": "Farm Irrigation Planner",
+"angle": "code",
+"text_es": "The function irrigate(fields) evaluates a list of farm plots, each containing the crop type, current soil moisture percentage, and predicted rainfall in millimeters. The target moisture is forty percent for corn and thirty percent for wheat. If the current moisture is greater than or equal to the target, no irrigation is needed. Otherwise, calculate the required water by applying ten millimeters for every one percent of moisture deficit, and then subtract the predicted rainfall. If the rainfall completely covers the need, the required irrigation becomes zero. Return a list of integers representing the final millimeters of water to apply for each field. For example, given [(\"corn\", 30, 20), (\"wheat\", 35, 0)], return [80, 0].",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "TARGET_MOISTURE = {\"corn\": 40, \"wheat\": 30}\nMM_PER_PERCENT = 10\n\n\ndef target_moisture(crop):\n    \"\"\"Look up the target soil moisture percentage for a crop.\n\n    Args:\n        crop (str): Name of the crop growing on the plot.\n\n    Returns:\n        int: The target soil moisture as a percentage.\n\n    Raises:\n        ValueError: If the crop has no defined moisture target.\n    \"\"\"\n    key = crop.strip().lower()\n    if key not in TARGET_MOISTURE:\n        raise ValueError(\"unknown crop: {}\".format(crop))\n    return TARGET_MOISTURE[key]\n\n\ndef moisture_deficit(crop, moisture):\n    \"\"\"Compute how many percentage points of moisture are missing.\n\n    Args:\n        crop (str): Name of the crop growing on the plot.\n        moisture (int): Current soil moisture as a percentage.\n\n    Returns:\n        int: The non-negative deficit in percentage points.\n    \"\"\"\n    return max(target_moisture(crop) - moisture, 0)\n\n\ndef water_needed(crop, moisture, rainfall):\n    \"\"\"Determine the irrigation required for a single plot.\n\n    Args:\n        crop (str): Name of the crop growing on the plot.\n        moisture (int): Current soil moisture as a percentage.\n        rainfall (int): Predicted rainfall in millimeters.\n\n    Returns:\n        int: Millimeters of irrigation water to apply, never below zero.\n    \"\"\"\n    deficit = moisture_deficit(crop, moisture)\n    if deficit == 0:\n        return 0\n    return max(deficit * MM_PER_PERCENT - rainfall, 0)\n\n\ndef irrigate(fields):\n    \"\"\"Plan irrigation for every plot on the farm.\n\n    Args:\n        fields (list): Sequence of (crop, moisture, rainfall) triples.\n\n    Returns:\n        list: Integers giving the millimeters of water for each plot.\n    \"\"\"\n    return [water_needed(crop, moisture, rainfall)\n            for crop, moisture, rainfall in fields]\n\n\ndef format_report(fields, amounts):\n    \"\"\"Render a human readable irrigation schedule.\n\n    Args:\n        fields (list): Sequence of (crop, moisture, rainfall) triples.\n        amounts (list): Irrigation amounts aligned with the plots in fields.\n\n    Returns:\n        str: A multi-line string with one line per plot plus a total.\n    \"\"\"\n    lines = []\n    for (crop, moisture, rainfall), water in zip(fields, amounts):\n        lines.append(\"{:<6} moisture={:>3}% rain={:>3}mm -> {:>4}mm\".format(\n            crop, moisture, rainfall, water))\n    lines.append(\"total: {}mm\".format(sum(amounts)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    plots = [(\"corn\", 30, 20), (\"wheat\", 35, 0), (\"corn\", 25, 200),\n             (\"wheat\", 12, 60)]\n    amounts = irrigate(plots)\n    print(amounts)\n    print(format_report(plots, amounts))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "TARGET_MOISTURE = {\"corn\": 40, \"wheat\": 30}\nMM_PER_PERCENT = 10\n\n\ndef target_moisture(crop):\n    \"\"\"Look up the target soil moisture percentage for a crop.\n\n    Parameters\n    ----------\n    crop : str\n        Name of the crop growing on the plot.\n\n    Returns\n    -------\n    int\n        The target soil moisture as a percentage.\n\n    Raises\n    ------\n    ValueError\n        If the crop has no defined moisture target.\n    \"\"\"\n    key = crop.strip().lower()\n    if key not in TARGET_MOISTURE:\n        raise ValueError(\"unknown crop: {}\".format(crop))\n    return TARGET_MOISTURE[key]\n\n\ndef moisture_deficit(crop, moisture):\n    \"\"\"Compute how many percentage points of moisture are missing.\n\n    Parameters\n    ----------\n    crop : str\n        Name of the crop growing on the plot.\n    moisture : int\n        Current soil moisture as a percentage.\n\n    Returns\n    -------\n    int\n        The non-negative deficit in percentage points.\n    \"\"\"\n    return max(target_moisture(crop) - moisture, 0)\n\n\ndef water_needed(crop, moisture, rainfall):\n    \"\"\"Determine the irrigation required for a single plot.\n\n    Parameters\n    ----------\n    crop : str\n        Name of the crop growing on the plot.\n    moisture : int\n        Current soil moisture as a percentage.\n    rainfall : int\n        Predicted rainfall in millimeters.\n\n    Returns\n    -------\n    int\n        Millimeters of irrigation water to apply, never below zero.\n    \"\"\"\n    deficit = moisture_deficit(crop, moisture)\n    if deficit == 0:\n        return 0\n    return max(deficit * MM_PER_PERCENT - rainfall, 0)\n\n\ndef irrigate(fields):\n    \"\"\"Plan irrigation for every plot on the farm.\n\n    Parameters\n    ----------\n    fields : list\n        Sequence of (crop, moisture, rainfall) triples.\n\n    Returns\n    -------\n    list\n        Integers giving the millimeters of water for each plot.\n    \"\"\"\n    return [water_needed(crop, moisture, rainfall)\n            for crop, moisture, rainfall in fields]\n\n\ndef format_report(fields, amounts):\n    \"\"\"Render a human readable irrigation schedule.\n\n    Parameters\n    ----------\n    fields : list\n        Sequence of (crop, moisture, rainfall) triples.\n    amounts : list\n        Irrigation amounts aligned with the plots in fields.\n\n    Returns\n    -------\n    str\n        A multi-line string with one line per plot plus a total.\n    \"\"\"\n    lines = []\n    for (crop, moisture, rainfall), water in zip(fields, amounts):\n        lines.append(\"{:<6} moisture={:>3}% rain={:>3}mm -> {:>4}mm\".format(\n            crop, moisture, rainfall, water))\n    lines.append(\"total: {}mm\".format(sum(amounts)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    plots = [(\"corn\", 30, 20), (\"wheat\", 35, 0), (\"corn\", 25, 200),\n             (\"wheat\", 12, 60)]\n    amounts = irrigate(plots)\n    print(amounts)\n    print(format_report(plots, amounts))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        crop (str): ",
+"alt": "Parameters\n    ----------\n    crop : str\n        ",
+"nat_span": [
+161,
+187
+],
+"alt_span": [
+161,
+210
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        crop (str): ",
+"alt": "Parameters\n    ----------\n    crop : str\n        ",
+"nat_span": [
+647,
+673
+],
+"alt_span": [
+697,
+746
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        crop (str): ",
+"alt": "Parameters\n    ----------\n    crop : str\n        ",
+"nat_span": [
+1019,
+1045
+],
+"alt_span": [
+1109,
+1158
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        fields (list): ",
+"alt": "Parameters\n    ----------\n    fields : list\n        ",
+"nat_span": [
+1520,
+1549
+],
+"alt_span": [
+1653,
+1705
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        fields (list): ",
+"alt": "Parameters\n    ----------\n    fields : list\n        ",
+"nat_span": [
+1887,
+1916
+],
+"alt_span": [
+2057,
+2109
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.925,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        crop (str): ",
+"alt": "Parameters\n    ----------\n    crop : str\n        ",
+"nat_span": [
+161,
+187
+],
+"alt_span": [
+161,
+210
+]
+},
+{
+"k": 1,
+"nat": ":\n        int: ",
+"alt": "\n    -------\n    int\n        ",
+"nat_span": [
+237,
+252
+],
+"alt_span": [
+260,
+289
+]
+},
+{
+"k": 2,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+305,
+327
+],
+"alt_span": [
+342,
+377
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        crop (str): ",
+"alt": "Parameters\n    ----------\n    crop : str\n        ",
+"nat_span": [
+647,
+673
+],
+"alt_span": [
+697,
+746
+]
+},
+{
+"k": 4,
+"nat": "\n        moisture (int): ",
+"alt": "\n    moisture : int\n        ",
+"nat_span": [
+710,
+735
+],
+"alt_span": [
+783,
+811
+]
+},
+{
+"k": 5,
+"nat": ":\n        int: ",
+"alt": "\n    -------\n    int\n        ",
+"nat_span": [
+786,
+801
+],
+"alt_span": [
+862,
+891
+]
+},
+{
+"k": 6,
+"nat": "Args:\n        crop (str): ",
+"alt": "Parameters\n    ----------\n    crop : str\n        ",
+"nat_span": [
+1019,
+1045
+],
+"alt_span": [
+1109,
+1158
+]
+},
+{
+"k": 7,
+"nat": "\n        moisture (int): ",
+"alt": "\n    moisture : int\n        ",
+"nat_span": [
+1082,
+1107
+],
+"alt_span": [
+1195,
+1223
+]
+},
+{
+"k": 8,
+"nat": "\n        rainfall (int): ",
+"alt": "\n    rainfall : int\n        ",
+"nat_span": [
+1145,
+1170
+],
+"alt_span": [
+1261,
+1289
+]
+},
+{
+"k": 9,
+"nat": ":\n        int: ",
+"alt": "\n    -------\n    int\n        ",
+"nat_span": [
+1217,
+1232
+],
+"alt_span": [
+1336,
+1365
+]
+},
+{
+"k": 10,
+"nat": "Args:\n        fields (list): ",
+"alt": "Parameters\n    ----------\n    fields : list\n        ",
+"nat_span": [
+1520,
+1549
+],
+"alt_span": [
+1653,
+1705
+]
+},
+{
+"k": 11,
+"nat": ":\n        list: ",
+"alt": "\n    -------\n    list\n        ",
+"nat_span": [
+1609,
+1625
+],
+"alt_span": [
+1765,
+1795
+]
+},
+{
+"k": 12,
+"nat": "Args:\n        fields (list): ",
+"alt": "Parameters\n    ----------\n    fields : list\n        ",
+"nat_span": [
+1887,
+1916
+],
+"alt_span": [
+2057,
+2109
+]
+},
+{
+"k": 13,
+"nat": "\n        amounts (list): ",
+"alt": "\n    amounts : list\n        ",
+"nat_span": [
+1963,
+1988
+],
+"alt_span": [
+2156,
+2184
+]
+},
+{
+"k": 14,
+"nat": ":\n        str: ",
+"alt": "\n    -------\n    str\n        ",
+"nat_span": [
+2053,
+2068
+],
+"alt_span": [
+2249,
+2278
 ]
 }
 ],
@@ -34143,6 +37131,308 @@
 "alt_span": [
 2228,
 2257
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "docstring_style__d145",
+"family": "docstring_style",
+"topic": "Bakery Inventory Projector",
+"angle": "code",
+"text_es": "The function project(days) estimates the required baked goods for a list of upcoming days. Each day is represented as a tuple of the day of the week, the average daily customer count, and a boolean flag indicating if there is a local festival. The base required croissants are half the customer count, and muffins are one third of the customer count. On weekends, meaning Saturday or Sunday, base demand increases by twenty percent for both items. If a local festival is occurring, add a flat fifty extra croissants and thirty extra muffins to the final calculation. Return a list of tuples containing the final estimated croissants and muffins, rounded up to the nearest whole integer. For example, given [(\"Sunday\", 300, True)], return [(230, 150)].",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import math\n\nWEEKEND_DAYS = {\"Saturday\", \"Sunday\"}\nWEEKEND_MULTIPLIER = 1.2\nFESTIVAL_CROISSANTS = 50\nFESTIVAL_MUFFINS = 30\n\n\ndef is_weekend(day_name):\n    \"\"\"Determine whether a day name falls on the weekend.\n\n    Args:\n        day_name (str): Name of the day of the week, e.g. \"Monday\".\n\n    Returns:\n        weekend (bool): True if the day is Saturday or Sunday, else False.\n    \"\"\"\n    return day_name.strip().title() in WEEKEND_DAYS\n\n\ndef base_demand(customers):\n    \"\"\"Compute the unadjusted croissant and muffin demand.\n\n    Args:\n        customers (int): Average number of customers expected on the day.\n\n    Returns:\n        demand (tuple[float, float]): Base croissants and base muffins.\n    \"\"\"\n    return customers / 2, customers / 3\n\n\ndef estimate_day(day_name, customers, festival):\n    \"\"\"Estimate baked goods needed for a single day.\n\n    Args:\n        day_name (str): Name of the day of the week.\n        customers (int): Average number of customers expected on the day.\n        festival (bool): True when a local festival takes place that day.\n\n    Returns:\n        estimate (tuple[int, int]): Croissants and muffins, rounded up.\n    \"\"\"\n    croissants, muffins = base_demand(customers)\n    if is_weekend(day_name):\n        croissants *= WEEKEND_MULTIPLIER\n        muffins *= WEEKEND_MULTIPLIER\n    if festival:\n        croissants += FESTIVAL_CROISSANTS\n        muffins += FESTIVAL_MUFFINS\n    return math.ceil(croissants), math.ceil(muffins)\n\n\ndef project(days):\n    \"\"\"Project baked goods demand across several upcoming days.\n\n    Args:\n        days (iterable): Tuples of day name, customer count, festival flag.\n\n    Returns:\n        estimates (list[tuple[int, int]]): One croissant/muffin pair per day.\n    \"\"\"\n    return [estimate_day(name, customers, festival)\n            for name, customers, festival in days]\n\n\ndef format_report(days, estimates):\n    \"\"\"Build a human readable production plan.\n\n    Args:\n        days (iterable): The original day tuples.\n        estimates (iterable): Croissant/muffin pairs produced by project.\n\n    Returns:\n        report (str): One summary line per day followed by a total line.\n    \"\"\"\n    lines = []\n    for (name, _, festival), (croissants, muffins) in zip(days, estimates):\n        marker = \" (festival)\" if festival else \"\"\n        lines.append(f\"{name}{marker}: {croissants} croissants, {muffins} muffins\")\n    total_c = sum(c for c, _ in estimates)\n    total_m = sum(m for _, m in estimates)\n    lines.append(f\"Total: {total_c} croissants, {total_m} muffins\")\n    return \"\\n\".join(lines)\n\n\ndef main():\n    week = [\n        (\"Friday\", 240, False),\n        (\"Saturday\", 310, False),\n        (\"Sunday\", 300, True),\n        (\"Monday\", 180, False),\n    ]\n    print(format_report(week, project(week)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import math\n\nWEEKEND_DAYS = {\"Saturday\", \"Sunday\"}\nWEEKEND_MULTIPLIER = 1.2\nFESTIVAL_CROISSANTS = 50\nFESTIVAL_MUFFINS = 30\n\n\ndef is_weekend(day_name):\n    \"\"\"Determine whether a day name falls on the weekend.\n\n    Parameters\n    ----------\n    day_name : str\n        Name of the day of the week, e.g. \"Monday\".\n\n    Returns\n    -------\n    weekend : bool\n        True if the day is Saturday or Sunday, else False.\n    \"\"\"\n    return day_name.strip().title() in WEEKEND_DAYS\n\n\ndef base_demand(customers):\n    \"\"\"Compute the unadjusted croissant and muffin demand.\n\n    Parameters\n    ----------\n    customers : int\n        Average number of customers expected on the day.\n\n    Returns\n    -------\n    demand : tuple[float, float]\n        Base croissants and base muffins.\n    \"\"\"\n    return customers / 2, customers / 3\n\n\ndef estimate_day(day_name, customers, festival):\n    \"\"\"Estimate baked goods needed for a single day.\n\n    Parameters\n    ----------\n    day_name : str\n        Name of the day of the week.\n    customers : int\n        Average number of customers expected on the day.\n    festival : bool\n        True when a local festival takes place that day.\n\n    Returns\n    -------\n    estimate : tuple[int, int]\n        Croissants and muffins, rounded up.\n    \"\"\"\n    croissants, muffins = base_demand(customers)\n    if is_weekend(day_name):\n        croissants *= WEEKEND_MULTIPLIER\n        muffins *= WEEKEND_MULTIPLIER\n    if festival:\n        croissants += FESTIVAL_CROISSANTS\n        muffins += FESTIVAL_MUFFINS\n    return math.ceil(croissants), math.ceil(muffins)\n\n\ndef project(days):\n    \"\"\"Project baked goods demand across several upcoming days.\n\n    Parameters\n    ----------\n    days : iterable\n        Tuples of day name, customer count, festival flag.\n\n    Returns\n    -------\n    estimates : list[tuple[int, int]]\n        One croissant/muffin pair per day.\n    \"\"\"\n    return [estimate_day(name, customers, festival)\n            for name, customers, festival in days]\n\n\ndef format_report(days, estimates):\n    \"\"\"Build a human readable production plan.\n\n    Parameters\n    ----------\n    days : iterable\n        The original day tuples.\n    estimates : iterable\n        Croissant/muffin pairs produced by project.\n\n    Returns\n    -------\n    report : str\n        One summary line per day followed by a total line.\n    \"\"\"\n    lines = []\n    for (name, _, festival), (croissants, muffins) in zip(days, estimates):\n        marker = \" (festival)\" if festival else \"\"\n        lines.append(f\"{name}{marker}: {croissants} croissants, {muffins} muffins\")\n    total_c = sum(c for c, _ in estimates)\n    total_m = sum(m for _, m in estimates)\n    lines.append(f\"Total: {total_c} croissants, {total_m} muffins\")\n    return \"\\n\".join(lines)\n\n\ndef main():\n    week = [\n        (\"Friday\", 240, False),\n        (\"Saturday\", 310, False),\n        (\"Sunday\", 300, True),\n        (\"Monday\", 180, False),\n    ]\n    print(format_report(week, project(week)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        day_name (str): ",
+"alt": "Parameters\n    ----------\n    day_name : str\n        ",
+"nat_span": [
+214,
+244
+],
+"alt_span": [
+214,
+267
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        customers (int): ",
+"alt": "Parameters\n    ----------\n    customers : int\n        ",
+"nat_span": [
+531,
+562
+],
+"alt_span": [
+568,
+622
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        day_name (str): ",
+"alt": "Parameters\n    ----------\n    day_name : str\n        ",
+"nat_span": [
+854,
+884
+],
+"alt_span": [
+928,
+981
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        days (iterable): ",
+"alt": "Parameters\n    ----------\n    days : iterable\n        ",
+"nat_span": [
+1550,
+1581
+],
+"alt_span": [
+1667,
+1721
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        days (iterable): ",
+"alt": "Parameters\n    ----------\n    days : iterable\n        ",
+"nat_span": [
+1925,
+1956
+],
+"alt_span": [
+2079,
+2133
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.926,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        day_name (str): ",
+"alt": "Parameters\n    ----------\n    day_name : str\n        ",
+"nat_span": [
+214,
+244
+],
+"alt_span": [
+214,
+267
+]
+},
+{
+"k": 1,
+"nat": ":\n        weekend (bool): ",
+"alt": "\n    -------\n    weekend : bool\n        ",
+"nat_span": [
+300,
+326
+],
+"alt_span": [
+323,
+363
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        customers (int): ",
+"alt": "Parameters\n    ----------\n    customers : int\n        ",
+"nat_span": [
+531,
+562
+],
+"alt_span": [
+568,
+622
+]
+},
+{
+"k": 3,
+"nat": ":\n        demand (",
+"alt": "\n    -------\n    demand : ",
+"nat_span": [
+623,
+641
+],
+"alt_span": [
+683,
+709
+]
+},
+{
+"k": 4,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+660,
+663
+],
+"alt_span": [
+728,
+737
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        day_name (str): ",
+"alt": "Parameters\n    ----------\n    day_name : str\n        ",
+"nat_span": [
+854,
+884
+],
+"alt_span": [
+928,
+981
+]
+},
+{
+"k": 6,
+"nat": "\n        customers (int): ",
+"alt": "\n    customers : int\n        ",
+"nat_span": [
+912,
+938
+],
+"alt_span": [
+1009,
+1038
+]
+},
+{
+"k": 7,
+"nat": "\n        festival (bool): ",
+"alt": "\n    festival : bool\n        ",
+"nat_span": [
+986,
+1012
+],
+"alt_span": [
+1086,
+1115
+]
+},
+{
+"k": 8,
+"nat": ":\n        estimate (",
+"alt": "\n    -------\n    estimate : ",
+"nat_span": [
+1073,
+1093
+],
+"alt_span": [
+1176,
+1204
+]
+},
+{
+"k": 9,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+1108,
+1111
+],
+"alt_span": [
+1219,
+1228
+]
+},
+{
+"k": 10,
+"nat": "Args:\n        days (iterable): ",
+"alt": "Parameters\n    ----------\n    days : iterable\n        ",
+"nat_span": [
+1550,
+1581
+],
+"alt_span": [
+1667,
+1721
+]
+},
+{
+"k": 11,
+"nat": ":\n        estimates (",
+"alt": "\n    -------\n    estimates : ",
+"nat_span": [
+1644,
+1665
+],
+"alt_span": [
+1784,
+1813
+]
+},
+{
+"k": 12,
+"nat": "): ",
+"alt": "\n        ",
+"nat_span": [
+1686,
+1689
+],
+"alt_span": [
+1834,
+1843
+]
+},
+{
+"k": 13,
+"nat": "Args:\n        days (iterable): ",
+"alt": "Parameters\n    ----------\n    days : iterable\n        ",
+"nat_span": [
+1925,
+1956
+],
+"alt_span": [
+2079,
+2133
+]
+},
+{
+"k": 14,
+"nat": "\n        estimates (iterable): ",
+"alt": "\n    estimates : iterable\n        ",
+"nat_span": [
+1980,
+2011
+],
+"alt_span": [
+2157,
+2191
+]
+},
+{
+"k": 15,
+"nat": ":\n        report (str): ",
+"alt": "\n    -------\n    report : str\n        ",
+"nat_span": [
+2067,
+2091
+],
+"alt_span": [
+2247,
+2285
 ]
 }
 ],
@@ -44651,6 +47941,295 @@
 "regen": "regen8"
 },
 {
+"doc_id": "docstring_style__d192",
+"family": "docstring_style",
+"topic": "Toll Road Biller",
+"angle": "code",
+"text_es": "The entry function `bill(trips)` takes a list of tuples consisting of a vehicle type string, a distance traveled in kilometers, and a peak hour boolean flag. The billing logic must be implemented via individual helper functions. One helper assigns a base rate per kilometer of ten cents for cars, twenty cents for trucks, and fifteen cents for vans. A second helper multiplies this rate by the distance to find the base fee. A third helper applies a fifty percent surcharge to the base fee if the travel occurred during peak hours. The entry function coordinates these and returns a list of final monetary charges rounded to two decimals.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "BASE_RATES = {\"car\": 0.10, \"truck\": 0.20, \"van\": 0.15}\nPEAK_MULTIPLIER = 1.5\n\n\ndef base_rate(vehicle_type):\n    \"\"\"Look up the per-kilometer rate charged for a vehicle type.\n\n    Args:\n        vehicle_type (str): Name of the vehicle, such as \"car\", \"truck\" or \"van\".\n\n    Returns:\n        float: The rate in dollars charged for each kilometer traveled.\n    \"\"\"\n    key = vehicle_type.strip().lower()\n    if key not in BASE_RATES:\n        raise ValueError(\"unknown vehicle type: {!r}\".format(vehicle_type))\n    return BASE_RATES[key]\n\n\ndef base_fee(rate, distance_km):\n    \"\"\"Multiply a per-kilometer rate by the distance traveled.\n\n    Args:\n        rate (float): Per-kilometer rate in dollars.\n        distance_km (float): Distance traveled, in kilometers.\n\n    Returns:\n        float: The fee in dollars before any peak-hour surcharge.\n    \"\"\"\n    if distance_km < 0:\n        raise ValueError(\"distance must not be negative\")\n    return rate * distance_km\n\n\ndef apply_peak_surcharge(fee, is_peak):\n    \"\"\"Add the peak-hour surcharge to a base fee when applicable.\n\n    Args:\n        fee (float): Base fee in dollars.\n        is_peak (bool): True when the trip took place during peak hours.\n\n    Returns:\n        float: The fee in dollars including a 50% surcharge for peak travel.\n    \"\"\"\n    if is_peak:\n        return fee * PEAK_MULTIPLIER\n    return fee\n\n\ndef bill(trips):\n    \"\"\"Compute the final charge for each trip in a list.\n\n    Args:\n        trips (list): Sequence of (vehicle_type, distance_km, is_peak) tuples.\n\n    Returns:\n        list: Charges in dollars, each rounded to two decimals.\n    \"\"\"\n    charges = []\n    for vehicle_type, distance_km, is_peak in trips:\n        rate = base_rate(vehicle_type)\n        fee = base_fee(rate, distance_km)\n        charges.append(round(apply_peak_surcharge(fee, is_peak), 2))\n    return charges\n\n\ndef format_invoice(trips, charges):\n    \"\"\"Render trips and their charges as aligned invoice lines.\n\n    Args:\n        trips (list): Sequence of (vehicle_type, distance_km, is_peak) tuples.\n        charges (list): Charges produced by :func:`bill` for the same trips.\n\n    Returns:\n        str: A single string with one line per trip plus a total line.\n    \"\"\"\n    lines = []\n    for (vehicle_type, distance_km, is_peak), amount in zip(trips, charges):\n        period = \"peak\" if is_peak else \"off-peak\"\n        lines.append(\"{:<6} {:>7.1f} km  {:<8} ${:>7.2f}\".format(\n            vehicle_type, distance_km, period, amount))\n    lines.append(\"{:<6} {:>10} {:<8} ${:>7.2f}\".format(\n        \"TOTAL\", \"\", \"\", round(sum(charges), 2)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    \"\"\"Bill a sample set of trips and print the resulting invoice.\n\n    Returns:\n        list: The list of charges that were printed.\n    \"\"\"\n    trips = [\n        (\"car\", 12.0, False),\n        (\"truck\", 40.5, True),\n        (\"van\", 8.25, False),\n        (\"car\", 100.0, True),\n    ]\n    charges = bill(trips)\n    print(format_invoice(trips, charges))\n    return charges\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "BASE_RATES = {\"car\": 0.10, \"truck\": 0.20, \"van\": 0.15}\nPEAK_MULTIPLIER = 1.5\n\n\ndef base_rate(vehicle_type):\n    \"\"\"Look up the per-kilometer rate charged for a vehicle type.\n\n    Parameters\n    ----------\n    vehicle_type : str\n        Name of the vehicle, such as \"car\", \"truck\" or \"van\".\n\n    Returns\n    -------\n    float\n        The rate in dollars charged for each kilometer traveled.\n    \"\"\"\n    key = vehicle_type.strip().lower()\n    if key not in BASE_RATES:\n        raise ValueError(\"unknown vehicle type: {!r}\".format(vehicle_type))\n    return BASE_RATES[key]\n\n\ndef base_fee(rate, distance_km):\n    \"\"\"Multiply a per-kilometer rate by the distance traveled.\n\n    Parameters\n    ----------\n    rate : float\n        Per-kilometer rate in dollars.\n    distance_km : float\n        Distance traveled, in kilometers.\n\n    Returns\n    -------\n    float\n        The fee in dollars before any peak-hour surcharge.\n    \"\"\"\n    if distance_km < 0:\n        raise ValueError(\"distance must not be negative\")\n    return rate * distance_km\n\n\ndef apply_peak_surcharge(fee, is_peak):\n    \"\"\"Add the peak-hour surcharge to a base fee when applicable.\n\n    Parameters\n    ----------\n    fee : float\n        Base fee in dollars.\n    is_peak : bool\n        True when the trip took place during peak hours.\n\n    Returns\n    -------\n    float\n        The fee in dollars including a 50% surcharge for peak travel.\n    \"\"\"\n    if is_peak:\n        return fee * PEAK_MULTIPLIER\n    return fee\n\n\ndef bill(trips):\n    \"\"\"Compute the final charge for each trip in a list.\n\n    Parameters\n    ----------\n    trips : list\n        Sequence of (vehicle_type, distance_km, is_peak) tuples.\n\n    Returns\n    -------\n    list\n        Charges in dollars, each rounded to two decimals.\n    \"\"\"\n    charges = []\n    for vehicle_type, distance_km, is_peak in trips:\n        rate = base_rate(vehicle_type)\n        fee = base_fee(rate, distance_km)\n        charges.append(round(apply_peak_surcharge(fee, is_peak), 2))\n    return charges\n\n\ndef format_invoice(trips, charges):\n    \"\"\"Render trips and their charges as aligned invoice lines.\n\n    Parameters\n    ----------\n    trips : list\n        Sequence of (vehicle_type, distance_km, is_peak) tuples.\n    charges : list\n        Charges produced by :func:`bill` for the same trips.\n\n    Returns\n    -------\n    str\n        A single string with one line per trip plus a total line.\n    \"\"\"\n    lines = []\n    for (vehicle_type, distance_km, is_peak), amount in zip(trips, charges):\n        period = \"peak\" if is_peak else \"off-peak\"\n        lines.append(\"{:<6} {:>7.1f} km  {:<8} ${:>7.2f}\".format(\n            vehicle_type, distance_km, period, amount))\n    lines.append(\"{:<6} {:>10} {:<8} ${:>7.2f}\".format(\n        \"TOTAL\", \"\", \"\", round(sum(charges), 2)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    \"\"\"Bill a sample set of trips and print the resulting invoice.\n\n    Returns\n    -------\n    list\n        The list of charges that were printed.\n    \"\"\"\n    trips = [\n        (\"car\", 12.0, False),\n        (\"truck\", 40.5, True),\n        (\"van\", 8.25, False),\n        (\"car\", 100.0, True),\n    ]\n    charges = bill(trips)\n    print(format_invoice(trips, charges))\n    return charges\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        vehicle_type (str): ",
+"alt": "Parameters\n    ----------\n    vehicle_type : str\n        ",
+"nat_span": [
+179,
+213
+],
+"alt_span": [
+179,
+236
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        rate (float): ",
+"alt": "Parameters\n    ----------\n    rate : float\n        ",
+"nat_span": [
+636,
+664
+],
+"alt_span": [
+673,
+724
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        fee (float): ",
+"alt": "Parameters\n    ----------\n    fee : float\n        ",
+"nat_span": [
+1071,
+1098
+],
+"alt_span": [
+1148,
+1198
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        trips (list): ",
+"alt": "Parameters\n    ----------\n    trips : list\n        ",
+"nat_span": [
+1440,
+1468
+],
+"alt_span": [
+1557,
+1608
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        trips (list): ",
+"alt": "Parameters\n    ----------\n    trips : list\n        ",
+"nat_span": [
+1957,
+1985
+],
+"alt_span": [
+2111,
+2162
+]
+},
+{
+"k": 5,
+"nat": ":\n        list: ",
+"alt": "\n    -------\n    list\n        ",
+"nat_span": [
+2704,
+2720
+],
+"alt_span": [
+2898,
+2928
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.94,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        vehicle_type (str): ",
+"alt": "Parameters\n    ----------\n    vehicle_type : str\n        ",
+"nat_span": [
+179,
+213
+],
+"alt_span": [
+179,
+236
+]
+},
+{
+"k": 1,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+279,
+296
+],
+"alt_span": [
+302,
+333
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        rate (float): ",
+"alt": "Parameters\n    ----------\n    rate : float\n        ",
+"nat_span": [
+636,
+664
+],
+"alt_span": [
+673,
+724
+]
+},
+{
+"k": 3,
+"nat": "\n        distance_km (float): ",
+"alt": "\n    distance_km : float\n        ",
+"nat_span": [
+694,
+724
+],
+"alt_span": [
+754,
+787
+]
+},
+{
+"k": 4,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+770,
+787
+],
+"alt_span": [
+833,
+864
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        fee (float): ",
+"alt": "Parameters\n    ----------\n    fee : float\n        ",
+"nat_span": [
+1071,
+1098
+],
+"alt_span": [
+1148,
+1198
+]
+},
+{
+"k": 6,
+"nat": "\n        is_peak (bool): ",
+"alt": "\n    is_peak : bool\n        ",
+"nat_span": [
+1118,
+1143
+],
+"alt_span": [
+1218,
+1246
+]
+},
+{
+"k": 7,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+1204,
+1221
+],
+"alt_span": [
+1307,
+1338
+]
+},
+{
+"k": 8,
+"nat": "Args:\n        trips (list): ",
+"alt": "Parameters\n    ----------\n    trips : list\n        ",
+"nat_span": [
+1440,
+1468
+],
+"alt_span": [
+1557,
+1608
+]
+},
+{
+"k": 9,
+"nat": ":\n        list: ",
+"alt": "\n    -------\n    list\n        ",
+"nat_span": [
+1537,
+1553
+],
+"alt_span": [
+1677,
+1707
+]
+},
+{
+"k": 10,
+"nat": "Args:\n        trips (list): ",
+"alt": "Parameters\n    ----------\n    trips : list\n        ",
+"nat_span": [
+1957,
+1985
+],
+"alt_span": [
+2111,
+2162
+]
+},
+{
+"k": 11,
+"nat": "\n        charges (list): ",
+"alt": "\n    charges : list\n        ",
+"nat_span": [
+2041,
+2066
+],
+"alt_span": [
+2218,
+2246
+]
+},
+{
+"k": 12,
+"nat": ":\n        str: ",
+"alt": "\n    -------\n    str\n        ",
+"nat_span": [
+2131,
+2146
+],
+"alt_span": [
+2311,
+2340
+]
+},
+{
+"k": 13,
+"nat": ":\n        list: ",
+"alt": "\n    -------\n    list\n        ",
+"nat_span": [
+2704,
+2720
+],
+"alt_span": [
+2898,
+2928
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "docstring_style__d193",
 "family": "docstring_style",
 "topic": "Real Estate Rental Yield Calculator",
@@ -47304,6 +50883,373 @@
 "regen": "regen8"
 },
 {
+"doc_id": "docstring_style__d205",
+"family": "docstring_style",
+"topic": "Windbreak Tree Shelterbelt",
+"angle": "code",
+"text_es": "Determine the protective dimensions of a tree shelterbelt planted to reduce wind erosion. Write an entry function `shelter(height, density)` where the first is the average tree height in meters and the second is the foliage density given as a percentage. The protected leeward distance is calculated by multiplying the tree height by ten. The wind speed reduction factor is equal to the foliage density multiplied by zero point eight. Determine the effective protected area per linear meter of the shelterbelt by multiplying the protected distance by the wind speed reduction factor. Return the protected distance and the effective area. Example: given a height of 15 and density of 60, the protected distance is 150, the reduction factor is 48.0, and the effective area is 7200.0.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def validate_inputs(height, density):\n    \"\"\"Check that a shelterbelt description holds usable measurements.\n\n    Args:\n        height (float): Average tree height in meters.\n        density (float): Foliage density as a percentage between 0 and 100.\n\n    Returns:\n        tuple[float, float]: The height and density converted to floats.\n\n    Raises:\n        ValueError: If the height is not positive or the density is outside 0-100.\n    \"\"\"\n    height = float(height)\n    density = float(density)\n    if height <= 0:\n        raise ValueError(\"tree height must be greater than zero meters\")\n    if not 0 <= density <= 100:\n        raise ValueError(\"foliage density must be a percentage from 0 to 100\")\n    return height, density\n\n\ndef protected_distance(height):\n    \"\"\"Compute the sheltered leeward distance behind the trees.\n\n    Args:\n        height (float): Average tree height in meters.\n\n    Returns:\n        float: The protected distance in meters, ten times the tree height.\n    \"\"\"\n    return height * 10\n\n\ndef reduction_factor(density):\n    \"\"\"Compute the wind speed reduction factor of the foliage.\n\n    Args:\n        density (float): Foliage density as a percentage.\n\n    Returns:\n        float: The reduction factor, the density scaled by 0.8.\n    \"\"\"\n    return density * 0.8\n\n\ndef effective_area(distance, factor):\n    \"\"\"Compute the effective protected area per linear meter of belt.\n\n    Args:\n        distance (float): Protected leeward distance in meters.\n        factor (float): Wind speed reduction factor of the foliage.\n\n    Returns:\n        float: The effective protected area per linear meter of shelterbelt.\n    \"\"\"\n    return distance * factor\n\n\ndef shelter(height, density):\n    \"\"\"Determine the protective dimensions of a tree shelterbelt.\n\n    Args:\n        height (float): Average tree height in meters.\n        density (float): Foliage density given as a percentage.\n\n    Returns:\n        tuple[float, float]: The protected leeward distance in meters and the\n            effective protected area per linear meter of shelterbelt.\n    \"\"\"\n    height, density = validate_inputs(height, density)\n    distance = protected_distance(height)\n    factor = reduction_factor(density)\n    return distance, effective_area(distance, factor)\n\n\ndef format_report(height, density):\n    \"\"\"Build a readable summary of one shelterbelt configuration.\n\n    Args:\n        height (float): Average tree height in meters.\n        density (float): Foliage density given as a percentage.\n\n    Returns:\n        str: A single line describing the distance and effective area.\n    \"\"\"\n    distance, area = shelter(height, density)\n    return (f\"{height} m trees at {density}% density: \"\n            f\"protected distance {distance} m, effective area {area}\")\n\n\ndef main():\n    \"\"\"Report shelterbelt dimensions for a few planting designs.\"\"\"\n    for height, density in [(15, 60), (8, 45), (22, 80)]:\n        print(format_report(height, density))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate_inputs(height, density):\n    \"\"\"Check that a shelterbelt description holds usable measurements.\n\n    Parameters\n    ----------\n    height : float\n        Average tree height in meters.\n    density : float\n        Foliage density as a percentage between 0 and 100.\n\n    Returns\n    -------\n    tuple[float, float]\n        The height and density converted to floats.\n\n    Raises\n    ------\n    ValueError\n        If the height is not positive or the density is outside 0-100.\n    \"\"\"\n    height = float(height)\n    density = float(density)\n    if height <= 0:\n        raise ValueError(\"tree height must be greater than zero meters\")\n    if not 0 <= density <= 100:\n        raise ValueError(\"foliage density must be a percentage from 0 to 100\")\n    return height, density\n\n\ndef protected_distance(height):\n    \"\"\"Compute the sheltered leeward distance behind the trees.\n\n    Parameters\n    ----------\n    height : float\n        Average tree height in meters.\n\n    Returns\n    -------\n    float\n        The protected distance in meters, ten times the tree height.\n    \"\"\"\n    return height * 10\n\n\ndef reduction_factor(density):\n    \"\"\"Compute the wind speed reduction factor of the foliage.\n\n    Parameters\n    ----------\n    density : float\n        Foliage density as a percentage.\n\n    Returns\n    -------\n    float\n        The reduction factor, the density scaled by 0.8.\n    \"\"\"\n    return density * 0.8\n\n\ndef effective_area(distance, factor):\n    \"\"\"Compute the effective protected area per linear meter of belt.\n\n    Parameters\n    ----------\n    distance : float\n        Protected leeward distance in meters.\n    factor : float\n        Wind speed reduction factor of the foliage.\n\n    Returns\n    -------\n    float\n        The effective protected area per linear meter of shelterbelt.\n    \"\"\"\n    return distance * factor\n\n\ndef shelter(height, density):\n    \"\"\"Determine the protective dimensions of a tree shelterbelt.\n\n    Parameters\n    ----------\n    height : float\n        Average tree height in meters.\n    density : float\n        Foliage density given as a percentage.\n\n    Returns\n    -------\n    tuple[float, float]\n        The protected leeward distance in meters and the\n        effective protected area per linear meter of shelterbelt.\n    \"\"\"\n    height, density = validate_inputs(height, density)\n    distance = protected_distance(height)\n    factor = reduction_factor(density)\n    return distance, effective_area(distance, factor)\n\n\ndef format_report(height, density):\n    \"\"\"Build a readable summary of one shelterbelt configuration.\n\n    Parameters\n    ----------\n    height : float\n        Average tree height in meters.\n    density : float\n        Foliage density given as a percentage.\n\n    Returns\n    -------\n    str\n        A single line describing the distance and effective area.\n    \"\"\"\n    distance, area = shelter(height, density)\n    return (f\"{height} m trees at {density}% density: \"\n            f\"protected distance {distance} m, effective area {area}\")\n\n\ndef main():\n    \"\"\"Report shelterbelt dimensions for a few planting designs.\"\"\"\n    for height, density in [(15, 60), (8, 45), (22, 80)]:\n        print(format_report(height, density))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+114,
+144
+],
+"alt_span": [
+114,
+167
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+832,
+862
+],
+"alt_span": [
+885,
+938
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        density (float): ",
+"alt": "Parameters\n    ----------\n    density : float\n        ",
+"nat_span": [
+1115,
+1146
+],
+"alt_span": [
+1205,
+1259
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        distance (float): ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+1405,
+1437
+],
+"alt_span": [
+1532,
+1587
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+1774,
+1804
+],
+"alt_span": [
+1941,
+1994
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+2368,
+2398
+],
+"alt_span": [
+2571,
+2624
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.916,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+114,
+144
+],
+"alt_span": [
+114,
+167
+]
+},
+{
+"k": 1,
+"nat": "\n        density (float): ",
+"alt": "\n    density : float\n        ",
+"nat_span": [
+174,
+200
+],
+"alt_span": [
+197,
+226
+]
+},
+{
+"k": 2,
+"nat": ":\n        ",
+"alt": "\n    -------\n    ",
+"nat_span": [
+263,
+273
+],
+"alt_span": [
+289,
+306
+]
+},
+{
+"k": 3,
+"nat": ": ",
+"alt": "\n        ",
+"nat_span": [
+292,
+294
+],
+"alt_span": [
+325,
+334
+]
+},
+{
+"k": 4,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+349,
+371
+],
+"alt_span": [
+389,
+424
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+832,
+862
+],
+"alt_span": [
+885,
+938
+]
+},
+{
+"k": 6,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+905,
+922
+],
+"alt_span": [
+981,
+1012
+]
+},
+{
+"k": 7,
+"nat": "Args:\n        density (float): ",
+"alt": "Parameters\n    ----------\n    density : float\n        ",
+"nat_span": [
+1115,
+1146
+],
+"alt_span": [
+1205,
+1259
+]
+},
+{
+"k": 8,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+1191,
+1208
+],
+"alt_span": [
+1304,
+1335
+]
+},
+{
+"k": 9,
+"nat": "Args:\n        distance (float): ",
+"alt": "Parameters\n    ----------\n    distance : float\n        ",
+"nat_span": [
+1405,
+1437
+],
+"alt_span": [
+1532,
+1587
+]
+},
+{
+"k": 10,
+"nat": "\n        factor (float): ",
+"alt": "\n    factor : float\n        ",
+"nat_span": [
+1474,
+1499
+],
+"alt_span": [
+1624,
+1652
+]
+},
+{
+"k": 11,
+"nat": ":\n        float: ",
+"alt": "\n    -------\n    float\n        ",
+"nat_span": [
+1555,
+1572
+],
+"alt_span": [
+1708,
+1739
+]
+},
+{
+"k": 12,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+1774,
+1804
+],
+"alt_span": [
+1941,
+1994
+]
+},
+{
+"k": 13,
+"nat": "\n        density (float): ",
+"alt": "\n    density : float\n        ",
+"nat_span": [
+1834,
+1860
+],
+"alt_span": [
+2024,
+2053
+]
+},
+{
+"k": 14,
+"nat": ":\n        ",
+"alt": "\n    -------\n    ",
+"nat_span": [
+1911,
+1921
+],
+"alt_span": [
+2104,
+2121
+]
+},
+{
+"k": 15,
+"nat": ": ",
+"alt": "\n        ",
+"nat_span": [
+1940,
+1942
+],
+"alt_span": [
+2140,
+2149
+]
+},
+{
+"k": 16,
+"nat": "\n            ",
+"alt": "\n        ",
+"nat_span": [
+1990,
+2003
+],
+"alt_span": [
+2197,
+2206
+]
+},
+{
+"k": 17,
+"nat": "Args:\n        height (float): ",
+"alt": "Parameters\n    ----------\n    height : float\n        ",
+"nat_span": [
+2368,
+2398
+],
+"alt_span": [
+2571,
+2624
+]
+},
+{
+"k": 18,
+"nat": "\n        density (float): ",
+"alt": "\n    density : float\n        ",
+"nat_span": [
+2428,
+2454
+],
+"alt_span": [
+2654,
+2683
+]
+},
+{
+"k": 19,
+"nat": ":\n        str: ",
+"alt": "\n    -------\n    str\n        ",
+"nat_span": [
+2505,
+2520
+],
+"alt_span": [
+2734,
+2763
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "docstring_style__d206",
 "family": "docstring_style",
 "topic": "Mountain Bike Suspension Sag",
@@ -49575,6 +53521,269 @@
 "alt_span": [
 2728,
 2757
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "docstring_style__d217",
+"family": "docstring_style",
+"topic": "Ultrasonic Flaw Detection",
+"angle": "code",
+"text_es": "Evaluate the depth and size of a structural flaw using ultrasonic testing. Write an entry function `scan(time, amplitude)` where the first is the echo return time in microseconds and the second is the echo signal amplitude as a percentage. First calculate the depth of the flaw knowing the speed of sound in steel is five thousand nine hundred meters per second; the distance is the speed multiplied by half the return time, converting microseconds to seconds. Next evaluate the severity of the flaw: if the amplitude exceeds fifty percent, the flaw is considered critical. Return the flaw depth in millimeters and a boolean indicating if it is critical. Example: given a time of 10 and amplitude of 60, the depth is 29.5 millimeters and it is critical.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "SOUND_SPEED_STEEL = 5900.0\nCRITICAL_AMPLITUDE = 50.0\n\n\ndef validate_measurement(time, amplitude):\n    \"\"\"Check that a raw ultrasonic measurement is physically meaningful.\n\n    Args:\n        time: Echo return time in microseconds.\n        amplitude: Echo signal amplitude as a percentage of full screen height.\n\n    Returns:\n        A tuple of the time and amplitude converted to floats.\n    \"\"\"\n    time = float(time)\n    amplitude = float(amplitude)\n    if time < 0:\n        raise ValueError(\"echo return time cannot be negative\")\n    if not 0.0 <= amplitude <= 100.0:\n        raise ValueError(\"amplitude must be a percentage between 0 and 100\")\n    return time, amplitude\n\n\ndef depth_mm(time):\n    \"\"\"Convert an echo return time into a flaw depth.\n\n    The pulse travels to the flaw and back, so the one-way path is half of\n    the measured time; microseconds are converted to seconds first.\n\n    Args:\n        time: Echo return time in microseconds.\n\n    Returns:\n        The depth of the flaw below the probe, in millimetres.\n    \"\"\"\n    one_way_seconds = (time * 1e-6) / 2.0\n    return SOUND_SPEED_STEEL * one_way_seconds * 1000.0\n\n\ndef is_critical(amplitude):\n    \"\"\"Decide whether an echo amplitude marks the flaw as critical.\n\n    Args:\n        amplitude: Echo signal amplitude as a percentage.\n\n    Returns:\n        True when the amplitude exceeds the critical threshold.\n    \"\"\"\n    return amplitude > CRITICAL_AMPLITUDE\n\n\ndef scan(time, amplitude):\n    \"\"\"Evaluate the depth and severity of a structural flaw.\n\n    Args:\n        time: Echo return time in microseconds.\n        amplitude: Echo signal amplitude as a percentage.\n\n    Returns:\n        A tuple holding the flaw depth in millimetres and a boolean that is\n        True when the flaw is critical.\n    \"\"\"\n    time, amplitude = validate_measurement(time, amplitude)\n    return depth_mm(time), is_critical(amplitude)\n\n\ndef format_report(time, amplitude):\n    \"\"\"Build a one-line human readable report for a single scan.\n\n    Args:\n        time: Echo return time in microseconds.\n        amplitude: Echo signal amplitude as a percentage.\n\n    Returns:\n        A formatted string with the depth, the amplitude and the verdict.\n    \"\"\"\n    depth, critical = scan(time, amplitude)\n    verdict = \"CRITICAL\" if critical else \"acceptable\"\n    return \"t={:.1f} us  A={:.0f}%  depth={:.1f} mm  -> {}\".format(\n        time, amplitude, depth, verdict)\n\n\ndef main():\n    readings = [(10, 60), (10, 40), (25.4, 85), (3.2, 12)]\n    for time, amplitude in readings:\n        print(format_report(time, amplitude))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "SOUND_SPEED_STEEL = 5900.0\nCRITICAL_AMPLITUDE = 50.0\n\n\ndef validate_measurement(time, amplitude):\n    \"\"\"Check that a raw ultrasonic measurement is physically meaningful.\n\n    Parameters\n    ----------\n    time : float\n        Echo return time in microseconds.\n    amplitude : float\n        Echo signal amplitude as a percentage of full screen height.\n\n    Returns\n    -------\n    tuple\n        A tuple of the time and amplitude converted to floats.\n    \"\"\"\n    time = float(time)\n    amplitude = float(amplitude)\n    if time < 0:\n        raise ValueError(\"echo return time cannot be negative\")\n    if not 0.0 <= amplitude <= 100.0:\n        raise ValueError(\"amplitude must be a percentage between 0 and 100\")\n    return time, amplitude\n\n\ndef depth_mm(time):\n    \"\"\"Convert an echo return time into a flaw depth.\n\n    The pulse travels to the flaw and back, so the one-way path is half of\n    the measured time; microseconds are converted to seconds first.\n\n    Parameters\n    ----------\n    time : float\n        Echo return time in microseconds.\n\n    Returns\n    -------\n    float\n        The depth of the flaw below the probe, in millimetres.\n    \"\"\"\n    one_way_seconds = (time * 1e-6) / 2.0\n    return SOUND_SPEED_STEEL * one_way_seconds * 1000.0\n\n\ndef is_critical(amplitude):\n    \"\"\"Decide whether an echo amplitude marks the flaw as critical.\n\n    Parameters\n    ----------\n    amplitude : float\n        Echo signal amplitude as a percentage.\n\n    Returns\n    -------\n    bool\n        True when the amplitude exceeds the critical threshold.\n    \"\"\"\n    return amplitude > CRITICAL_AMPLITUDE\n\n\ndef scan(time, amplitude):\n    \"\"\"Evaluate the depth and severity of a structural flaw.\n\n    Parameters\n    ----------\n    time : float\n        Echo return time in microseconds.\n    amplitude : float\n        Echo signal amplitude as a percentage.\n\n    Returns\n    -------\n    tuple\n        A tuple holding the flaw depth in millimetres and a boolean that is\n        True when the flaw is critical.\n    \"\"\"\n    time, amplitude = validate_measurement(time, amplitude)\n    return depth_mm(time), is_critical(amplitude)\n\n\ndef format_report(time, amplitude):\n    \"\"\"Build a one-line human readable report for a single scan.\n\n    Parameters\n    ----------\n    time : float\n        Echo return time in microseconds.\n    amplitude : float\n        Echo signal amplitude as a percentage.\n\n    Returns\n    -------\n    str\n        A formatted string with the depth, the amplitude and the verdict.\n    \"\"\"\n    depth, critical = scan(time, amplitude)\n    verdict = \"CRITICAL\" if critical else \"acceptable\"\n    return \"t={:.1f} us  A={:.0f}%  depth={:.1f} mm  -> {}\".format(\n        time, amplitude, depth, verdict)\n\n\ndef main():\n    readings = [(10, 60), (10, 40), (25.4, 85), (3.2, 12)]\n    for time, amplitude in readings:\n        print(format_report(time, amplitude))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+176,
+196
+],
+"alt_span": [
+176,
+227
+]
+},
+{
+"k": 1,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+899,
+919
+],
+"alt_span": [
+962,
+1013
+]
+},
+{
+"k": 2,
+"nat": "Args:\n        amplitude: ",
+"alt": "Parameters\n    ----------\n    amplitude : float\n        ",
+"nat_span": [
+1239,
+1264
+],
+"alt_span": [
+1354,
+1410
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+1526,
+1546
+],
+"alt_span": [
+1692,
+1743
+]
+},
+{
+"k": 4,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+1994,
+2014
+],
+"alt_span": [
+2223,
+2274
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.974,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+176,
+196
+],
+"alt_span": [
+176,
+227
+]
+},
+{
+"k": 1,
+"nat": "\n        amplitude: ",
+"alt": "\n    amplitude : float\n        ",
+"nat_span": [
+229,
+249
+],
+"alt_span": [
+260,
+291
+]
+},
+{
+"k": 2,
+"nat": ":",
+"alt": "\n    -------\n    tuple",
+"nat_span": [
+322,
+323
+],
+"alt_span": [
+364,
+386
+]
+},
+{
+"k": 3,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+899,
+919
+],
+"alt_span": [
+962,
+1013
+]
+},
+{
+"k": 4,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+965,
+966
+],
+"alt_span": [
+1059,
+1081
+]
+},
+{
+"k": 5,
+"nat": "Args:\n        amplitude: ",
+"alt": "Parameters\n    ----------\n    amplitude : float\n        ",
+"nat_span": [
+1239,
+1264
+],
+"alt_span": [
+1354,
+1410
+]
+},
+{
+"k": 6,
+"nat": ":",
+"alt": "\n    -------\n    bool",
+"nat_span": [
+1315,
+1316
+],
+"alt_span": [
+1461,
+1482
+]
+},
+{
+"k": 7,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+1526,
+1546
+],
+"alt_span": [
+1692,
+1743
+]
+},
+{
+"k": 8,
+"nat": "\n        amplitude: ",
+"alt": "\n    amplitude : float\n        ",
+"nat_span": [
+1579,
+1599
+],
+"alt_span": [
+1776,
+1807
+]
+},
+{
+"k": 9,
+"nat": ":",
+"alt": "\n    -------\n    tuple",
+"nat_span": [
+1650,
+1651
+],
+"alt_span": [
+1858,
+1880
+]
+},
+{
+"k": 10,
+"nat": "Args:\n        time: ",
+"alt": "Parameters\n    ----------\n    time : float\n        ",
+"nat_span": [
+1994,
+2014
+],
+"alt_span": [
+2223,
+2274
+]
+},
+{
+"k": 11,
+"nat": "\n        amplitude: ",
+"alt": "\n    amplitude : float\n        ",
+"nat_span": [
+2047,
+2067
+],
+"alt_span": [
+2307,
+2338
+]
+},
+{
+"k": 12,
+"nat": ":",
+"alt": "\n    -------\n    str",
+"nat_span": [
+2118,
+2119
+],
+"alt_span": [
+2389,
+2409
 ]
 }
 ],
@@ -59771,7 +63980,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.97,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -78420,7 +82629,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.932,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -79454,7 +83663,7 @@
 ],
 "k_en": 5,
 "shared_fraction": 0.978,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -80692,7 +84901,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.939,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -83383,7 +87592,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.959,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -87566,7 +91775,7 @@
 ],
 "k_en": 7,
 "shared_fraction": 0.98,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -92815,7 +97024,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.897,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -98131,7 +102340,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.895,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -99801,7 +104010,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.918,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -107073,7 +111282,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.9,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -113389,7 +117598,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.888,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -116178,7 +120387,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.883,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {

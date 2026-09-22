@@ -1034,6 +1034,508 @@
 "regen": "regen8"
 },
 {
+"doc_id": "comment_case__d008",
+"family": "comment_case",
+"topic": "Date String Validator",
+"angle": "code",
+"text_es": "A single word entry function `validate(date)` takes a string in day month year format separated by hyphens. First, split the string into three components and ensure they are all numeric. Extract the year and check if it is between nineteen hundred and twenty one hundred. Determine if the year is a leap year, which occurs every four years but not on centuries unless divisible by four hundred. Check the month is between one and twelve. Assign the maximum days for the month, accounting for february in a leap year. Ensure the day is between one and the maximum days for that month. Return a boolean indicating if the date is valid. Example: twenty nine hyphen zero two hyphen two thousand returns true.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_leap_year(year):\n    # A year is a leap year every four years, except centuries not divisible by 400.\n    if year % 400 == 0:\n        return True\n    if year % 100 == 0:\n        return False\n    return year % 4 == 0\n\n\ndef days_in_month(month, year):\n    # February gains a day in leap years, so it is handled separately.\n    if month == 2:\n        return 29 if is_leap_year(year) else 28\n    if month in (4, 6, 9, 11):\n        return 30\n    return 31\n\n\ndef validate(date):\n    parts = date.split(\"-\")\n    # The input must decompose into exactly three hyphen-separated fields.\n    if len(parts) != 3:\n        return False\n    # Every field has to be made of digits only before it can be converted.\n    if not all(part.isdigit() for part in parts):\n        return False\n\n    day, month, year = (int(part) for part in parts)\n\n    # Only years inside the supported range are accepted.\n    if year < 1900 or year > 2100:\n        return False\n    if month < 1 or month > 12:\n        return False\n\n    max_days = days_in_month(month, year)\n    return 1 <= day <= max_days\n\n\ndef explain(date):\n    # Turn the boolean result into a short human-readable report line.\n    verdict = \"valid\" if validate(date) else \"invalid\"\n    return \"{:<12} -> {}\".format(date, verdict)\n\n\ndef first_valid(dates):\n    # Scan the candidates in order and hand back the first one that passes.\n    for date in dates:\n        if validate(date):\n            return date\n    return None\n\n\ndef main():\n    samples = [\n        \"31-13-2000\",\n        \"29-02-2000\",\n        \"29-02-1900\",\n        \"31-04-1999\",\n        \"01-01-1899\",\n        \"2a-02-2000\",\n        \"15-08-2100\",\n    ]\n\n    for date in samples:\n        print(explain(date))\n\n    # Report the earliest acceptable entry of the batch, if there is one.\n    winner = first_valid(samples)\n    if winner is None:\n        print(\"No valid date in the batch.\")\n    else:\n        print(\"First valid date: \" + winner)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def is_leap_year(year):\n    # a year is a leap year every four years, except centuries not divisible by 400.\n    if year % 400 == 0:\n        return True\n    if year % 100 == 0:\n        return False\n    return year % 4 == 0\n\n\ndef days_in_month(month, year):\n    # february gains a day in leap years, so it is handled separately.\n    if month == 2:\n        return 29 if is_leap_year(year) else 28\n    if month in (4, 6, 9, 11):\n        return 30\n    return 31\n\n\ndef validate(date):\n    parts = date.split(\"-\")\n    # the input must decompose into exactly three hyphen-separated fields.\n    if len(parts) != 3:\n        return False\n    # every field has to be made of digits only before it can be converted.\n    if not all(part.isdigit() for part in parts):\n        return False\n\n    day, month, year = (int(part) for part in parts)\n\n    # only years inside the supported range are accepted.\n    if year < 1900 or year > 2100:\n        return False\n    if month < 1 or month > 12:\n        return False\n\n    max_days = days_in_month(month, year)\n    return 1 <= day <= max_days\n\n\ndef explain(date):\n    # turn the boolean result into a short human-readable report line.\n    verdict = \"valid\" if validate(date) else \"invalid\"\n    return \"{:<12} -> {}\".format(date, verdict)\n\n\ndef first_valid(dates):\n    # scan the candidates in order and hand back the first one that passes.\n    for date in dates:\n        if validate(date):\n            return date\n    return None\n\n\ndef main():\n    samples = [\n        \"31-13-2000\",\n        \"29-02-2000\",\n        \"29-02-1900\",\n        \"31-04-1999\",\n        \"01-01-1899\",\n        \"2a-02-2000\",\n        \"15-08-2100\",\n    ]\n\n    for date in samples:\n        print(explain(date))\n\n    # report the earliest acceptable entry of the batch, if there is one.\n    winner = first_valid(samples)\n    if winner is None:\n        print(\"No valid date in the batch.\")\n    else:\n        print(\"First valid date: \" + winner)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"nat": "A",
+"alt": "a",
+"nat_span": [
+30,
+31
+],
+"alt_span": [
+30,
+31
+],
+"k": 0
+},
+{
+"nat": "February",
+"alt": "february",
+"nat_span": [
+263,
+271
+],
+"alt_span": [
+263,
+271
+],
+"k": 1
+},
+{
+"nat": "The",
+"alt": "the",
+"nat_span": [
+514,
+517
+],
+"alt_span": [
+514,
+517
+],
+"k": 2
+},
+{
+"nat": "Every",
+"alt": "every",
+"nat_span": [
+634,
+639
+],
+"alt_span": [
+634,
+639
+],
+"k": 3
+},
+{
+"nat": "Only",
+"alt": "only",
+"nat_span": [
+836,
+840
+],
+"alt_span": [
+836,
+840
+],
+"k": 4
+},
+{
+"nat": "Turn",
+"alt": "turn",
+"nat_span": [
+1099,
+1103
+],
+"alt_span": [
+1099,
+1103
+],
+"k": 5
+},
+{
+"nat": "Scan",
+"alt": "scan",
+"nat_span": [
+1299,
+1303
+],
+"alt_span": [
+1299,
+1303
+],
+"k": 6
+},
+{
+"nat": "Report",
+"alt": "report",
+"nat_span": [
+1711,
+1717
+],
+"alt_span": [
+1711,
+1717
+],
+"k": 7
+}
+],
+"k_en": 8,
+"shared_fraction": 0.989,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "A",
+"alt": "a",
+"nat_span": [
+30,
+31
+],
+"alt_span": [
+30,
+31
+]
+},
+{
+"k": 1,
+"nat": "February",
+"alt": "february",
+"nat_span": [
+263,
+271
+],
+"alt_span": [
+263,
+271
+]
+},
+{
+"k": 2,
+"nat": "The",
+"alt": "the",
+"nat_span": [
+514,
+517
+],
+"alt_span": [
+514,
+517
+]
+},
+{
+"k": 3,
+"nat": "Every",
+"alt": "every",
+"nat_span": [
+634,
+639
+],
+"alt_span": [
+634,
+639
+]
+},
+{
+"k": 4,
+"nat": "Only",
+"alt": "only",
+"nat_span": [
+836,
+840
+],
+"alt_span": [
+836,
+840
+]
+},
+{
+"k": 5,
+"nat": "Turn",
+"alt": "turn",
+"nat_span": [
+1099,
+1103
+],
+"alt_span": [
+1099,
+1103
+]
+},
+{
+"k": 6,
+"nat": "Scan",
+"alt": "scan",
+"nat_span": [
+1299,
+1303
+],
+"alt_span": [
+1299,
+1303
+]
+},
+{
+"k": 7,
+"nat": "Report",
+"alt": "report",
+"nat_span": [
+1711,
+1717
+],
+"alt_span": [
+1711,
+1717
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "comment_case__d009",
+"family": "comment_case",
+"topic": "Sudoku Board Checker",
+"angle": "code",
+"text_es": "A single word entry function `check(board)` takes a list of nine lists, each with nine integers from zero to nine, where zero is an empty cell. First, verify the board has exactly nine rows and nine columns. Then iterate through each row to ensure no non zero duplicates exist. Do the same for each of the nine columns. Next, divide the board into nine three by three subgrids and check each for duplicate numbers. Keep track of how many zeros remain on the board. If the board has duplicates, return negative one. If it is valid but incomplete, return zero. If valid and complete, return one. Example: a completely filled valid board returns one.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def _validate_shape(board):\n    # A board must be a sequence of exactly nine rows.\n    if not isinstance(board, (list, tuple)) or len(board) != 9:\n        return False\n    for row in board:\n        # Every row must itself hold exactly nine cells.\n        if not isinstance(row, (list, tuple)) or len(row) != 9:\n            return False\n        for value in row:\n            # Only integers from zero through nine are legal cell values.\n            if not isinstance(value, int) or isinstance(value, bool):\n                return False\n            if value < 0 or value > 9:\n                return False\n    return True\n\n\ndef _has_duplicates(cells):\n    seen = set()\n    for value in cells:\n        # Zeros mark empty cells and never count as duplicates.\n        if value == 0:\n            continue\n        if value in seen:\n            return True\n        seen.add(value)\n    return False\n\n\ndef _columns(board):\n    for index in range(9):\n        yield [board[row][index] for row in range(9)]\n\n\ndef _subgrids(board):\n    for top in range(0, 9, 3):\n        for left in range(0, 9, 3):\n            # Collect the nine cells of one three by three block.\n            block = []\n            for row in range(top, top + 3):\n                block.extend(board[row][left:left + 3])\n            yield block\n\n\ndef check(board):\n    if not _validate_shape(board):\n        raise ValueError(\"board must be nine rows of nine integers in 0..9\")\n\n    zeros = 0\n    for row in board:\n        if _has_duplicates(row):\n            return -1\n        zeros += row.count(0)\n\n    for column in _columns(board):\n        # A repeated digit in any column invalidates the board.\n        if _has_duplicates(column):\n            return -1\n\n    for block in _subgrids(board):\n        if _has_duplicates(block):\n            return -1\n\n    # No conflicts remain, so only the empty cells decide the verdict.\n    if zeros:\n        return 0\n    return 1\n\n\ndef describe(board):\n    result = check(board)\n    if result == -1:\n        return \"invalid: the board contains duplicates\"\n    if result == 0:\n        return \"valid but incomplete\"\n    return \"valid and complete\"\n\n\ndef main():\n    solved = [\n        [5, 3, 4, 6, 7, 8, 9, 1, 2],\n        [6, 7, 2, 1, 9, 5, 3, 4, 8],\n        [1, 9, 8, 3, 4, 2, 5, 6, 7],\n        [8, 5, 9, 7, 6, 1, 4, 2, 3],\n        [4, 2, 6, 8, 5, 3, 7, 9, 1],\n        [7, 1, 3, 9, 2, 4, 8, 5, 6],\n        [9, 6, 1, 5, 3, 7, 2, 8, 4],\n        [2, 8, 7, 4, 1, 9, 6, 3, 5],\n        [3, 4, 5, 2, 8, 6, 1, 7, 9],\n    ]\n    # Blanking a cell turns the solved grid into an incomplete one.\n    partial = [row[:] for row in solved]\n    partial[0][0] = 0\n\n    # Copying a digit inside the top left block creates a conflict.\n    broken = [row[:] for row in solved]\n    broken[1][1] = 5\n\n    for name, grid in ((\"solved\", solved), (\"partial\", partial), (\"broken\", broken)):\n        print(f\"{name}: {check(grid)} ({describe(grid)})\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def _validate_shape(board):\n    # a board must be a sequence of exactly nine rows.\n    if not isinstance(board, (list, tuple)) or len(board) != 9:\n        return False\n    for row in board:\n        # every row must itself hold exactly nine cells.\n        if not isinstance(row, (list, tuple)) or len(row) != 9:\n            return False\n        for value in row:\n            # only integers from zero through nine are legal cell values.\n            if not isinstance(value, int) or isinstance(value, bool):\n                return False\n            if value < 0 or value > 9:\n                return False\n    return True\n\n\ndef _has_duplicates(cells):\n    seen = set()\n    for value in cells:\n        # zeros mark empty cells and never count as duplicates.\n        if value == 0:\n            continue\n        if value in seen:\n            return True\n        seen.add(value)\n    return False\n\n\ndef _columns(board):\n    for index in range(9):\n        yield [board[row][index] for row in range(9)]\n\n\ndef _subgrids(board):\n    for top in range(0, 9, 3):\n        for left in range(0, 9, 3):\n            # collect the nine cells of one three by three block.\n            block = []\n            for row in range(top, top + 3):\n                block.extend(board[row][left:left + 3])\n            yield block\n\n\ndef check(board):\n    if not _validate_shape(board):\n        raise ValueError(\"board must be nine rows of nine integers in 0..9\")\n\n    zeros = 0\n    for row in board:\n        if _has_duplicates(row):\n            return -1\n        zeros += row.count(0)\n\n    for column in _columns(board):\n        # a repeated digit in any column invalidates the board.\n        if _has_duplicates(column):\n            return -1\n\n    for block in _subgrids(board):\n        if _has_duplicates(block):\n            return -1\n\n    # no conflicts remain, so only the empty cells decide the verdict.\n    if zeros:\n        return 0\n    return 1\n\n\ndef describe(board):\n    result = check(board)\n    if result == -1:\n        return \"invalid: the board contains duplicates\"\n    if result == 0:\n        return \"valid but incomplete\"\n    return \"valid and complete\"\n\n\ndef main():\n    solved = [\n        [5, 3, 4, 6, 7, 8, 9, 1, 2],\n        [6, 7, 2, 1, 9, 5, 3, 4, 8],\n        [1, 9, 8, 3, 4, 2, 5, 6, 7],\n        [8, 5, 9, 7, 6, 1, 4, 2, 3],\n        [4, 2, 6, 8, 5, 3, 7, 9, 1],\n        [7, 1, 3, 9, 2, 4, 8, 5, 6],\n        [9, 6, 1, 5, 3, 7, 2, 8, 4],\n        [2, 8, 7, 4, 1, 9, 6, 3, 5],\n        [3, 4, 5, 2, 8, 6, 1, 7, 9],\n    ]\n    # blanking a cell turns the solved grid into an incomplete one.\n    partial = [row[:] for row in solved]\n    partial[0][0] = 0\n\n    # copying a digit inside the top left block creates a conflict.\n    broken = [row[:] for row in solved]\n    broken[1][1] = 5\n\n    for name, grid in ((\"solved\", solved), (\"partial\", partial), (\"broken\", broken)):\n        print(f\"{name}: {check(grid)} ({describe(grid)})\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"nat": "A",
+"alt": "a",
+"nat_span": [
+34,
+35
+],
+"alt_span": [
+34,
+35
+],
+"k": 0
+},
+{
+"nat": "Every",
+"alt": "every",
+"nat_span": [
+200,
+205
+],
+"alt_span": [
+200,
+205
+],
+"k": 1
+},
+{
+"nat": "Only",
+"alt": "only",
+"nat_span": [
+376,
+380
+],
+"alt_span": [
+376,
+380
+],
+"k": 2
+},
+{
+"nat": "Zeros",
+"alt": "zeros",
+"nat_span": [
+700,
+705
+],
+"alt_span": [
+700,
+705
+],
+"k": 3
+},
+{
+"nat": "Collect",
+"alt": "collect",
+"nat_span": [
+1098,
+1105
+],
+"alt_span": [
+1098,
+1105
+],
+"k": 4
+},
+{
+"nat": "A",
+"alt": "a",
+"nat_span": [
+1597,
+1598
+],
+"alt_span": [
+1597,
+1598
+],
+"k": 5
+},
+{
+"nat": "No",
+"alt": "no",
+"nat_span": [
+1809,
+1811
+],
+"alt_span": [
+1809,
+1811
+],
+"k": 6
+},
+{
+"nat": "Blanking",
+"alt": "blanking",
+"nat_span": [
+2508,
+2516
+],
+"alt_span": [
+2508,
+2516
+],
+"k": 7
+},
+{
+"nat": "Copying",
+"alt": "copying",
+"nat_span": [
+2640,
+2647
+],
+"alt_span": [
+2640,
+2647
+],
+"k": 8
+}
+],
+"k_en": 9,
+"shared_fraction": 0.992,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "A",
+"alt": "a",
+"nat_span": [
+34,
+35
+],
+"alt_span": [
+34,
+35
+]
+},
+{
+"k": 1,
+"nat": "Every",
+"alt": "every",
+"nat_span": [
+200,
+205
+],
+"alt_span": [
+200,
+205
+]
+},
+{
+"k": 2,
+"nat": "Only",
+"alt": "only",
+"nat_span": [
+376,
+380
+],
+"alt_span": [
+376,
+380
+]
+},
+{
+"k": 3,
+"nat": "Zeros",
+"alt": "zeros",
+"nat_span": [
+700,
+705
+],
+"alt_span": [
+700,
+705
+]
+},
+{
+"k": 4,
+"nat": "Collect",
+"alt": "collect",
+"nat_span": [
+1098,
+1105
+],
+"alt_span": [
+1098,
+1105
+]
+},
+{
+"k": 5,
+"nat": "A",
+"alt": "a",
+"nat_span": [
+1597,
+1598
+],
+"alt_span": [
+1597,
+1598
+]
+},
+{
+"k": 6,
+"nat": "No",
+"alt": "no",
+"nat_span": [
+1809,
+1811
+],
+"alt_span": [
+1809,
+1811
+]
+},
+{
+"k": 7,
+"nat": "Blanking",
+"alt": "blanking",
+"nat_span": [
+2508,
+2516
+],
+"alt_span": [
+2508,
+2516
+]
+},
+{
+"k": 8,
+"nat": "Copying",
+"alt": "copying",
+"nat_span": [
+2640,
+2647
+],
+"alt_span": [
+2640,
+2647
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "comment_case__d010",
 "family": "comment_case",
 "topic": "Vending Machine Change",
@@ -10246,6 +10748,322 @@
 "regen": "regen8"
 },
 {
+"doc_id": "comment_case__d089",
+"family": "comment_case",
+"topic": "Restaurant Table Turnover Estimator",
+"angle": "code",
+"text_es": "A function that estimates the dining duration in minutes for a restaurant table. The input is a list containing party size, course count, kids in party flag, alcohol ordered flag, VIP status flag, and current restaurant occupancy percentage. First, establish a base time of forty five minutes. Next, add ten minutes for every additional person in the party beyond two. Then, add twenty minutes for each course ordered beyond the first main course. After that, if there are kids in the party, add fifteen minutes to account for slower dining. Next, if alcohol is ordered, add twenty five minutes as guests tend to linger. Then, check the VIP status flag; if true, add thirty minutes because staff allow them more relaxed pacing. Finally, if the restaurant occupancy is over ninety percent, apply a rush pressure reduction by subtracting ten percent from the total time to encourage faster turnover. Return the integer floor of the estimated minutes. Example input: [4, 3, true, true, false, 95]. Output: 130.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import math\n\n\ndef parse_table_record(record):\n    \"\"\"Validate a raw table record and return its six typed fields.\"\"\"\n    if len(record) != 6:\n        raise ValueError(\"a table record needs exactly 6 fields\")\n\n    party_size, course_count, kids, alcohol, vip, occupancy = record\n\n    # Party size and course count drive the additive terms, so they must be whole numbers.\n    if not isinstance(party_size, int) or not isinstance(course_count, int):\n        raise TypeError(\"party size and course count must be integers\")\n\n    # A table is seated by at least one guest who eats at least one course.\n    if party_size < 1 or course_count < 1:\n        raise ValueError(\"party size and course count must be positive\")\n\n    # Occupancy is a percentage, so anything outside 0..100 is a bad reading.\n    if not 0 <= occupancy <= 100:\n        raise ValueError(\"occupancy must be a percentage between 0 and 100\")\n\n    return party_size, course_count, bool(kids), bool(alcohol), bool(vip), float(occupancy)\n\n\ndef estimate_dining_duration(record):\n    \"\"\"Estimate how long a table will be occupied, in whole minutes.\"\"\"\n    party_size, course_count, kids, alcohol, vip, occupancy = parse_table_record(record)\n\n    # Every seating starts from a flat forty-five minute baseline.\n    minutes = 45.0\n\n    # Each guest past a two-top adds ten minutes of service overhead.\n    minutes += 10 * max(0, party_size - 2)\n\n    # Courses beyond the first main add twenty minutes apiece.\n    minutes += 20 * (course_count - 1)\n\n    if kids:\n        # Children eat more slowly, which stretches the seating.\n        minutes += 15\n\n    if alcohol:\n        # Guests with drinks linger at the table after the meal.\n        minutes += 25\n\n    if vip:\n        # Staff deliberately relax the pacing for VIP guests.\n        minutes += 30\n\n    if occupancy > 90:\n        # A nearly full room creates rush pressure that trims ten percent.\n        minutes *= 0.9\n\n    return math.floor(minutes)\n\n\ndef format_estimate(label, record):\n    \"\"\"Render one table's estimate as a single human-readable line.\"\"\"\n    minutes = estimate_dining_duration(record)\n    hours, remainder = divmod(minutes, 60)\n    return \"{:<10} {:>4} min ({}h{:02d})\".format(label, minutes, hours, remainder)\n\n\ndef main():\n    tables = {\n        \"T1\": [4, 3, True, True, False, 95],\n        \"T2\": [2, 1, False, False, False, 40],\n        \"T3\": [6, 4, False, True, True, 72],\n        \"T4\": [3, 2, True, False, True, 91],\n    }\n\n    for label in sorted(tables):\n        print(format_estimate(label, tables[label]))\n\n    # The average tells the host how fast the floor is turning over overall.\n    average = sum(estimate_dining_duration(r) for r in tables.values()) / len(tables)\n    print(\"Average seating: {:.1f} min\".format(average))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import math\n\n\ndef parse_table_record(record):\n    \"\"\"Validate a raw table record and return its six typed fields.\"\"\"\n    if len(record) != 6:\n        raise ValueError(\"a table record needs exactly 6 fields\")\n\n    party_size, course_count, kids, alcohol, vip, occupancy = record\n\n    # party size and course count drive the additive terms, so they must be whole numbers.\n    if not isinstance(party_size, int) or not isinstance(course_count, int):\n        raise TypeError(\"party size and course count must be integers\")\n\n    # a table is seated by at least one guest who eats at least one course.\n    if party_size < 1 or course_count < 1:\n        raise ValueError(\"party size and course count must be positive\")\n\n    # occupancy is a percentage, so anything outside 0..100 is a bad reading.\n    if not 0 <= occupancy <= 100:\n        raise ValueError(\"occupancy must be a percentage between 0 and 100\")\n\n    return party_size, course_count, bool(kids), bool(alcohol), bool(vip), float(occupancy)\n\n\ndef estimate_dining_duration(record):\n    \"\"\"Estimate how long a table will be occupied, in whole minutes.\"\"\"\n    party_size, course_count, kids, alcohol, vip, occupancy = parse_table_record(record)\n\n    # every seating starts from a flat forty-five minute baseline.\n    minutes = 45.0\n\n    # each guest past a two-top adds ten minutes of service overhead.\n    minutes += 10 * max(0, party_size - 2)\n\n    # courses beyond the first main add twenty minutes apiece.\n    minutes += 20 * (course_count - 1)\n\n    if kids:\n        # children eat more slowly, which stretches the seating.\n        minutes += 15\n\n    if alcohol:\n        # guests with drinks linger at the table after the meal.\n        minutes += 25\n\n    if vip:\n        # staff deliberately relax the pacing for VIP guests.\n        minutes += 30\n\n    if occupancy > 90:\n        # a nearly full room creates rush pressure that trims ten percent.\n        minutes *= 0.9\n\n    return math.floor(minutes)\n\n\ndef format_estimate(label, record):\n    \"\"\"Render one table's estimate as a single human-readable line.\"\"\"\n    minutes = estimate_dining_duration(record)\n    hours, remainder = divmod(minutes, 60)\n    return \"{:<10} {:>4} min ({}h{:02d})\".format(label, minutes, hours, remainder)\n\n\ndef main():\n    tables = {\n        \"T1\": [4, 3, True, True, False, 95],\n        \"T2\": [2, 1, False, False, False, 40],\n        \"T3\": [6, 4, False, True, True, 72],\n        \"T4\": [3, 2, True, False, True, 91],\n    }\n\n    for label in sorted(tables):\n        print(format_estimate(label, tables[label]))\n\n    # the average tells the host how fast the floor is turning over overall.\n    average = sum(estimate_dining_duration(r) for r in tables.values()) / len(tables)\n    print(\"Average seating: {:.1f} min\".format(average))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"nat": "Party",
+"alt": "party",
+"nat_span": [
+285,
+290
+],
+"alt_span": [
+285,
+290
+],
+"k": 0
+},
+{
+"nat": "A",
+"alt": "a",
+"nat_span": [
+526,
+527
+],
+"alt_span": [
+526,
+527
+],
+"k": 1
+},
+{
+"nat": "Occupancy",
+"alt": "occupancy",
+"nat_span": [
+719,
+728
+],
+"alt_span": [
+719,
+728
+],
+"k": 2
+},
+{
+"nat": "Every",
+"alt": "every",
+"nat_span": [
+1203,
+1208
+],
+"alt_span": [
+1203,
+1208
+],
+"k": 3
+},
+{
+"nat": "Each",
+"alt": "each",
+"nat_span": [
+1290,
+1294
+],
+"alt_span": [
+1290,
+1294
+],
+"k": 4
+},
+{
+"nat": "Courses",
+"alt": "courses",
+"nat_span": [
+1404,
+1411
+],
+"alt_span": [
+1404,
+1411
+],
+"k": 5
+},
+{
+"nat": "Children",
+"alt": "children",
+"nat_span": [
+1524,
+1532
+],
+"alt_span": [
+1524,
+1532
+],
+"k": 6
+},
+{
+"nat": "Guests",
+"alt": "guests",
+"nat_span": [
+1628,
+1634
+],
+"alt_span": [
+1628,
+1634
+],
+"k": 7
+},
+{
+"nat": "Staff",
+"alt": "staff",
+"nat_span": [
+1728,
+1733
+],
+"alt_span": [
+1728,
+1733
+],
+"k": 8
+},
+{
+"nat": "A",
+"alt": "a",
+"nat_span": [
+1836,
+1837
+],
+"alt_span": [
+1836,
+1837
+],
+"k": 9
+},
+{
+"nat": "The",
+"alt": "the",
+"nat_span": [
+2549,
+2552
+],
+"alt_span": [
+2549,
+2552
+],
+"k": 10
+}
+],
+"k_en": 11,
+"shared_fraction": 0.989,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Party",
+"alt": "party",
+"nat_span": [
+285,
+290
+],
+"alt_span": [
+285,
+290
+]
+},
+{
+"k": 1,
+"nat": "A",
+"alt": "a",
+"nat_span": [
+526,
+527
+],
+"alt_span": [
+526,
+527
+]
+},
+{
+"k": 2,
+"nat": "Occupancy",
+"alt": "occupancy",
+"nat_span": [
+719,
+728
+],
+"alt_span": [
+719,
+728
+]
+},
+{
+"k": 3,
+"nat": "Every",
+"alt": "every",
+"nat_span": [
+1203,
+1208
+],
+"alt_span": [
+1203,
+1208
+]
+},
+{
+"k": 4,
+"nat": "Each",
+"alt": "each",
+"nat_span": [
+1290,
+1294
+],
+"alt_span": [
+1290,
+1294
+]
+},
+{
+"k": 5,
+"nat": "Courses",
+"alt": "courses",
+"nat_span": [
+1404,
+1411
+],
+"alt_span": [
+1404,
+1411
+]
+},
+{
+"k": 6,
+"nat": "Children",
+"alt": "children",
+"nat_span": [
+1524,
+1532
+],
+"alt_span": [
+1524,
+1532
+]
+},
+{
+"k": 7,
+"nat": "Guests",
+"alt": "guests",
+"nat_span": [
+1628,
+1634
+],
+"alt_span": [
+1628,
+1634
+]
+},
+{
+"k": 8,
+"nat": "Staff",
+"alt": "staff",
+"nat_span": [
+1728,
+1733
+],
+"alt_span": [
+1728,
+1733
+]
+},
+{
+"k": 9,
+"nat": "A",
+"alt": "a",
+"nat_span": [
+1836,
+1837
+],
+"alt_span": [
+1836,
+1837
+]
+},
+{
+"k": 10,
+"nat": "The",
+"alt": "the",
+"nat_span": [
+2549,
+2552
+],
+"alt_span": [
+2549,
+2552
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "comment_case__d092",
 "family": "comment_case",
 "topic": "Car Wash Pricing Logic",
@@ -15806,6 +16624,218 @@
 "regen": "regen8"
 },
 {
+"doc_id": "comment_case__d138",
+"family": "comment_case",
+"topic": "Train Network Timetable Validator",
+"angle": "code",
+"text_es": "Write a function `validate(arrivals)` where arrivals is a list of tuples containing station id, arrival time in minutes, and departure time in minutes. Ensure a train does not depart before it arrives. Verify the dwell time, which is departure minus arrival, is at least two minutes but does not exceed fifteen minutes. Check that the travel time to the next station, meaning next arrival minus current departure, is at least five minutes. Ensure successive station ids are not identical. Verify the train visits at least three stations. Return a list of error strings detailing any violations, or an empty list if the timetable is fully valid. Example: given two stations only, returns an error stating minimum stations not met.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "MIN_STATIONS = 3\nMIN_DWELL = 2\nMAX_DWELL = 15\nMIN_TRAVEL = 5\n\n\ndef format_time(minutes):\n    # Times are stored as minutes past midnight, so wrap at 24 hours for display.\n    minutes = minutes % (24 * 60)\n    return \"{:02d}:{:02d}\".format(minutes // 60, minutes % 60)\n\n\ndef describe_stop(stop):\n    station, arrival, departure = stop\n    return \"{} ({}-{})\".format(station, format_time(arrival), format_time(departure))\n\n\ndef validate(arrivals):\n    errors = []\n\n    # A timetable with too few stops cannot form a meaningful run.\n    if len(arrivals) < MIN_STATIONS:\n        errors.append(\n            \"minimum stations not met: {} of {} required\".format(len(arrivals), MIN_STATIONS)\n        )\n\n    for index, stop in enumerate(arrivals):\n        station, arrival, departure = stop\n        dwell = departure - arrival\n\n        # Departing before arriving is a hard inconsistency, so skip dwell checks.\n        if dwell < 0:\n            errors.append(\n                \"station {}: departure {} precedes arrival {}\".format(\n                    station, format_time(departure), format_time(arrival)\n                )\n            )\n        elif dwell < MIN_DWELL:\n            errors.append(\n                \"station {}: dwell time {} min is below the {} min minimum\".format(\n                    station, dwell, MIN_DWELL\n                )\n            )\n        elif dwell > MAX_DWELL:\n            errors.append(\n                \"station {}: dwell time {} min exceeds the {} min maximum\".format(\n                    station, dwell, MAX_DWELL\n                )\n            )\n\n        # The remaining rules compare this stop with its successor.\n        if index + 1 == len(arrivals):\n            continue\n\n        next_station, next_arrival, _next_departure = arrivals[index + 1]\n        travel = next_arrival - departure\n\n        # Consecutive identical ids would mean the train never actually moved.\n        if next_station == station:\n            errors.append(\"station {} is repeated at positions {} and {}\".format(\n                station, index, index + 1))\n        if travel < MIN_TRAVEL:\n            errors.append(\n                \"leg {} -> {}: travel time {} min is below the {} min minimum\".format(\n                    station, next_station, travel, MIN_TRAVEL\n                )\n            )\n\n    return errors\n\n\ndef report(arrivals):\n    errors = validate(arrivals)\n    lines = [\"Route: \" + \" -> \".join(describe_stop(stop) for stop in arrivals)]\n\n    # An empty error list means the timetable satisfied every rule.\n    if not errors:\n        lines.append(\"Timetable valid.\")\n    else:\n        lines.extend(\"ERROR: \" + message for message in errors)\n    return \"\\n\".join(lines)\n\n\ndef main():\n    good = [(\"ALB\", 480, 484), (\"BRG\", 495, 499), (\"CHM\", 510, 513)]\n    short = [(\"ALB\", 480, 484), (\"BRG\", 495, 499)]\n    broken = [(\"ALB\", 480, 500), (\"ALB\", 505, 503), (\"CHM\", 506, 509)]\n\n    # Print each timetable's verdict so the rules are exercised end to end.\n    for timetable in (good, short, broken):\n        print(report(timetable))\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "MIN_STATIONS = 3\nMIN_DWELL = 2\nMAX_DWELL = 15\nMIN_TRAVEL = 5\n\n\ndef format_time(minutes):\n    # times are stored as minutes past midnight, so wrap at 24 hours for display.\n    minutes = minutes % (24 * 60)\n    return \"{:02d}:{:02d}\".format(minutes // 60, minutes % 60)\n\n\ndef describe_stop(stop):\n    station, arrival, departure = stop\n    return \"{} ({}-{})\".format(station, format_time(arrival), format_time(departure))\n\n\ndef validate(arrivals):\n    errors = []\n\n    # a timetable with too few stops cannot form a meaningful run.\n    if len(arrivals) < MIN_STATIONS:\n        errors.append(\n            \"minimum stations not met: {} of {} required\".format(len(arrivals), MIN_STATIONS)\n        )\n\n    for index, stop in enumerate(arrivals):\n        station, arrival, departure = stop\n        dwell = departure - arrival\n\n        # departing before arriving is a hard inconsistency, so skip dwell checks.\n        if dwell < 0:\n            errors.append(\n                \"station {}: departure {} precedes arrival {}\".format(\n                    station, format_time(departure), format_time(arrival)\n                )\n            )\n        elif dwell < MIN_DWELL:\n            errors.append(\n                \"station {}: dwell time {} min is below the {} min minimum\".format(\n                    station, dwell, MIN_DWELL\n                )\n            )\n        elif dwell > MAX_DWELL:\n            errors.append(\n                \"station {}: dwell time {} min exceeds the {} min maximum\".format(\n                    station, dwell, MAX_DWELL\n                )\n            )\n\n        # the remaining rules compare this stop with its successor.\n        if index + 1 == len(arrivals):\n            continue\n\n        next_station, next_arrival, _next_departure = arrivals[index + 1]\n        travel = next_arrival - departure\n\n        # consecutive identical ids would mean the train never actually moved.\n        if next_station == station:\n            errors.append(\"station {} is repeated at positions {} and {}\".format(\n                station, index, index + 1))\n        if travel < MIN_TRAVEL:\n            errors.append(\n                \"leg {} -> {}: travel time {} min is below the {} min minimum\".format(\n                    station, next_station, travel, MIN_TRAVEL\n                )\n            )\n\n    return errors\n\n\ndef report(arrivals):\n    errors = validate(arrivals)\n    lines = [\"Route: \" + \" -> \".join(describe_stop(stop) for stop in arrivals)]\n\n    # an empty error list means the timetable satisfied every rule.\n    if not errors:\n        lines.append(\"Timetable valid.\")\n    else:\n        lines.extend(\"ERROR: \" + message for message in errors)\n    return \"\\n\".join(lines)\n\n\ndef main():\n    good = [(\"ALB\", 480, 484), (\"BRG\", 495, 499), (\"CHM\", 510, 513)]\n    short = [(\"ALB\", 480, 484), (\"BRG\", 495, 499)]\n    broken = [(\"ALB\", 480, 500), (\"ALB\", 505, 503), (\"CHM\", 506, 509)]\n\n    # print each timetable's verdict so the rules are exercised end to end.\n    for timetable in (good, short, broken):\n        print(report(timetable))\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"nat": "Times",
+"alt": "times",
+"nat_span": [
+95,
+100
+],
+"alt_span": [
+95,
+100
+],
+"k": 0
+},
+{
+"nat": "A",
+"alt": "a",
+"nat_span": [
+469,
+470
+],
+"alt_span": [
+469,
+470
+],
+"k": 1
+},
+{
+"nat": "Departing",
+"alt": "departing",
+"nat_span": [
+829,
+838
+],
+"alt_span": [
+829,
+838
+],
+"k": 2
+},
+{
+"nat": "The",
+"alt": "the",
+"nat_span": [
+1580,
+1583
+],
+"alt_span": [
+1580,
+1583
+],
+"k": 3
+},
+{
+"nat": "Consecutive",
+"alt": "consecutive",
+"nat_span": [
+1826,
+1837
+],
+"alt_span": [
+1826,
+1837
+],
+"k": 4
+},
+{
+"nat": "An",
+"alt": "an",
+"nat_span": [
+2459,
+2461
+],
+"alt_span": [
+2459,
+2461
+],
+"k": 5
+},
+{
+"nat": "Print",
+"alt": "print",
+"nat_span": [
+2895,
+2900
+],
+"alt_span": [
+2895,
+2900
+],
+"k": 6
+}
+],
+"k_en": 7,
+"shared_fraction": 0.993,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Times",
+"alt": "times",
+"nat_span": [
+95,
+100
+],
+"alt_span": [
+95,
+100
+]
+},
+{
+"k": 1,
+"nat": "A",
+"alt": "a",
+"nat_span": [
+469,
+470
+],
+"alt_span": [
+469,
+470
+]
+},
+{
+"k": 2,
+"nat": "Departing",
+"alt": "departing",
+"nat_span": [
+829,
+838
+],
+"alt_span": [
+829,
+838
+]
+},
+{
+"k": 3,
+"nat": "The",
+"alt": "the",
+"nat_span": [
+1580,
+1583
+],
+"alt_span": [
+1580,
+1583
+]
+},
+{
+"k": 4,
+"nat": "Consecutive",
+"alt": "consecutive",
+"nat_span": [
+1826,
+1837
+],
+"alt_span": [
+1826,
+1837
+]
+},
+{
+"k": 5,
+"nat": "An",
+"alt": "an",
+"nat_span": [
+2459,
+2461
+],
+"alt_span": [
+2459,
+2461
+]
+},
+{
+"k": 6,
+"nat": "Print",
+"alt": "print",
+"nat_span": [
+2895,
+2900
+],
+"alt_span": [
+2895,
+2900
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "comment_case__d141",
 "family": "comment_case",
 "topic": "Automated Negotiation Agent",
@@ -18308,6 +19338,270 @@
 "alt_span": [
 2252,
 2255
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
+"doc_id": "comment_case__d172",
+"family": "comment_case",
+"topic": "Wine Fermentation Monitor",
+"angle": "code",
+"text_es": "Write `monitor(sugar, temp)` to check brewing health. Sugar is a list of daily gravity readings as floats. Temp is the current liquid temperature in celsius. If the sugar list has at least 3 readings and the last 3 values are identical, the fermentation is stuck. If the temperature exceeds 30 degrees, yeast stress is high and cooling is required. If the last sugar reading drops below 0.99, the fermentation is complete. Determine the current status string by prioritizing complete, then stuck, then cooling needed, and finally active if none apply. Return a tuple of the status string and the total drop in sugar from the first to the last reading.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def validate(sugar, temp):\n    # Gravity readings must exist before any judgement can be made.\n    if not sugar:\n        raise ValueError(\"sugar must contain at least one reading\")\n    for reading in sugar:\n        if not isinstance(reading, (int, float)):\n            raise TypeError(\"gravity readings must be numeric\")\n        # Readings below water density are possible, but zero or negative is not.\n        if reading <= 0:\n            raise ValueError(\"gravity readings must be positive\")\n    if not isinstance(temp, (int, float)):\n        raise TypeError(\"temperature must be numeric\")\n\n\ndef is_stuck(sugar):\n    # Three identical days in a row means the yeast has stopped working.\n    if len(sugar) < 3:\n        return False\n    last_three = sugar[-3:]\n    return last_three[0] == last_three[1] == last_three[2]\n\n\ndef needs_cooling(temp):\n    # Above thirty celsius the yeast produces off flavours.\n    return temp > 30\n\n\ndef is_complete(sugar):\n    # Final gravity under 0.99 marks the end of fermentation.\n    return sugar[-1] < 0.99\n\n\ndef total_drop(sugar):\n    return sugar[0] - sugar[-1]\n\n\ndef monitor(sugar, temp):\n    validate(sugar, temp)\n    drop = total_drop(sugar)\n    # Completion outranks every warning, since the batch is already finished.\n    if is_complete(sugar):\n        return (\"complete\", drop)\n    if is_stuck(sugar):\n        return (\"stuck\", drop)\n    if needs_cooling(temp):\n        return (\"cooling needed\", drop)\n    return (\"active\", drop)\n\n\ndef format_report(name, sugar, temp):\n    status, drop = monitor(sugar, temp)\n    # A negative drop means the reading rose, which is worth flagging in words.\n    if drop < 0:\n        trend = \"rose by {:.3f}\".format(abs(drop))\n    else:\n        trend = \"dropped by {:.3f}\".format(drop)\n    return \"{}: {} ({}, {:.1f}C)\".format(name, status, trend, temp)\n\n\ndef main():\n    batches = {\n        \"pale ale\": ([1.048, 1.020, 1.006, 0.988], 21.5),\n        \"saison\": ([1.060, 1.030, 1.014, 1.014, 1.014], 24.0),\n        \"cider\": ([1.050, 1.040, 1.032], 33.2),\n        \"mead\": ([1.100, 1.080, 1.062], 19.0),\n    }\n    # Sorting keeps the printed log stable between runs.\n    for name in sorted(batches):\n        sugar, temp = batches[name]\n        print(format_report(name, sugar, temp))\n\n    hot_or_stalled = [\n        name for name, (sugar, temp) in batches.items()\n        if monitor(sugar, temp)[0] in (\"stuck\", \"cooling needed\")\n    ]\n    # Only warn the brewer when at least one batch actually needs attention.\n    if hot_or_stalled:\n        print(\"Attention required: \" + \", \".join(sorted(hot_or_stalled)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate(sugar, temp):\n    # gravity readings must exist before any judgement can be made.\n    if not sugar:\n        raise ValueError(\"sugar must contain at least one reading\")\n    for reading in sugar:\n        if not isinstance(reading, (int, float)):\n            raise TypeError(\"gravity readings must be numeric\")\n        # readings below water density are possible, but zero or negative is not.\n        if reading <= 0:\n            raise ValueError(\"gravity readings must be positive\")\n    if not isinstance(temp, (int, float)):\n        raise TypeError(\"temperature must be numeric\")\n\n\ndef is_stuck(sugar):\n    # three identical days in a row means the yeast has stopped working.\n    if len(sugar) < 3:\n        return False\n    last_three = sugar[-3:]\n    return last_three[0] == last_three[1] == last_three[2]\n\n\ndef needs_cooling(temp):\n    # above thirty celsius the yeast produces off flavours.\n    return temp > 30\n\n\ndef is_complete(sugar):\n    # final gravity under 0.99 marks the end of fermentation.\n    return sugar[-1] < 0.99\n\n\ndef total_drop(sugar):\n    return sugar[0] - sugar[-1]\n\n\ndef monitor(sugar, temp):\n    validate(sugar, temp)\n    drop = total_drop(sugar)\n    # completion outranks every warning, since the batch is already finished.\n    if is_complete(sugar):\n        return (\"complete\", drop)\n    if is_stuck(sugar):\n        return (\"stuck\", drop)\n    if needs_cooling(temp):\n        return (\"cooling needed\", drop)\n    return (\"active\", drop)\n\n\ndef format_report(name, sugar, temp):\n    status, drop = monitor(sugar, temp)\n    # a negative drop means the reading rose, which is worth flagging in words.\n    if drop < 0:\n        trend = \"rose by {:.3f}\".format(abs(drop))\n    else:\n        trend = \"dropped by {:.3f}\".format(drop)\n    return \"{}: {} ({}, {:.1f}C)\".format(name, status, trend, temp)\n\n\ndef main():\n    batches = {\n        \"pale ale\": ([1.048, 1.020, 1.006, 0.988], 21.5),\n        \"saison\": ([1.060, 1.030, 1.014, 1.014, 1.014], 24.0),\n        \"cider\": ([1.050, 1.040, 1.032], 33.2),\n        \"mead\": ([1.100, 1.080, 1.062], 19.0),\n    }\n    # sorting keeps the printed log stable between runs.\n    for name in sorted(batches):\n        sugar, temp = batches[name]\n        print(format_report(name, sugar, temp))\n\n    hot_or_stalled = [\n        name for name, (sugar, temp) in batches.items()\n        if monitor(sugar, temp)[0] in (\"stuck\", \"cooling needed\")\n    ]\n    # only warn the brewer when at least one batch actually needs attention.\n    if hot_or_stalled:\n        print(\"Attention required: \" + \", \".join(sorted(hot_or_stalled)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"nat": "Gravity",
+"alt": "gravity",
+"nat_span": [
+33,
+40
+],
+"alt_span": [
+33,
+40
+],
+"k": 0
+},
+{
+"nat": "Readings",
+"alt": "readings",
+"nat_span": [
+331,
+339
+],
+"alt_span": [
+331,
+339
+],
+"k": 1
+},
+{
+"nat": "Three",
+"alt": "three",
+"nat_span": [
+621,
+626
+],
+"alt_span": [
+621,
+626
+],
+"k": 2
+},
+{
+"nat": "Above",
+"alt": "above",
+"nat_span": [
+852,
+857
+],
+"alt_span": [
+852,
+857
+],
+"k": 3
+},
+{
+"nat": "Final",
+"alt": "final",
+"nat_span": [
+959,
+964
+],
+"alt_span": [
+959,
+964
+],
+"k": 4
+},
+{
+"nat": "Completion",
+"alt": "completion",
+"nat_span": [
+1189,
+1199
+],
+"alt_span": [
+1189,
+1199
+],
+"k": 5
+},
+{
+"nat": "A",
+"alt": "a",
+"nat_span": [
+1559,
+1560
+],
+"alt_span": [
+1559,
+1560
+],
+"k": 6
+},
+{
+"nat": "Sorting",
+"alt": "sorting",
+"nat_span": [
+2086,
+2093
+],
+"alt_span": [
+2086,
+2093
+],
+"k": 7
+},
+{
+"nat": "Only",
+"alt": "only",
+"nat_span": [
+2412,
+2416
+],
+"alt_span": [
+2412,
+2416
+],
+"k": 8
+}
+],
+"k_en": 9,
+"shared_fraction": 0.991,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Gravity",
+"alt": "gravity",
+"nat_span": [
+33,
+40
+],
+"alt_span": [
+33,
+40
+]
+},
+{
+"k": 1,
+"nat": "Readings",
+"alt": "readings",
+"nat_span": [
+331,
+339
+],
+"alt_span": [
+331,
+339
+]
+},
+{
+"k": 2,
+"nat": "Three",
+"alt": "three",
+"nat_span": [
+621,
+626
+],
+"alt_span": [
+621,
+626
+]
+},
+{
+"k": 3,
+"nat": "Above",
+"alt": "above",
+"nat_span": [
+852,
+857
+],
+"alt_span": [
+852,
+857
+]
+},
+{
+"k": 4,
+"nat": "Final",
+"alt": "final",
+"nat_span": [
+959,
+964
+],
+"alt_span": [
+959,
+964
+]
+},
+{
+"k": 5,
+"nat": "Completion",
+"alt": "completion",
+"nat_span": [
+1189,
+1199
+],
+"alt_span": [
+1189,
+1199
+]
+},
+{
+"k": 6,
+"nat": "A",
+"alt": "a",
+"nat_span": [
+1559,
+1560
+],
+"alt_span": [
+1559,
+1560
+]
+},
+{
+"k": 7,
+"nat": "Sorting",
+"alt": "sorting",
+"nat_span": [
+2086,
+2093
+],
+"alt_span": [
+2086,
+2093
+]
+},
+{
+"k": 8,
+"nat": "Only",
+"alt": "only",
+"nat_span": [
+2412,
+2416
+],
+"alt_span": [
+2412,
+2416
 ]
 }
 ],
@@ -45157,7 +46451,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.956,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -45643,7 +46937,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.977,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -65118,7 +66412,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.963,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -67100,7 +68394,7 @@
 ],
 "k_en": 11,
 "shared_fraction": 0.966,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -72058,7 +73352,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.975,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {

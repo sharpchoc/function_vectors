@@ -152839,6 +152839,855 @@
 "regen": "regen8"
 },
 {
+"doc_id": "py_self_name__d212",
+"family": "py_self_name",
+"topic": "Catering Banquet Setup",
+"angle": "code",
+"text_es": "Design a function `seat(roster)` that arranges attendees at a large dining function. The simulation needs a coordinator entity that creates and manages round dining surface entities. Each dining surface entity has a fixed seating capacity and a designated dietary restriction category. The coordinator entity processes a list of attendee entities, each having a name and a dietary preference. The coordinator attempts to place each attendee at a dining surface that matches their preference and has an open seat. If placed, the surface capacity is reduced by one. The function takes a list of attendee preference strings and returns the number of empty seats remaining at each dining surface.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "class Attendee:\n    def __init__(self, name, preference):\n        self.name = name\n        self.preference = preference\n\n    def matches(self, table):\n        return self.preference == table.category\n\n    def describe(self):\n        return \"{} ({})\".format(self.name, self.preference)\n\n\nclass DiningTable:\n    def __init__(self, label, capacity, category):\n        self.label = label\n        self.capacity = capacity\n        self.category = category\n        self.occupants = []\n\n    def has_room(self):\n        return len(self.occupants) < self.capacity\n\n    def accepts(self, attendee):\n        return self.has_room() and attendee.matches(self)\n\n    def place(self, attendee):\n        self.occupants.append(attendee)\n        return self.empty_seats()\n\n    def empty_seats(self):\n        return self.capacity - len(self.occupants)\n\n    def report(self):\n        names = \", \".join(guest.describe() for guest in self.occupants)\n        return \"{} [{}] {}/{} seated: {}\".format(\n            self.label, self.category, len(self.occupants), self.capacity, names or \"-\")\n\n\nclass Coordinator:\n    def __init__(self, layout):\n        self.tables = [DiningTable(label, capacity, category)\n                       for label, capacity, category in layout]\n        self.unseated = []\n\n    def parse(self, entry, index):\n        if isinstance(entry, (tuple, list)):\n            name, preference = entry\n        else:\n            name, preference = \"Guest {}\".format(index + 1), entry\n        return Attendee(name, preference)\n\n    def assign(self, attendee):\n        for table in self.tables:\n            if table.accepts(attendee):\n                table.place(attendee)\n                return table\n        self.unseated.append(attendee)\n        return None\n\n    def process(self, roster):\n        for index, entry in enumerate(roster):\n            self.assign(self.parse(entry, index))\n        return self.vacancies()\n\n    def vacancies(self):\n        return [table.empty_seats() for table in self.tables]\n\n    def summary(self):\n        lines = [table.report() for table in self.tables]\n        if self.unseated:\n            lines.append(\"turned away: \" + \", \".join(g.describe() for g in self.unseated))\n        return \"\\n\".join(lines)\n\n\nLAYOUT = [\n    (\"Table 1\", 4, \"vegan\"),\n    (\"Table 2\", 4, \"vegan\"),\n    (\"Table 3\", 6, \"halal\"),\n    (\"Table 4\", 5, \"standard\"),\n    (\"Table 5\", 5, \"gluten-free\"),\n]\n\n\ndef seat(roster):\n    coordinator = Coordinator(LAYOUT)\n    remaining = coordinator.process(roster)\n    print(coordinator.summary())\n    return remaining\n\n\ndef main():\n    roster = [\"vegan\", \"vegan\", \"halal\", \"standard\", \"gluten-free\", \"vegan\",\n              \"vegan\", \"vegan\", \"halal\", \"standard\", \"kosher\",\n              (\"Dana\", \"gluten-free\"), (\"Omar\", \"halal\")]\n    print(seat(roster))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "class Attendee:\n    def __init__(this, name, preference):\n        this.name = name\n        this.preference = preference\n\n    def matches(this, table):\n        return this.preference == table.category\n\n    def describe(this):\n        return \"{} ({})\".format(this.name, this.preference)\n\n\nclass DiningTable:\n    def __init__(this, label, capacity, category):\n        this.label = label\n        this.capacity = capacity\n        this.category = category\n        this.occupants = []\n\n    def has_room(this):\n        return len(this.occupants) < this.capacity\n\n    def accepts(this, attendee):\n        return this.has_room() and attendee.matches(this)\n\n    def place(this, attendee):\n        this.occupants.append(attendee)\n        return this.empty_seats()\n\n    def empty_seats(this):\n        return this.capacity - len(this.occupants)\n\n    def report(this):\n        names = \", \".join(guest.describe() for guest in this.occupants)\n        return \"{} [{}] {}/{} seated: {}\".format(\n            this.label, this.category, len(this.occupants), this.capacity, names or \"-\")\n\n\nclass Coordinator:\n    def __init__(this, layout):\n        this.tables = [DiningTable(label, capacity, category)\n                       for label, capacity, category in layout]\n        this.unseated = []\n\n    def parse(this, entry, index):\n        if isinstance(entry, (tuple, list)):\n            name, preference = entry\n        else:\n            name, preference = \"Guest {}\".format(index + 1), entry\n        return Attendee(name, preference)\n\n    def assign(this, attendee):\n        for table in this.tables:\n            if table.accepts(attendee):\n                table.place(attendee)\n                return table\n        this.unseated.append(attendee)\n        return None\n\n    def process(this, roster):\n        for index, entry in enumerate(roster):\n            this.assign(this.parse(entry, index))\n        return this.vacancies()\n\n    def vacancies(this):\n        return [table.empty_seats() for table in this.tables]\n\n    def summary(this):\n        lines = [table.report() for table in this.tables]\n        if this.unseated:\n            lines.append(\"turned away: \" + \", \".join(g.describe() for g in this.unseated))\n        return \"\\n\".join(lines)\n\n\nLAYOUT = [\n    (\"Table 1\", 4, \"vegan\"),\n    (\"Table 2\", 4, \"vegan\"),\n    (\"Table 3\", 6, \"halal\"),\n    (\"Table 4\", 5, \"standard\"),\n    (\"Table 5\", 5, \"gluten-free\"),\n]\n\n\ndef seat(roster):\n    coordinator = Coordinator(LAYOUT)\n    remaining = coordinator.process(roster)\n    print(coordinator.summary())\n    return remaining\n\n\ndef main():\n    roster = [\"vegan\", \"vegan\", \"halal\", \"standard\", \"gluten-free\", \"vegan\",\n              \"vegan\", \"vegan\", \"halal\", \"standard\", \"kosher\",\n              (\"Dana\", \"gluten-free\"), (\"Omar\", \"halal\")]\n    print(seat(roster))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+33,
+37
+],
+"alt_span": [
+33,
+37
+]
+},
+{
+"k": 1,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+137,
+141
+],
+"alt_span": [
+137,
+141
+]
+},
+{
+"k": 2,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+218,
+222
+],
+"alt_span": [
+218,
+222
+]
+},
+{
+"k": 3,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+323,
+327
+],
+"alt_span": [
+323,
+327
+]
+},
+{
+"k": 4,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+496,
+500
+],
+"alt_span": [
+496,
+500
+]
+},
+{
+"k": 5,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+571,
+575
+],
+"alt_span": [
+571,
+575
+]
+},
+{
+"k": 6,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+661,
+665
+],
+"alt_span": [
+661,
+665
+]
+},
+{
+"k": 7,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+773,
+777
+],
+"alt_span": [
+773,
+777
+]
+},
+{
+"k": 8,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+847,
+851
+],
+"alt_span": [
+847,
+851
+]
+},
+{
+"k": 9,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1103,
+1107
+],
+"alt_span": [
+1103,
+1107
+]
+},
+{
+"k": 10,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1286,
+1290
+],
+"alt_span": [
+1286,
+1290
+]
+},
+{
+"k": 11,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1528,
+1532
+],
+"alt_span": [
+1528,
+1532
+]
+},
+{
+"k": 12,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1762,
+1766
+],
+"alt_span": [
+1762,
+1766
+]
+},
+{
+"k": 13,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1925,
+1929
+],
+"alt_span": [
+1925,
+1929
+]
+},
+{
+"k": 14,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+2011,
+2015
+],
+"alt_span": [
+2011,
+2015
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.95,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+33,
+37
+],
+"alt_span": [
+33,
+37
+]
+},
+{
+"k": 1,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+66,
+70
+],
+"alt_span": [
+66,
+70
+]
+},
+{
+"k": 2,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+91,
+95
+],
+"alt_span": [
+91,
+95
+]
+},
+{
+"k": 3,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+137,
+141
+],
+"alt_span": [
+137,
+141
+]
+},
+{
+"k": 4,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+166,
+170
+],
+"alt_span": [
+166,
+170
+]
+},
+{
+"k": 5,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+218,
+222
+],
+"alt_span": [
+218,
+222
+]
+},
+{
+"k": 6,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+257,
+261
+],
+"alt_span": [
+257,
+261
+]
+},
+{
+"k": 7,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+268,
+272
+],
+"alt_span": [
+268,
+272
+]
+},
+{
+"k": 8,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+323,
+327
+],
+"alt_span": [
+323,
+327
+]
+},
+{
+"k": 9,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+365,
+369
+],
+"alt_span": [
+365,
+369
+]
+},
+{
+"k": 10,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+392,
+396
+],
+"alt_span": [
+392,
+396
+]
+},
+{
+"k": 11,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+425,
+429
+],
+"alt_span": [
+425,
+429
+]
+},
+{
+"k": 12,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+458,
+462
+],
+"alt_span": [
+458,
+462
+]
+},
+{
+"k": 13,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+496,
+500
+],
+"alt_span": [
+496,
+500
+]
+},
+{
+"k": 14,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+522,
+526
+],
+"alt_span": [
+522,
+526
+]
+},
+{
+"k": 15,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+540,
+544
+],
+"alt_span": [
+540,
+544
+]
+},
+{
+"k": 16,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+571,
+575
+],
+"alt_span": [
+571,
+575
+]
+},
+{
+"k": 17,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+603,
+607
+],
+"alt_span": [
+603,
+607
+]
+},
+{
+"k": 18,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+640,
+644
+],
+"alt_span": [
+640,
+644
+]
+},
+{
+"k": 19,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+661,
+665
+],
+"alt_span": [
+661,
+665
+]
+},
+{
+"k": 20,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+686,
+690
+],
+"alt_span": [
+686,
+690
+]
+},
+{
+"k": 21,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+733,
+737
+],
+"alt_span": [
+733,
+737
+]
+},
+{
+"k": 22,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+773,
+777
+],
+"alt_span": [
+773,
+777
+]
+},
+{
+"k": 23,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+795,
+799
+],
+"alt_span": [
+795,
+799
+]
+},
+{
+"k": 24,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+815,
+819
+],
+"alt_span": [
+815,
+819
+]
+},
+{
+"k": 25,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+847,
+851
+],
+"alt_span": [
+847,
+851
+]
+},
+{
+"k": 26,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+910,
+914
+],
+"alt_span": [
+910,
+914
+]
+},
+{
+"k": 27,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+988,
+992
+],
+"alt_span": [
+988,
+992
+]
+},
+{
+"k": 28,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1000,
+1004
+],
+"alt_span": [
+1000,
+1004
+]
+},
+{
+"k": 29,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1019,
+1023
+],
+"alt_span": [
+1019,
+1023
+]
+},
+{
+"k": 30,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1036,
+1040
+],
+"alt_span": [
+1036,
+1040
+]
+},
+{
+"k": 31,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1103,
+1107
+],
+"alt_span": [
+1103,
+1107
+]
+},
+{
+"k": 32,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1126,
+1130
+],
+"alt_span": [
+1126,
+1130
+]
+},
+{
+"k": 33,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1252,
+1256
+],
+"alt_span": [
+1252,
+1256
+]
+},
+{
+"k": 34,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1286,
+1290
+],
+"alt_span": [
+1286,
+1290
+]
+},
+{
+"k": 35,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1528,
+1532
+],
+"alt_span": [
+1528,
+1532
+]
+},
+{
+"k": 36,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1566,
+1570
+],
+"alt_span": [
+1566,
+1570
+]
+},
+{
+"k": 37,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1694,
+1698
+],
+"alt_span": [
+1694,
+1698
+]
+},
+{
+"k": 38,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1762,
+1766
+],
+"alt_span": [
+1762,
+1766
+]
+},
+{
+"k": 39,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1836,
+1840
+],
+"alt_span": [
+1836,
+1840
+]
+},
+{
+"k": 40,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1848,
+1852
+],
+"alt_span": [
+1848,
+1852
+]
+},
+{
+"k": 41,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1889,
+1893
+],
+"alt_span": [
+1889,
+1893
+]
+},
+{
+"k": 42,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1925,
+1929
+],
+"alt_span": [
+1925,
+1929
+]
+},
+{
+"k": 43,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1981,
+1985
+],
+"alt_span": [
+1981,
+1985
+]
+},
+{
+"k": 44,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+2011,
+2015
+],
+"alt_span": [
+2011,
+2015
+]
+},
+{
+"k": 45,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+2063,
+2067
+],
+"alt_span": [
+2063,
+2067
+]
+},
+{
+"k": 46,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+2087,
+2091
+],
+"alt_span": [
+2087,
+2091
+]
+},
+{
+"k": 47,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+2177,
+2181
+],
+"alt_span": [
+2177,
+2181
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview",
+"regen": "regen8"
+},
+{
 "doc_id": "py_self_name__d213",
 "family": "py_self_name",
 "topic": "Patient Pharmacy Dispenser",
@@ -163945,405 +164794,6 @@
 "alt_span": [
 784,
 788
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_self_name__t066",
-"family": "py_self_name",
-"topic": "Character Frequency Counter",
-"angle": "code",
-"text_es": "Count the frequency of each character in a given string, ignoring case. The function `char_frequency(text)` should return a dictionary where keys are characters and values are their counts. Input: `text` (str). Output: `frequency_map` (dict).\nExample 1: `char_frequency('hello')` should return `{'h': 1, 'e': 1, 'l': 2, 'o': 1}`.\nExample 2: `char_frequency('Python')` should return `{'p': 1, 'y': 1, 't': 1, 'h': 1, 'o': 1, 'n': 1}`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "class CharacterCounter:\n    def __init__(self):\n        self.frequency_map = {}\n\n    def process_character(self, char):\n        self.frequency_map[char] = self.frequency_map.get(char, 0) + 1\n\n    def get_frequency_map(self):\n        return self.frequency_map\n\nclass TextProcessor:\n    def __init__(self, text):\n        self.original_text = text\n        self.normalized_text = self.original_text.lower()\n\n    def get_normalized_text(self):\n        return self.normalized_text\n\nclass FrequencyAnalyzer:\n    def __init__(self):\n        self.counter = CharacterCounter()\n\n    def analyze(self, text_processor):\n        self.text_to_analyze = text_processor.get_normalized_text()\n        for char in self.text_to_analyze:\n            self.counter.process_character(char)\n        self.final_map = self.counter.get_frequency_map()\n        return self.final_map\n\ndef char_frequency(text):\n    processor = TextProcessor(text)\n    analyzer = FrequencyAnalyzer()\n    result = analyzer.analyze(processor)\n    return result\n",
-"text_alt": "class CharacterCounter:\n    def __init__(this):\n        this.frequency_map = {}\n\n    def process_character(this, char):\n        this.frequency_map[char] = this.frequency_map.get(char, 0) + 1\n\n    def get_frequency_map(this):\n        return this.frequency_map\n\nclass TextProcessor:\n    def __init__(this, text):\n        this.original_text = text\n        this.normalized_text = this.original_text.lower()\n\n    def get_normalized_text(this):\n        return this.normalized_text\n\nclass FrequencyAnalyzer:\n    def __init__(this):\n        this.counter = CharacterCounter()\n\n    def analyze(this, text_processor):\n        this.text_to_analyze = text_processor.get_normalized_text()\n        for char in this.text_to_analyze:\n            this.counter.process_character(char)\n        this.final_map = this.counter.get_frequency_map()\n        return this.final_map\n\ndef char_frequency(text):\n    processor = TextProcessor(text)\n    analyzer = FrequencyAnalyzer()\n    result = analyzer.analyze(processor)\n    return result\n",
-"opps": [
-{
-"k": 0,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-41,
-45
-],
-"alt_span": [
-41,
-45
-]
-},
-{
-"k": 1,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-107,
-111
-],
-"alt_span": [
-107,
-111
-]
-},
-{
-"k": 2,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-218,
-222
-],
-"alt_span": [
-218,
-222
-]
-},
-{
-"k": 3,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-298,
-302
-],
-"alt_span": [
-298,
-302
-]
-},
-{
-"k": 4,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-432,
-436
-],
-"alt_span": [
-432,
-436
-]
-},
-{
-"k": 5,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-518,
-522
-],
-"alt_span": [
-518,
-522
-]
-},
-{
-"k": 6,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-584,
-588
-],
-"alt_span": [
-584,
-588
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 0.912,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-41,
-45
-],
-"alt_span": [
-41,
-45
-]
-},
-{
-"k": 1,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-56,
-60
-],
-"alt_span": [
-56,
-60
-]
-},
-{
-"k": 2,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-107,
-111
-],
-"alt_span": [
-107,
-111
-]
-},
-{
-"k": 3,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-128,
-132
-],
-"alt_span": [
-128,
-132
-]
-},
-{
-"k": 4,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-155,
-159
-],
-"alt_span": [
-155,
-159
-]
-},
-{
-"k": 5,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-218,
-222
-],
-"alt_span": [
-218,
-222
-]
-},
-{
-"k": 6,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-240,
-244
-],
-"alt_span": [
-240,
-244
-]
-},
-{
-"k": 7,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-298,
-302
-],
-"alt_span": [
-298,
-302
-]
-},
-{
-"k": 8,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-319,
-323
-],
-"alt_span": [
-319,
-323
-]
-},
-{
-"k": 9,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-353,
-357
-],
-"alt_span": [
-353,
-357
-]
-},
-{
-"k": 10,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-376,
-380
-],
-"alt_span": [
-376,
-380
-]
-},
-{
-"k": 11,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-432,
-436
-],
-"alt_span": [
-432,
-436
-]
-},
-{
-"k": 12,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-454,
-458
-],
-"alt_span": [
-454,
-458
-]
-},
-{
-"k": 13,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-518,
-522
-],
-"alt_span": [
-518,
-522
-]
-},
-{
-"k": 14,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-533,
-537
-],
-"alt_span": [
-533,
-537
-]
-},
-{
-"k": 15,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-584,
-588
-],
-"alt_span": [
-584,
-588
-]
-},
-{
-"k": 16,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-615,
-619
-],
-"alt_span": [
-615,
-619
-]
-},
-{
-"k": 17,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-695,
-699
-],
-"alt_span": [
-695,
-699
-]
-},
-{
-"k": 18,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-729,
-733
-],
-"alt_span": [
-729,
-733
-]
-},
-{
-"k": 19,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-774,
-778
-],
-"alt_span": [
-774,
-778
-]
-},
-{
-"k": 20,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-791,
-795
-],
-"alt_span": [
-791,
-795
-]
-},
-{
-"k": 21,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-839,
-843
-],
-"alt_span": [
-839,
-843
 ]
 }
 ],
