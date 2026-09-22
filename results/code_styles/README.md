@@ -30,3 +30,6 @@ then `analyze.py --model qwen25_code`, `code_cutoff.py --model qwen25_code`, `lo
 
 ## Update 2026-09-22 — corpus-wide padding clean-up refreshed
 All numbers here were recomputed after the corpus-wide padding clean-up (2,438 of 2,464 flagged documents regenerated with Opus 5 + Opus 5/GPT-5 review; 49 families changed; 26 documents still flagged: js_hungarian 9, py_join_concat 6, py_private 11). Pool is now 55 / 60: py_ternary dropped (k = 4 natural pole .375 → .27, below the cutoff). Before/after per family: `results/code_styles/padding_regen_before_after.csv`, pooled: `padding_regen_before_after_pooled.csv` (55 pool families: k = 4 .726 → .719; write L24 α2 .508 → .543; read L8 α4 .569 → .581). The 10-family hyperparameter sweeps (sweep10) were NOT re-run and predate the clean-up. The read→write map sandbox was NOT refit (user will instruct).
+
+## Update 2026-09-22 (later) — py_private redefined
+py_private now = underscore-prefixed vs plain private members (alternative derived by rule, see WORKLOG); its numbers are not comparable with the earlier double-underscore definition. Residual flagged documents: 10 (js_hungarian 9, py_join_concat 1; user decision: leave as is).

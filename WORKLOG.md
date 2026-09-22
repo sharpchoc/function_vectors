@@ -9951,3 +9951,18 @@ read_full_analyze, explainer). **POOL CHANGE: 55 / 60 — py_ternary dropped** (
 write L24 α2 .508 → .543 (unsteered .275 → .281), read L8 α4 .569 → .581 (unsteered .061 → .062, real 3-shot .713 → .711). Largest k=4 drops: py_abbrev −.15,
 comment_language −.13, comment_case −.12, py_comprehension −.10; gains: py_with_open +.10. Tables: `results/code_styles/padding_regen_before_after{,_pooled}.csv`.
 sweep10 hyperparameter sweeps not re-run; read→write map sandbox not refit.
+
+**2026-09-22 (later) — residual 26 + py_private redefinition (USER DECISIONS: py_ternary drop accepted; js_hungarian left as is; py_private → option 2).**
+Retry t7 with new designed tasks + a string-literal guard (twins' string literals must be identical): py_join_concat 5/6 more fixed, js_hungarian 0/9
+(task-pinned parameters stay unprefixed by `harmonise_pinned`; user: leave as is). py_private root cause: `code_free.propagate_renames` rebuilt the
+alternative twin converting dotted uses only (never `def _x(`), so 198/200 pairs called `self.__m()` with `def _m()` still defined (invalid, 18 crash).
+Redefinition (option 2): natural = underscore-prefixed private members, alternative = NO underscore prefix (`self._cache` → `self.cache`,
+`def _load` → `def load`), scorer regexes `(?:self|cls)\._[a-z]|\bdef _[a-z]` vs `(?:self|cls)\.[a-z]|\bdef [a-z]`, twins ALWAYS derived by the
+AST-verified rule `code_rule_alt.py_private` (`ALWAYS_RULE`; pinned identifiers kept; collision = existing bare attribute/method; f-strings handled).
+Same 200 documents: 181 natural twins kept with re-derived alternatives, 19 regenerated (padding/leak guards or < 5 counted under the new rule;
+Opus 5 + dual review, 19/19 accepted, ≈ $10). Sweep 0 issues; cues ` self` 2073 / ` def` 806; prompts verified. GPU refresh (pod regen8_v1, terminated)
+for py_private + py_join_concat (the latter's first job had failed: evidence was computed before move_stale — order fixed). Analyses rerun: pool 55/60
+unchanged (py_private k4 nat .41 / alt .42 — old definition .76/.66; write L24 α2 .41, read L8 α4 .41 vs 3-shot .37); py_join_concat k4 .72/.62,
+write .56, read .44. Pooled 55: k4 .719 → .718, write .543 → .545, read .581 → .584. prompt_pairs 44,788 / 31,704 correct; 0 unjudged.
+Residual flagged docs now 10 (js_hungarian 9, py_join_concat 1). NOTE: standby pod map_5 (37jojnsoek8pdj) no longer exists (RunPod API: pod null);
+not terminated by any of this session's watchers (they act only on their own recorded ids) — a new pod is needed for the map regressions.
