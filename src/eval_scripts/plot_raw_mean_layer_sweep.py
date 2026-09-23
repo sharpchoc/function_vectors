@@ -13,6 +13,7 @@ real-1-shot baselines, and writes to results/69_task_run/raw_mean_steering/:
   layer_summary.csv   per layer x alpha: mean/median accuracy, train/heldout split
   per_task_by_layer.csv  task x layer matrix (best alpha per cell) + the three baselines
 """
+import argparse
 import csv
 import json
 import sys
@@ -36,8 +37,26 @@ ALPHAS = (0.5, 1.0, 2.0, 4.0)
 LAYERS = list(range(28))
 
 
+def parse_args():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Model-agnostic since 2026-09-23 (Qwen base line); defaults = GPT-J.
+    ap.add_argument("--ar", type=Path, default=AR, help="raw_mean_steering capture dir")
+    ap.add_argument("--ref", type=str, default=str(REF),
+                    help="read_dir_steering_1shot dir for the 0-shot / real-1-shot reference lines; "
+                         "'none' = omit them (Qwen lines: no such capture)")
+    ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--split_path", type=Path,
+                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+    ap.add_argument("--model_label", default="GPT-J-6B")
+    return ap.parse_args()
+
+
 def main():
-    split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
+    global AR, OUT
+    args = parse_args()
+    AR, OUT = args.ar, args.out
+    REF = None if args.ref == "none" else Path(args.ref)
+    split = json.load(open(args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
     tasks = sorted(t for t in group if (AR / f"{t}.json").exists())
@@ -48,10 +67,13 @@ def main():
     grp = np.array([group[t] for t in tasks])
 
     base = np.array([data[t]["conditions"]["baseline"]["acc"] for t in tasks])
-    zs = np.array([json.load(open(REF / f"{t}__zero_shot.json"))
-                   ["conditions"]["baseline"]["acc"] for t in tasks])
-    r1 = np.array([json.load(open(REF / f"{t}__real_1shot.json"))
-                   ["conditions"]["baseline"]["acc"] for t in tasks])
+    if REF is not None:
+        zs = np.array([json.load(open(REF / f"{t}__zero_shot.json"))
+                       ["conditions"]["baseline"]["acc"] for t in tasks])
+        r1 = np.array([json.load(open(REF / f"{t}__real_1shot.json"))
+                       ["conditions"]["baseline"]["acc"] for t in tasks])
+    else:
+        zs = r1 = None
 
     # acc[layer][alpha] -> per-task array; and the shared-mean control if present
     acc = {l: {a: np.array([data[t]["conditions"][f"L{l}_a{a}"]["acc"] for t in tasks])
@@ -100,16 +122,18 @@ def main():
                                               axis=0))) for l in LAYERS],
                 "s--", ms=3.5, color="tab:purple", lw=1.3,
                 label="shared-mean control (no task identity), best alpha")
-    ax.axhline(float(r1.mean()), color="tab:green", lw=1.4,
-               label=f"real 1-shot demo = {r1.mean():.3f}")
+    if r1 is not None:
+        ax.axhline(float(r1.mean()), color="tab:green", lw=1.4,
+                   label=f"real 1-shot demo = {r1.mean():.3f}")
     ax.axhline(float(base.mean()), color="0.45", ls=":", lw=1.2,
                label=f"unsteered '_' scaffold = {base.mean():.3f}")
-    ax.axhline(float(zs.mean()), color="tab:brown", ls="-.", lw=1.1,
-               label=f"0-shot = {zs.mean():.3f}")
+    if zs is not None:
+        ax.axhline(float(zs.mean()), color="tab:brown", ls="-.", lw=1.1,
+                   label=f"0-shot = {zs.mean():.3f}")
     ax.set_xticks(LAYERS, [str(l) for l in LAYERS], fontsize=8)
     ax.set_xlabel("injection layer (mean taken at the same layer)")
     ax.set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks)")
-    ax.set_title("Raw mean-activation steering at the target slot, swept over depth\n"
+    ax.set_title(f"Raw mean-activation steering at the target slot, swept over depth ({args.model_label})\n"
                  "1-shot 'Q: {input} / A: _' scaffold, injection at the '_' token, "
                  "alpha x the vector's own norm", fontsize=11)
     ax.legend(fontsize=8)
@@ -124,11 +148,13 @@ def main():
     x = np.arange(len(tasks))
     w_ = 0.2
     fig, ax = plt.subplots(figsize=(max(15, 0.4 * len(tasks)), 7.0), dpi=150)
-    ax.bar(x - 1.5 * w_, zs[order], w_, color="0.35", label="0-shot (no demo)")
+    if zs is not None:
+        ax.bar(x - 1.5 * w_, zs[order], w_, color="0.35", label="0-shot (no demo)")
     ax.bar(x - 0.5 * w_, base[order], w_, color="0.72", label="unsteered '_' scaffold")
     ax.bar(x + 0.5 * w_, bl[order], w_, color="tab:red",
            label=f"raw mean activation @L{best_layer} (best alpha)")
-    ax.bar(x + 1.5 * w_, r1[order], w_, color="tab:green", label="real 1-shot demo")
+    if r1 is not None:
+        ax.bar(x + 1.5 * w_, r1[order], w_, color="tab:green", label="real 1-shot demo")
     ax.set_xticks(x, labels, rotation=90, fontsize=6.4)
     ax.set_ylabel("T=1 sampled exact-match accuracy (150 prompts)")
     ax.set_title(f"Raw mean-activation steering at the best layer (L{best_layer}) by task "
@@ -158,13 +184,13 @@ def main():
     # ---- per_task_by_layer.csv ----
     with open(OUT / "per_task_by_layer.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["task", "group", "zero_shot", "unsteered", "real_1shot"] +
-                   [f"L{l}" for l in LAYERS] + ["best_layer", "best_acc"])
+        refcols = ["zero_shot", "unsteered", "real_1shot"] if zs is not None else ["unsteered"]
+        w.writerow(["task", "group"] + refcols + [f"L{l}" for l in LAYERS] + ["best_layer", "best_acc"])
         for i, t in enumerate(tasks):
             row_vals = [round(float(best[l][i]), 4) for l in LAYERS]
             bi = int(np.argmax(row_vals))
-            w.writerow([t, group[t], zs[i], base[i], r1[i]] + row_vals +
-                       [LAYERS[bi], row_vals[bi]])
+            refs = [zs[i], base[i], r1[i]] if zs is not None else [base[i]]
+            w.writerow([t, group[t]] + refs + row_vals + [LAYERS[bi], row_vals[bi]])
     print(f"wrote {OUT}")
 
 

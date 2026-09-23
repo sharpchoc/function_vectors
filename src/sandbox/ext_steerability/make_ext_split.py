@@ -47,8 +47,10 @@ def main():
     assert not missing, f"tasks missing from n-shot CSV: {missing}"
 
     filtered = sorted(t for t in tasks_all if acc6[t] >= args.threshold)
-    assert len(filtered) == args.expect_n, \
-        f"SPLIT GATE FAILED: {len(filtered)} tasks pass >= {args.threshold} at n={args.n_shots}, expected {args.expect_n}"
+    if args.expect_n >= 0:   # -1 = no gate (new model pools whose count is not known a priori)
+        assert len(filtered) == args.expect_n, \
+            f"SPLIT GATE FAILED: {len(filtered)} tasks pass >= {args.threshold} at n={args.n_shots}, expected {args.expect_n}"
+    print(f"{len(filtered)} tasks pass >= {args.threshold} at n={args.n_shots}")
 
     rng = np.random.RandomState(args.seed)
     perm = rng.permutation(len(filtered))

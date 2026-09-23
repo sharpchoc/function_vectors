@@ -52,6 +52,13 @@ QWEN25_SELECTION_ROOT = ARTIFACTS_ROOT / "sandbox" / "ext_steerability_qwen25_96
 QWEN25_SPLIT = REPO_ROOT / "task_splits" / "qwen25_ext_steerable_96_prunedfail.json"
 QWEN25_PROMPTS = REPO_ROOT / "dataset_files" / "isolation_prompts_ext_qwen25"
 QWEN25_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+# Qwen2.5-7B BASE repeat of the whole line (2026-09-23), key qwen25_base: sibling of qwen25_fv.
+QWEN25B_MODEL = "Qwen/Qwen2.5-7B"
+QWEN25B_FV_DIR = RESULTS_ROOT / "qwen25_base_fv"
+QWEN25B_FV_ARTIFACTS_DIR = ARTIFACTS_ROOT / "qwen25_base_fv"
+QWEN25B_READ_ARTIFACTS_DIR = ARTIFACTS_ROOT / "qwen25_base_read"
+QWEN25B_SELECTION_ROOT = ARTIFACTS_ROOT / "sandbox" / "ext_steerability_qwen25_base"   # round-1 pool; pruned = <root>_<N>
+QWEN25B_PROMPTS = REPO_ROOT / "dataset_files" / "isolation_prompts_ext_qwen25_base"
 
 # Live new research branch (2026-09-01): free-form style-property extension of the
 # read/write-feature line (evidence/cue sites in free text, GPT-J,
@@ -76,6 +83,8 @@ __all__ = [
     "TASK69_RUN_DIR", "STEERING_COMPARISON_DIR", "CHAT_TEMPLATE_TRANSFER_DIR", "QWEN25_FV_DIR",
     "QWEN25_FV_ARTIFACTS_DIR", "QWEN25_READ_ARTIFACTS_DIR", "QWEN25_SELECTION_ROOT",
     "QWEN25_SPLIT", "QWEN25_PROMPTS", "QWEN25_MODEL",
+    "QWEN25B_MODEL", "QWEN25B_FV_DIR", "QWEN25B_FV_ARTIFACTS_DIR", "QWEN25B_READ_ARTIFACTS_DIR",
+    "QWEN25B_SELECTION_ROOT", "QWEN25B_PROMPTS",
     "STYLE_PROPERTIES_DIR", "STYLE_TRANSLATION_DATA", "STYLE_TRANSLATION_RESULTS", "STYLE_FREE_TEXT_RESULTS", "EXPLORATORY_ROOT",
     "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR", "GENERAL_DIR",
 ]

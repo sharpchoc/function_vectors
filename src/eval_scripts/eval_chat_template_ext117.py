@@ -75,6 +75,9 @@ def parse_args():
     p.add_argument("--max_new_tokens", type=int, default=12)
     p.add_argument("--limit_tasks", type=int, default=None, help="smoke: only first K tasks of the shard")
     p.add_argument("--overwrite", action="store_true")
+    p.add_argument("--out_root", type=Path, default=OUT_ROOT,
+                   help="per-format output root (default: the Instruct chat-template-transfer artifacts; "
+                        "another model MUST use its own root, e.g. artifacts/qwen25_base_fv/screen_ext117)")
     return p.parse_args()
 
 
@@ -134,7 +137,9 @@ def build_specs(task, n, n_prompts):
 
 
 def main():
+    global OUT_ROOT
     args = parse_args()
+    OUT_ROOT = args.out_root
     import torch
     from utils.model_utils import load_gpt_model_and_tokenizer
 
@@ -157,7 +162,8 @@ def main():
     tokenizer.padding_side = "left"
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
-    assert_template(tokenizer)
+    if any(f != "plain" for f in args.formats):   # the chat-arm template check (Instruct only)
+        assert_template(tokenizer)
 
     specs_by_task = {t: build_specs(t, args.n, args.n_prompts) for t in dict.fromkeys(t for _, t in todo)}
     flat = []
