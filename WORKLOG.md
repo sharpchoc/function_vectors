@@ -10164,3 +10164,8 @@ single-slot injection already reaches the six-slot level (.555 vs .555): repeati
 demonstration slots adds nothing on Qwen (the α=2 six-slot curve peaks at .543, below the per-task-best .555).
 **Files:** results/qwen25_fv/read_feature_steering_6shot/{summary.csv, per_task_acc.csv, alpha_curve.png, by_task.png};
 artifacts artifacts/qwen25_fv/raw_mean_steering/sixshot_dummy/. **Next:** none. **Blockers:** none.
+
+**2026-09-23 (later) — three families re-sampled.** num_separators, py2_iter, py_literal_ctor had lost their artefacts (moved aside for wave 2, then
+not in any refresh shard); refreshed on pod refresh12_f3 (terminated). POOL 54 / 60 (dropped: css_shorthand, py_ternary, early_return, py_bool_prefix,
+c_braces, py_abbrev). Pooled 54: k0 .288 → .298, k4 .724 → .763, write L24 α2 .549 → .560, read L8 α4 .587 → .595, 3-shot ref .718 → .760.
+prompt_pairs 44,800 prompts / 33,388 correct over 56 families; 0 unjudged; all pool families complete. Tables results/code_styles/regen8/.
