@@ -10146,3 +10146,21 @@ comment_case cue-anchored, py_abbrev any new mapped identifier (rescore_records.
 comment_language .45 → .30 (the model now often writes code instead of the next comment — genuine, not scoring), sql_keyword_case .92 → .78,
 py_builtin_generics .90 → .79; gains: blank_lines .50 → .83, comment_case .50 → .77, py_const_naming .64 → .86, php_array .53 → .75. Not re-run: sweep10,
 read→write map, causal test (await user). Page: https://claude.ai/artifact/TFCWKWjHzFt2nNW4qUEF17
+
+## 2026-09-23 — Qwen2.5 port: 6-shot dummy-label read-feature steering (user request) — DONE
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree.
+**What:** `sixshot_dummy_steer.py` ported (--model_name, --layer) and run on Qwen2.5-7B-Instruct, 96 tasks:
+6-shot dummy-'_' scaffold, α·m_A(L12) (raw L12 label-token mean) added at ALL SIX '_' slots at block-12 output,
+α ∈ {0.5, 1, 2, 4}, T=1 sampled exact match; in-run dummy-6 unsteered and real-6-shot references; 0-shot and
+real-1-shot references from the FV-ablation eval JSONs, 1-shot dummy steering @L12 (best α per task) from
+`artifacts/qwen25_read/raw_mean_steering`. GPT-J counterpart: `bottom_up_read_features/steering_results/sixshot_dummy/`.
+**Commands:** `port_chain.sh sixshot i 4` on 4 RTX PRO 4500 pods (~8 min), `plotS.sh`
+(`plot_sixshot_dummy_steer.py --layer 12 --refs fv_ablation:...`). Pods terminated.
+**Findings (mean over 96 tasks):** dummy-6 unsteered .000 | steered α=0.5 .015, α=1 .252, **α=2 .543**, α=4 .478 |
+best-α per task .555 | real 6-shot .798 | real 1-shot .476 | 1-shot dummy steered @L12 (best α) .555.
+Six injected read features recover 70% of the real 6-shot level (.555/.798), the same fraction as on GPT-J
+(71%: .447/.630). Unlike GPT-J, where six slots beat one slot by a wide margin (.447 vs .126), on Qwen the
+single-slot injection already reaches the six-slot level (.555 vs .555): repeating the read feature across six
+demonstration slots adds nothing on Qwen (the α=2 six-slot curve peaks at .543, below the per-task-best .555).
+**Files:** results/qwen25_fv/read_feature_steering_6shot/{summary.csv, per_task_acc.csv, alpha_curve.png, by_task.png};
+artifacts artifacts/qwen25_fv/raw_mean_steering/sixshot_dummy/. **Next:** none. **Blockers:** none.

@@ -12,6 +12,7 @@ Writes to results/69_task_run/raw_mean_steering/sixshot_dummy/:
                   / 1-shot-dummy-steered reference lines
   summary.csv, per_task_acc.csv
 """
+import argparse
 import csv
 import json
 import sys
@@ -36,8 +37,28 @@ ALPHAS = (0.5, 1.0, 2.0, 4.0)
 LAYER = 6
 
 
+def parse_args():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Qwen2.5 port (2026-09-22): same summary on another model's captures; defaults = GPT-J.
+    ap.add_argument("--ss", type=Path, default=SS, help="sixshot_dummy capture dir")
+    ap.add_argument("--rms", type=Path, default=RMS, help="1-shot raw-mean steering dir (L{layer}_a{alpha} keys)")
+    ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--split_path", type=Path,
+                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+    ap.add_argument("--layer", type=int, default=LAYER)
+    ap.add_argument("--refs", type=str, default="gptj",
+                    help="'gptj' = zero_shot / real_1shot from read_dir_steering_1shot; "
+                         "'fv_ablation:<root>' = from that FV-ablation eval's in-run zero_shot / real1_baseline")
+    ap.add_argument("--model_label", default="GPT-J-6B")
+    return ap.parse_args()
+
+
 def main():
-    split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
+    global SS, RMS, OUT, LAYER
+    args = parse_args()
+    SS, RMS, OUT, LAYER = args.ss, args.rms, args.out, args.layer
+    split = json.load(open(args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
     tasks = sorted(t for t in group if (SS / f"{t}.json").exists())
@@ -53,17 +74,24 @@ def main():
              for a in ALPHAS}
     best6 = np.max(np.stack([steer[a] for a in ALPHAS]), axis=0)
     # 1-shot context (already computed elsewhere in this study)
-    r1 = np.array([json.load(open(REF / f"{t}__real_1shot.json"))
-                   ["conditions"]["baseline"]["acc"] for t in tasks])
-    zs = np.array([json.load(open(REF / f"{t}__zero_shot.json"))
-                   ["conditions"]["baseline"]["acc"] for t in tasks])
+    if args.refs == "gptj":
+        r1 = np.array([json.load(open(REF / f"{t}__real_1shot.json"))
+                       ["conditions"]["baseline"]["acc"] for t in tasks])
+        zs = np.array([json.load(open(REF / f"{t}__zero_shot.json"))
+                       ["conditions"]["baseline"]["acc"] for t in tasks])
+    else:
+        root = Path(args.refs.split(":", 1)[1])
+        zs = np.array([json.load(open(root / "eval" / f"{t}.json"))["conditions"]["zero_shot"]["acc"]
+                       for t in tasks])
+        r1 = np.array([json.load(open(root / "eval_1shot" / f"{t}.json"))["conditions"]["real1_baseline"]["acc"]
+                       for t in tasks])
     steer1 = np.array([max(json.load(open(RMS / f"{t}.json"))["conditions"][f"L{LAYER}_a{a}"]["acc"]
                            for a in ALPHAS) for t in tasks])
 
     OUT.mkdir(parents=True, exist_ok=True)
     rows = [["condition", "task_group", "mean_acc", "median_acc"]]
     named = [("zero_shot", zs), ("dummy6_unsteered", base6),
-             ("dummy1_steered_L6_best", steer1),
+             (f"dummy1_steered_L{LAYER}_best", steer1),
              ("dummy6_steered_best", best6), ("real_1shot", r1), ("real_6shot", real6)] + \
             [(f"dummy6_steer_a{a}", steer[a]) for a in ALPHAS]
     for name, arr in named:
@@ -79,7 +107,7 @@ def main():
 
     fig, ax = plt.subplots(figsize=(8.6, 5.4), dpi=150)
     ax.plot(ALPHAS, [float(steer[a].mean()) for a in ALPHAS], "o-", color="tab:red", lw=2,
-            label="6-shot dummy '_' , steered at all 6 slots (L6)")
+            label=f"6-shot dummy '_' , steered at all 6 slots (L{LAYER})")
     ax.axhline(float(base6.mean()), color="0.45", ls=":", lw=1.2,
                label=f"6-shot dummy unsteered = {base6.mean():.3f}")
     ax.axhline(float(real6.mean()), color="tab:green", lw=1.4,
@@ -87,11 +115,11 @@ def main():
     ax.axhline(float(r1.mean()), color="tab:olive", ls="--", lw=1.2,
                label=f"real 1-shot demo = {r1.mean():.3f}")
     ax.axhline(float(steer1.mean()), color="tab:purple", ls="-.", lw=1.2,
-               label=f"1-shot dummy steered @L6 = {steer1.mean():.3f}")
+               label=f"1-shot dummy steered @L{LAYER} = {steer1.mean():.3f}")
     ax.set_xscale("log"); ax.set_xticks(ALPHAS, [str(a) for a in ALPHAS])
     ax.set_xlabel("alpha (x the vector's own norm)")
     ax.set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks)")
-    ax.set_title("6-shot dummy-label steering at L6 (all six '_' slots)", fontsize=11)
+    ax.set_title(f"6-shot dummy-label steering at L{LAYER} (all six '_' slots), {args.model_label}", fontsize=11)
     ax.grid(alpha=0.25); ax.legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(OUT / "alpha_curve.png", bbox_inches="tight")
@@ -105,8 +133,8 @@ def main():
     ax.bar(x, best6[order], w, color="tab:red", label="6-shot dummy, steered (best alpha)")
     ax.bar(x + w, real6[order], w, color="tab:green", label="real 6-shot demos")
     ax.set_xticks(x, labels, rotation=90, fontsize=6.4)
-    ax.set_ylabel("T=1 sampled exact-match accuracy (150 prompts)")
-    ax.set_title("6-shot dummy-label steering at L6 by task — * = held-out", fontsize=11)
+    ax.set_ylabel("T=1 sampled exact-match accuracy")
+    ax.set_title(f"6-shot dummy-label steering at L{LAYER} by task, {args.model_label} — * = held-out", fontsize=11)
     ax.legend(fontsize=8.5); ax.grid(alpha=0.25, axis="y")
     fig.tight_layout()
     fig.savefig(OUT / "by_task.png", bbox_inches="tight")
@@ -114,7 +142,7 @@ def main():
     with open(OUT / "per_task_acc.csv", "w", newline="") as f:
         w_ = csv.writer(f)
         w_.writerow(["task", "group", "zero_shot", "dummy6_unsteered", "real_1shot",
-                     "dummy1_steered_L6_best", "dummy6_steered_best", "real_6shot"] +
+                     f"dummy1_steered_L{LAYER}_best", "dummy6_steered_best", "real_6shot"] +
                     [f"dummy6_steer_a{a}" for a in ALPHAS])
         for i, t in enumerate(tasks):
             w_.writerow([t, group[t], zs[i], base6[i], r1[i], steer1[i], best6[i], real6[i]] +

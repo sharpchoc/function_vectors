@@ -31,13 +31,15 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 try:
     from src.sandbox.ext_steerability.steer_read_dir_1shot import load_model, batches_by_len
     from src.sandbox.ext_steerability.steer_read_dir_methods import Injector
+    from src.sandbox.ext_steerability.ablate_pc50_labeltokens import load_model as load_model_generic
 except ModuleNotFoundError:  # staged copy outside the repo tree
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from steer_read_dir_1shot import load_model, batches_by_len
     from steer_read_dir_methods import Injector
+    from ablate_pc50_labeltokens import load_model as load_model_generic
 
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
-LAYER = 6
+LAYER = 6          # GPT-J read layer; --layer overrides (Qwen2.5 port: 12)
 N_SHOTS = 6
 
 
@@ -53,6 +55,10 @@ def parse_args():
     p.add_argument("--split_path", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
+    p.add_argument("--model_name", default=None,
+                   help="HF id for a non-GPT-J model (Qwen2.5 port, bf16); default GPT-J-6B")
+    p.add_argument("--layer", type=int, default=LAYER,
+                   help="read layer: m_A(L) injected at block-L output (GPT-J 6; Qwen 12)")
     p.add_argument("--token_budget", type=int, default=24000)
     p.add_argument("--batch_cap", type=int, default=48)
     p.add_argument("--shard_idx", type=int, default=0)
@@ -114,7 +120,9 @@ def build_items_6shot(task, prompts_root, tok, real_labels):
 
 
 def main():
+    global LAYER
     args = parse_args()
+    LAYER = args.layer
     split = json.load(open(args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
@@ -122,7 +130,10 @@ def main():
     args.out_root.mkdir(parents=True, exist_ok=True)
     print(f"{len(tasks)} tasks on this shard", flush=True)
 
-    model, tok = load_model(args.model_dir)
+    if args.model_name is None:
+        model, tok = load_model(args.model_dir)                      # GPT-J path, unchanged
+    else:
+        model, tok = load_model_generic(args.model_dir, args.model_name)
     tok.padding_side = "left"
     inj = Injector(model, [LAYER])
 
@@ -137,7 +148,8 @@ def main():
                        weights_only=False)["resid_means"][LAYER].float().cuda()
         res = {"task": task, "group": group[task], "n_prompts": len(dummy),
                "n_shots": N_SHOTS, "layer": LAYER, "norm_m": float(m.norm()),
-               "definition": "z += alpha*m_A(L6) at ALL six '_' label slots", "conditions": {}}
+               "model_name": args.model_name or "EleutherAI/gpt-j-6b",
+               "definition": f"z += alpha*m_A(L{LAYER}) at ALL six '_' label slots", "conditions": {}}
 
         def run(cname, items, vec):
             inj.vec = None if vec is None else vec

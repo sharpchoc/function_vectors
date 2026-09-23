@@ -13,7 +13,8 @@ Qwen2.5-7B has 28 blocks, d = 3584, 28 heads. All accuracies are temperature-1 s
 | `screen/` | competence screen | 6-shot accuracy of the extended pool (`qwen25_acc6.csv`), threshold ≥ .30 → 104 tasks |
 | `round1_104/` | head selection | 104-task pooled sparse selection, head-count sweep, train/heldout summary |
 | `round2_96_prunedfail/` | `FV_train_test_generalisation/` | steering-prune to 96 tasks, refit (140 heads), zero-shot heldout .058 → .758 |
-| `read_feature_layer_selection/` | `bottom_up_read_features/layer_selection/` | raw label-mean steering layer × α sweep; peak **L12** (.556), shared-mean control ≈ .05 |
+| `read_feature_layer_selection/` | `bottom_up_read_features/layer_selection/` | raw label-mean steering layer × α sweep (1-shot dummy scaffold); peak **L12** (.556), shared-mean control ≈ .05 |
+| `read_feature_steering_6shot/` | `bottom_up_read_features/steering_results/sixshot_dummy/` | m_A(L12) injected at all six dummy '_' slots: .000 → .543 (α=2), best-α .555 = 70% of real 6-shot (.798); equals the 1-shot dummy level (.555) |
 | `read_write_map/` | `FV_linear_decodability/`, `understanding_read_write_linear_map/` | per-prompt ridge read → FV per read layer; heldout centroid R² .554 (L22), per-prompt .29 (L20) |
 | `readwrite_msj_transfer/` | — | ICL read→write map applied to the MSJ read feature: no transfer (cos ≈ 0) |
 | `FV_ablation/` | `FV_ablation/` | **Study A** — FV-direction ablation at the final cue token, {own, cf} × {zero, mean} × {L9–27, L0–27}, 6-shot and 1-shot |
@@ -33,6 +34,7 @@ Qwen2.5-7B has 28 blocks, d = 3584, 28 heads. All accuracies are temperature-1 s
 | D. cos(cue residual, task FV) after read injection, 6-shot dummy scaffold, α=2 | .388 → **.502** (m_A(L12)@L12), .388 → .475 (s_A@L0); readout L24 | .183 → .365 (m_A(L6)@L6), .183 → .424 (s_A@L0); readout L13 |
 | B. within-task Spearman ρ (presence vs accuracy over n = 0..6) | median +.85 at L24 (83/96 positive); +.89 at L20–22 | median +.96 (69/69), L9–20 band |
 | B. between-task ρ at fixed n = 6 | +.17 at L24; −.24 for the L9–20 band mean | −.36 for the L9–20 band mean, −.31 at L13 (Simpson pattern) |
+| Read steering, 6-shot dummy scaffold (unsteered → six slots steered, best α → real 6-shot) | .000 → .555 → .798 (70%); 1-slot dummy .555 | .000 → .447 → .630 (71%); 1-slot dummy .126 |
 
 Conventions and choices specific to the Qwen port (DECISIONS 2026-09-22):
 - **Headline presence/readout layer = L24**, the argmax of the 6-shot mean-presence profile
