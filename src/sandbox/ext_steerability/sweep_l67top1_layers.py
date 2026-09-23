@@ -27,10 +27,12 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 try:
     from src.sandbox.ext_steerability.steer_read_dir_1shot import load_model, batches_by_len
+    from src.sandbox.ext_steerability.ablate_pc50_labeltokens import load_model as load_model_generic
     from src.sandbox.ext_steerability.steer_read_dir_methods import Injector, build_items
 except ModuleNotFoundError:  # staged copy outside the repo tree
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from steer_read_dir_1shot import load_model, batches_by_len
+    from ablate_pc50_labeltokens import load_model as load_model_generic
     from steer_read_dir_methods import Injector, build_items
 
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
@@ -49,6 +51,8 @@ def parse_args():
     p.add_argument("--split_path", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
+    p.add_argument("--model_name", default=None,
+                   help="HF id for a non-GPT-J model (Qwen2.5 port, bf16); default GPT-J-6B")
     p.add_argument("--layers", type=int, nargs="+", default=list(range(28)))
     p.add_argument("--token_budget", type=int, default=24000)
     p.add_argument("--batch_cap", type=int, default=48)
@@ -68,7 +72,10 @@ def main():
           flush=True)
 
     vecs = torch.load(args.vectors_path, map_location="cpu", weights_only=False)["tasks"]
-    model, tok = load_model(args.model_dir)
+    if args.model_name is None:
+        model, tok = load_model(args.model_dir)                      # GPT-J path, unchanged
+    else:
+        model, tok = load_model_generic(args.model_dir, args.model_name)
     tok.padding_side = "left"
     injectors = {l: Injector(model, [l]) for l in args.layers}
 

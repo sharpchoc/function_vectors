@@ -10220,3 +10220,36 @@ next_in_period capped at 52).
 layers 0..27, zero/mean (corpus-wide mean), same cf partner as the write ablation. Alt success .741 → own zero .310 / own mean .339; cf .738 / .736;
 margin 4.6 → −0.8 vs 4.6; 31/53 families specific, 15 fall to ≤ .05. js_var's partner re-drawn (js_hungarian out of pool) and its write ablation re-run
 (pooled write numbers change ≤ .003). Pods d1–d3 + fix terminated. `results/code_styles/read_ablation/`.
+
+## 2026-09-23 — Reviewer "cheap fixes": training-only carrier, matched maps in both models, Qwen c+u_A steering — DONE
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree. User request: run the fixes for the reviewer's caveats, then update
+the paper wording (paper_materials/uploads/main.tex + standalone sections). Qwen head-selection penalty retune DROPPED by user
+(caveat kept, made precise: the 104-task CV that chose λ=0.001 had 16 of the final 19 Qwen held-out tasks in its training set).
+Defaults taken (user said "run these"): both map protocols in both models; training-only carrier for the maps only (interventions
+keep the pooled carrier); Qwen c+u_A block chosen by its own one-dummy sweep (GPT-J's rule).
+**Commands:** `src/eval_scripts/matched_readwrite_maps.py --model {gptj,qwen25}` (CPU; loads only the used blocks — the CPU pod has a
+16 GB cgroup limit, the all-28-block fp64 load was OOM-killed); `ridge_readwrite_generic.py` on GPT-J paths (pod, GPT-J per-prompt
+layer sweep; script now tolerates captures without prompt_index); Qwen c+u_A: `sweep_l67top1_layers.py` / `sixshot_l67top1_steer.py`
+(new `--model_name`) via `logs/qwen25_fv/port/cu_{chain,launch,dispatch}.sh` on 7 RTX PRO 4500 pods (cu1–cu8, cu7 DOA; ALL
+terminated, re-listed gone); `summarize_qwen25_carrier_steering.py`; `paper_materials/plot_identification_execution.py` (map figure
+redrawn as matched panels).
+**Findings:**
+- Carrier leakage harmless: GPT-J u_A→v_A held-out pooled R² .6410 (pooled carrier, reproduces the paper) → .6409 (training-only);
+  Qwen .5876 → .5876. Rotation / rotation+scale unchanged to 3 d.p. (GPT-J .457/.588, Qwen .455/.544).
+- Matched maps (held-out; GPT-J 55/14, Qwen 77/19): task-level u_A map pooled R² .641 / .588 (coord-mean .578 / .526; train-mean
+  predictor −.084 / −.053). Per-prompt raw map at the identification block (6 / 12): centroid pooled .633 / .577, centroid coord-mean
+  .577 / .527 (Qwen reproduces the paper's .527), individual prompts .384 / .278 (reproduces .278). GPT-J per-prompt centroid peaks
+  .636 @ block 15.
+- Qwen c+u_A (s_A = c + u_A, pooled carrier, band 11–13): one-dummy sweep selects block 12 (per-task-best .558; α2 .542), dead from
+  block 22. Six dummy slots @ block 12: .0002 → α1 .236, **α2 .537**, α4 .485, best .554 vs real 6-shot .798 (67%); ≈ raw-mean six-slot
+  (.543). @ block 0 (the block of the App-D alignment readout): α1 .207, α2 .173. GPT-J for comparison: block 0, α2 .570 = 91% of .629,
+  vs raw mean .381.
+**Paper edits (main.tex + synced standalone files, clean pdflatex build, 25 pp; Overleaf zip rebuilt, old copy in the job tmp):**
+contribution bullet (both-model map R²); pooled-carrier sentence; map subsection rewritten on matched protocols; c+u_A steering both
+models; Limitations (carrier + mismatch sentences removed, penalty sentence made precise); App B penalty; App C c+u_A block selection;
+App D map paragraphs + caption; identification_execution_data/README evidence limits.
+**Files:** NEW src/eval_scripts/{matched_readwrite_maps.py, summarize_qwen25_carrier_steering.py}; MOD
+src/sandbox/ext_steerability/{sweep_l67top1_layers.py, sixshot_l67top1_steer.py, ridge_readwrite_generic.py}; results
+69_task_run/understanding_read_write_linear_map/matched_maps/, qwen25_fv/read_write_map/matched_maps/,
+qwen25_fv/read_feature_steering_6shot/carrier_plus_task_specific/; artifacts qwen25_fv/meanresid_steering/.
+**Next:** none. paper_materials/ is untracked in git (user's call whether to track it). **Blockers:** none.

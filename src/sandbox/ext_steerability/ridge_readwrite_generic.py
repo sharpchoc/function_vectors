@@ -49,8 +49,12 @@ def main():
 
     def load(t):
         x = torch.load(READ / f"{t}.pt", weights_only=False); f = torch.load(FV / f"{t}.pt", weights_only=False)
-        apx = list(x["prompt_index"]); fpx = list(f["prompt_index"]); fmap = {p: i for i, p in enumerate(fpx)}
-        sel = [fmap[p] for p in apx]
+        if "prompt_index" in x:
+            apx = list(x["prompt_index"]); fpx = list(f["prompt_index"]); fmap = {p: i for i, p in enumerate(fpx)}
+            sel = [fmap[p] for p in apx]
+        else:   # GPT-J read capture keeps every prompt in FV order (no prompt_index field)
+            assert x["acts"].shape[0] == f["fv"].shape[0], t
+            sel = list(range(x["acts"].shape[0]))
         return x["acts"].float(), f["fv"].float()[sel]   # (N, NL, resid), (N, resid)
     data = {t: load(t) for t in train + test}
     NL = int(data[train[0]][0].shape[1])
