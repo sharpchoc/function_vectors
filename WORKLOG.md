@@ -10179,3 +10179,7 @@ run, whose results were deleted): cue token, layers 1..27, each layer's own dire
 seeded random other family. Pooled 25: natural context .869 → own zero .656 / own mean .615, cf .856 / .866; alternative context .798 → .457 / .440,
 cf .798 / .833. First-token margin 6.9 → 1.2 (own) vs 6.8 (cf). 19–20 of 25 families show own-drop ≥ .20 with cf-drop < .10. Pods b1–b3
 terminated; the remaining 29 families await the user's go. `results/code_styles/write_ablation/`.
+
+**2026-09-23 — write-feature ablation COMPLETE (53 pool families).** Alternative-context headline (USER DECISION): unablated .718 → own zero-proj .405 /
+own mean .406; counterfactual .720 / .741; margin 6.0 → 1.2 vs 5.9; 30/53 families specific (own drop ≥ .20, cf < .10). Natural context: .807 → .647 / .606
+vs cf .799 / .805. Pods c1–c3 terminated. `results/code_styles/write_ablation/` (headline.png = alternative context; supp_natural_context.png).

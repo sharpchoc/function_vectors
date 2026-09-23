@@ -41,18 +41,20 @@ def main():
     m = df.pivot_table(index=["family", "context"], columns="arm", values="margin_ctx")[ARMS]; m.round(3).to_csv(R / "margin.csv")
     summ["margin_ctx_mean"] = {arm: round(float(m[arm].mean()), 3) for arm in ARMS}
     json.dump(summ, open(R / "summary.json", "w"), indent=1)
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.9), sharey=True)
-    for k, ctx in enumerate(("nat", "alt")):
+    # headline (USER DECISION 2026-09-23): the ALTERNATIVE context only — the natural convention is the model's default, so keeping it under
+    # ablation says little; the natural-context view is kept as a supplementary figure.
+    for ctx, name in (("alt", "headline.png"), ("nat", "supp_natural_context.png")):
         p = piv.xs(ctx, level="context"); mu = [p[arm].mean() for arm in ARMS]; e = [ci(p[arm]) for arm in ARMS]
-        cols = ["#6b7280", "#1f5f8b", "#5aa0d0", "#b3261e", "#e08a80"]; ax[k].bar(range(5), mu, yerr=e, color=cols, capsize=3); ax[k].set_xticks(range(5)); ax[k].set_xticklabels([LAB[x] for x in ARMS], rotation=25, ha="right", fontsize=8)
-        ax[k].set_title(f"{'natural' if ctx == 'nat' else 'alternative'}-convention demonstrations (k = 4)", fontsize=10); ax[k].set_ylim(0, 1); ax[k].grid(axis="y", alpha=.3)
-    ax[0].set_ylabel("keeps the demonstrated convention (judge OK)"); fig.suptitle(f"Write-feature ablation at the L24 cue token, {summ['n_families']} families, 40 held-out documents per pole", fontsize=10)
-    fig.tight_layout(); fig.savefig(R / "headline.png", dpi=150); plt.close(fig)
-    d = piv.groupby(level="family").mean(); d = d.sub(d["base"], axis=0)[ARMS[1:]]; order = d["own_zero"].sort_values().index
+        fig, ax = plt.subplots(figsize=(6.2, 3.9)); cols = ["#6b7280", "#1f5f8b", "#5aa0d0", "#b3261e", "#e08a80"]
+        ax.bar(range(5), mu, yerr=e, color=cols, capsize=3); ax.set_xticks(range(5)); ax.set_xticklabels([LAB[x] for x in ARMS], rotation=25, ha="right", fontsize=8)
+        ax.set_ylim(0, 1); ax.grid(axis="y", alpha=.3); ax.set_ylabel("keeps the demonstrated convention (judge OK)")
+        ax.set_title(f"Write-feature ablation at the cue token (layers 1–27)\n{'alternative' if ctx == 'alt' else 'natural'}-convention demonstrations, k = 4, {summ['n_families']} families, 40 held-out docs", fontsize=9)
+        fig.tight_layout(); fig.savefig(R / name, dpi=150); plt.close(fig)
+    d = piv.xs("alt", level="context"); d = d.sub(d["base"], axis=0)[ARMS[1:]]; order = d["own_zero"].sort_values().index
     fig, ax = plt.subplots(figsize=(6, max(6, .2 * len(order)))); im = ax.imshow(d.loc[order].values, aspect="auto", cmap="RdBu", vmin=-.8, vmax=.8)
-    ax.set_yticks(range(len(order))); ax.set_yticklabels(order, fontsize=7); ax.set_xticks(range(4)); ax.set_xticklabels([LAB[x] for x in ARMS[1:]], rotation=25, ha="right", fontsize=8); ax.set_title("Δ success vs unablated (mean of both contexts)", fontsize=9); plt.colorbar(im, ax=ax)
+    ax.set_yticks(range(len(order))); ax.set_yticklabels(order, fontsize=7); ax.set_xticks(range(4)); ax.set_xticklabels([LAB[x] for x in ARMS[1:]], rotation=25, ha="right", fontsize=8); ax.set_title("Δ success vs unablated, alternative-convention demonstrations", fontsize=9); plt.colorbar(im, ax=ax)
     fig.tight_layout(); fig.savefig(R / "per_family_grid.png", dpi=150); plt.close(fig)
-    print(json.dumps({k: v for k, v in summ.items() if k in ("n_families", "missing", "unjudged", "both", "margin_ctx_mean")}, indent=1)); print("->", R)
+    print(json.dumps({k: v for k, v in summ.items() if k in ("n_families", "missing", "unjudged", "alt", "margin_ctx_mean")}, indent=1)); print("->", R)
 
 
 if __name__ == "__main__":
