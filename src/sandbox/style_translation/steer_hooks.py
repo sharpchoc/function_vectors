@@ -192,3 +192,74 @@ class MultiCueAblate:
 
     def __exit__(self, *exc):
         for h in self.hooks: h.__exit__(*exc)
+
+
+class PositionAblate:
+    """Read-feature ablation at a list of positions per batch row (2026-09-23): at layer L (0 = embedding output), remove the component of
+    the residual along the unit direction w at those positions (mode "zero") or set it to a fixed value m (mode "mean"). Prefill only.
+    `proj` = per-row mean of the pre-ablation projections over the row's positions."""
+    def __init__(self, model, layer, w_unit, mode, mean_value, positions):
+        A = arch(model)
+        self.block = A["embed"] if layer == 0 else A["blocks"][layer - 1]
+        w = torch.as_tensor(w_unit, dtype=torch.float32, device=next(model.parameters()).device); self.w32 = w / w.norm()
+        self.mode, self.m, self.positions = mode, float(mean_value), positions
+        self.handle = None; self.calls = 0; self.proj = None
+
+    def _hook(self, module, inputs, output):
+        h = output[0] if isinstance(output, tuple) else output
+        if h.shape[1] > 1:
+            h = h.clone(); pr = []
+            for r, pos in enumerate(self.positions):
+                if not pos:
+                    pr.append(float("nan")); continue
+                x = h[r, pos, :].float(); p = x @ self.w32; pr.append(p.mean().item())
+                target = torch.zeros_like(p) if self.mode == "zero" else torch.full_like(p, self.m)
+                h[r, pos, :] = (x + (target - p)[:, None] * self.w32[None, :]).to(h.dtype)
+            self.proj = pr; self.calls += 1
+            return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
+        return output
+
+    def __enter__(self):
+        self.handle = self.block.register_forward_hook(self._hook); return self
+
+    def __exit__(self, *exc):
+        if self.handle is not None:
+            self.handle.remove()
+
+
+class MultiPositionAblate:
+    """PositionAblate at several layers at once, each with its own direction w_by_layer[l] and mean m_by_layer[l] (index = layer, 0 = embed)."""
+    def __init__(self, model, layers, w_by_layer, mode, m_by_layer, positions):
+        self.layers = list(layers)
+        self.hooks = [PositionAblate(model, l, w_by_layer[l], mode, 0.0 if m_by_layer is None else float(m_by_layer[l]), positions) for l in self.layers]
+
+    def proj_at(self, layer):
+        return self.hooks[self.layers.index(layer)].proj
+
+    def __enter__(self):
+        for h in self.hooks: h.__enter__()
+        return self
+
+    def __exit__(self, *exc):
+        for h in self.hooks: h.__exit__(*exc)
+
+
+def unit_test_position_ablate(model, tok, layer=6):
+    enc = tok(["Spanish:\nHola mundo.\n\nEnglish:\nHello", "Spanish:\nAdiós.\n\nEnglish:\nGood"], return_tensors="pt", padding=True).to(model.device)
+    w = torch.randn(arch(model)["hidden"], generator=torch.Generator().manual_seed(4)); w = w / w.norm(); wd = w.to(model.device)
+    pos = [[2, 5], [3]]
+    with torch.no_grad():
+        base = model(**enc, output_hidden_states=True)
+        with PositionAblate(model, layer, w, "zero", 0.0, pos) as a0:
+            z = model(**enc, output_hidden_states=True)
+        with PositionAblate(model, 0, w, "mean", 3.0, pos) as a1:
+            m = model(**enc, output_hidden_states=True)
+    hb = base.hidden_states[layer]; hz = z.hidden_states[layer]; hm = m.hidden_states[0]
+    tol = 0.05 + 3 * torch.finfo(arch(model)["dtype"]).eps * hb.float().abs().max().item()
+    for r, p in enumerate(pos):
+        assert (hz[r, p, :].float() @ wd).abs().max().item() <= tol, "zero mode"
+        assert ((hm[r, p, :].float() @ wd) - 3.0).abs().max().item() <= tol, "mean mode at the embedding"
+        keep = [i for i in range(hb.shape[1]) if i not in p]
+        assert torch.equal(hz[r, keep, :], hb[r, keep, :]), "other positions must be unchanged"
+    assert a0.calls == 1 and a1.calls == 1 and len(a0.proj) == 2
+    return True

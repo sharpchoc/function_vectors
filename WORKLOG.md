@@ -10195,3 +10195,28 @@ explicitly named parts so the + rewrite is exact, (d) rewrite-repair ported into
 feedback), (e) a family review note for sql_keyword_case (several keywords per line are normal; only the first counts). Result: py_join_concat
 200/200, sql_keyword_case 194/200 (97 %). Both families refreshed on pod refresh13_g1 (terminated), analyses rerun: pool 53/60 unchanged; pooled 53:
 k4 .763, write L24 α2 .560, read L8 α4 .600, 3-shot .758; prompt_pairs 42,400 / 32,257 correct over the pool; 0 unjudged. Approved docs: 10,594 / 10,600 (99.9 %).
+
+## 2026-09-23 — Qwen2.5-7B BASE: full read/write-feature line (competence screen → head selection → captures → sweep → map → the five ported studies)
+**Status:** IN PROGRESS. **Owner:** Claude Code bg agent, main tree. Model key `qwen25_base`
+(`Qwen/Qwen2.5-7B`, bf16, tokenizer byte-identical to Instruct). Results → `results/qwen25_base_fv/`,
+artifacts → `artifacts/{qwen25_base_fv, qwen25_base_read, sandbox/ext_steerability_qwen25_base*}`,
+prompts → `dataset_files/isolation_prompts_ext_qwen25_base/`, splits `task_splits/qwen25_base_ext_steerable_*.json`.
+Methodology identical to the Instruct line (DECISIONS 2026-08-29 / 2026-09-22); USER DECISION (2026-09-23): base runs
+with its own generation config (no repetition penalty, like GPT-J) — NOTE the Instruct numbers silently carried
+repetition_penalty=1.05 from Instruct's generation_config.json (no script overrides it).
+**Code:** upstream pipeline made model-agnostic (`eval_chat_template_ext117.py --out_root`, `make_ext_split.py
+--expect_n -1`, NEW `make_prunedfail_split.py` (reproduces the Instruct 96 split exactly), NEW
+`refit_selection_fixedlam.py`, the readfeat scripts moved into the repo as `*_generic.py`,
+`plot_raw_mean_layer_sweep.py` args). Orchestration `logs/qwen25_base_fv/port/` (port_env.sh keyed on the base
+constants, port_chain.sh chains screen/capture/cvq/final/evalext1/refit/evalext2/readcap/sweep/readpp/ridge + the
+study chains). 11 RTX PRO 4500 workers (12th: no stock).
+**P0 (done):** screen 117 tasks × 50 prompts, plain Q:/A:, ≥ .30 → **98 tasks** (Instruct 104; the 6 missing on base:
+count_consonants, count_zeros, english-german, second_digit, synonym, word_length; no base-only tasks), split seed 42
+→ 78 train / 20 heldout (`qwen25_base_ext_steerable_98.json`), isolation prompts generated (seed 42; next_in_group /
+next_in_period capped at 52).
+**Later stages:** appended below as they complete.
+
+**2026-09-23 — read-feature ablation at the evidence tokens (53 families) DONE.** USER DECISIONS: alt context, k = 4, 40 held-out docs, every evidence token,
+layers 0..27, zero/mean (corpus-wide mean), same cf partner as the write ablation. Alt success .741 → own zero .310 / own mean .339; cf .738 / .736;
+margin 4.6 → −0.8 vs 4.6; 31/53 families specific, 15 fall to ≤ .05. js_var's partner re-drawn (js_hungarian out of pool) and its write ablation re-run
+(pooled write numbers change ≤ .003). Pods d1–d3 + fix terminated. `results/code_styles/read_ablation/`.
