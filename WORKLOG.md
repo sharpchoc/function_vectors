@@ -10253,3 +10253,17 @@ src/sandbox/ext_steerability/{sweep_l67top1_layers.py, sixshot_l67top1_steer.py,
 69_task_run/understanding_read_write_linear_map/matched_maps/, qwen25_fv/read_write_map/matched_maps/,
 qwen25_fv/read_feature_steering_6shot/carrier_plus_task_specific/; artifacts qwen25_fv/meanresid_steering/.
 **Next:** none. paper_materials/ is untracked in git (user's call whether to track it). **Blockers:** none.
+
+## 2026-09-23 — Reviewer mediation tests: T2.4 full (both models) + T2.5 pilot — AWAITING USER ASSESSMENT
+**Status:** results in; paper NOT edited (user: stop and report after the cheap test). **Owner:** Claude Code bg agent, main tree.
+**T2.4 (mediation a)** `mediation_ablate_readcue.py`: clean 6-shot prompts, u_hat_A ablated at all demo-label tokens entering all blocks
+(the paper's identification-ablation hook, meanresid_top1 bases), forward only, cue cosine with v_A at GPT-J block 13 / Qwen block 24.
+GPT-J (69): none .424 → own mean/zero .312 (Δ −.112), cf −.001, own<cf 69/69, own−cf CI [−.121, −.100]; generic-FV cos +.010.
+Qwen (96): .498 → .451 (Δ −.047), cf .000, own<cf 87/96, CI [−.056, −.039]; generic +.018. Scale: demos 0→6 shots raise cue cos by
+.248 (GPT-J) / .084 (Qwen), so the ablation removes ~45% / ~56% of the demonstration-induced alignment.
+**T2.5 pilot (mediation b)** `mediation_steer_fvablate.py`, every 4th task: six dummy slots + α2·m_A(L_id) (GPT-J 6, Qwen 12), zero-ablate
+unit FV at the query cue, blocks 9–27. GPT-J (18): steer .414 → own-FV abl .001 (100% of gain removed), cf .210 (49%); own>cf 13/18,
+diff CI [.104, .328]. Qwen (24): steer .545 (matches full-run .543) → own .021 (96%), cf .289 (47%); 22/24, CI [.191, .349].
+**Infra:** logs/mediation/med_{chain,launch,dispatch}.sh; GPT-J needs the pinned snapshot 47e1693… (the default glob picks a broken
+f3f4288… snapshot). 8 pods med1–med8 (med3 DOA), ALL terminated, re-listed gone. Artifacts {69_task_run,qwen25_fv}/mediation/.
+**Next:** user decides whether to run full T2.5 (remaining tasks; same out_root, resumable) and how to word the paper.
