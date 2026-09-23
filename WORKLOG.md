@@ -10288,3 +10288,12 @@ ablation at the query cue, blocks 9–27 inputs, T=1 sampled. Pods esa1–esa5 (
 .694 / .799 (cos(own û, cf û) ≈ 0) | carrier mean .695 / .787, carrier zero .116 / .377 | span{c,u} own mean .098 / .564, cf .655 / .800.
 Same tasks, paper full-FV mean ablation .190 / .748. Own-minus-cf drop (task-unique, mean) .587 [.507, .670] 18/18; Qwen .227 [.146, .319] 21/24.
 **Next:** user decides on the full run.
+
+## 2026-09-23 — Execution carrier / task-unique split ablation: FULL run — DONE
+USER DECISION: main paper keeps ZERO ablation of the full FV for execution; the full-FV MEAN ablation and this split ablation go to the
+appendix (with the Qwen shared-carrier explanation), referenced from the main text. Paper/figure edits are done by Codex from a prompt.
+Full run on pods esf1–esf7 (esf1 never booted; all terminated). `summarize_exec_split_ablation.py` → {69_task_run,qwen25_fv}/FV_ablation/
+task_unique_split/{per_task,summary}.csv. GPT-J (69) / Qwen (96), 6-shot, cue, blocks 9–27: baseline .634 / .801 | task-unique own mean
+.168 / .579, own zero .203 / .558 | task-unique cf mean .625 / .801 | carrier mean .623 / .792, carrier zero .138 / .341 | span own mean
+.143 / .573, span cf .607 / .793. Own−cf drop (task-unique, mean) .457 [.411, .504] 69/69; .222 [.183, .260] 86/96. cos(own û, cf û)
+−.02 / −.06. Full-FV mean-ablation shift / zero shift .48 / .18; task-unique ≈ 1.07 / 1.06. FV·ĉ .63 / .79.
