@@ -10187,3 +10187,11 @@ vs cf .799 / .805. Pods c1–c3 terminated. `results/code_styles/write_ablation/
 **2026-09-23 — js_hungarian dropped from the pool (user decision, see DECISIONS).** `code_cutoff.py --exclude` (default js_hungarian) → POOL 53 / 60.
 Pool-dependent analyses rerun; pooled 53: k0 .287 → .297, k4 .723 → .763, write L24 α2 .551 → .564, read L8 α4 .591 → .600, 3-shot ref .716 → .760.
 Map splits (test18 + the ten v10 splits) had js_hungarian removed; v1 map refit on split 35 / 18 (pod map_9, terminated) — numbers in the v1 README.
+
+**2026-09-23 — every pool family ≥ 95 % judge-approved (user request).** Targeted passes fin2/fin3/fin4 on the 72 unapproved docs of sql_keyword_case /
+py_join_concat: (a) SQL natural twins get every reserved keyword upper-cased before the builder (the mixed-case guard had rejected 473 candidates),
+(b) plain-SQL generation hint (no PL/pgSQL, LANGUAGE, RETURN QUERY, :: casts — the rule's keyword set does not cover them), (c) joins only over
+explicitly named parts so the + rewrite is exact, (d) rewrite-repair ported into regen8 (alt-side objections → same natural twin rewritten with the
+feedback), (e) a family review note for sql_keyword_case (several keywords per line are normal; only the first counts). Result: py_join_concat
+200/200, sql_keyword_case 194/200 (97 %). Both families refreshed on pod refresh13_g1 (terminated), analyses rerun: pool 53/60 unchanged; pooled 53:
+k4 .763, write L24 α2 .560, read L8 α4 .600, 3-shot .758; prompt_pairs 42,400 / 32,257 correct over the pool; 0 unjudged. Approved docs: 10,594 / 10,600 (99.9 %).
