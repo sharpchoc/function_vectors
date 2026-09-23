@@ -10297,3 +10297,26 @@ task_unique_split/{per_task,summary}.csv. GPT-J (69) / Qwen (96), 6-shot, cue, b
 .168 / .579, own zero .203 / .558 | task-unique cf mean .625 / .801 | carrier mean .623 / .792, carrier zero .138 / .341 | span own mean
 .143 / .573, span cf .607 / .793. Own−cf drop (task-unique, mean) .457 [.411, .504] 69/69; .222 [.183, .260] 86/96. cos(own û, cf û)
 −.02 / −.06. Full-FV mean-ablation shift / zero shift .48 / .18; task-unique ≈ 1.07 / 1.06. FV·ĉ .63 / .79.
+**P1–P3 (done, 2026-09-23 17:15–21:30 UTC):** head-mean capture 98 tasks (11 pods, ~10 min, linearity gates OK);
+pooled sparse CV 35 cells (7 λ × 5 folds, ~25–40 min each, 11 pods): fold acc .717 (λ=.0005) / .711 / .711 / .701 /
+.680 (λ=.01) / .487 / .160 — best at the grid's lower edge, so the grid was extended with λ=.0002 as on Instruct: on the
+same folds .0002 ties .0005 (.705 vs .706), plateau, λ=.0005 kept. Final fit (train_sparse_pooled_ext --mode final,
+7-λ grid; first attempt lost 45 min to a relative-path crash at the selection write, now path-robust) → **234 heads**
+(c > .8; Instruct round 1: 170), best epoch 29/30, heads over all layers (max 16 at L18, 14 at L16/17).
+Round-1 eval (eval_ext, 98 tasks, 8 pods, 20 min): zs train .087→.810, heldout .043→.801; shuf .336→.791 / .263→.754;
+mix .134→.732 / .141→.716 (`results/qwen25_base_fv/round1_98/`). Steering-prune zs_best < .4 dropped 6
+(count_words, country-currency, double_last_letter, last_two_letters, plus_hundred, time_to_minutes) → **92 tasks**,
+re-split seed 43 → 74 train / 18 heldout (`qwen25_base_ext_steerable_92_prunedfail.json`); refit at λ=.0005 running.
+**Read line:** label_resid_means (98 tasks, no label-gate drops); raw-mean layer × α sweep on the 1-shot dummy
+scaffold (10 pods, ~2 h): best-over-α **peak L11 = .394**, plateau L8–15 (L8 .388, L12 .390, L14 .380), α=2 best,
+~0 beyond L20 (Instruct: L12 = .556) → read band **L10–12** (peak ± 1), 6-shot dummy steering run at L11.
+Per-prompt read captures done (98 tasks); per-prompt FVs + ridge wait for the 92-task selection.
+
+## 2026-09-23 — Coding-style paper numbers on the 53-family pool (user decision 1A) + identification→execution readout v2 (2A, running)
+**1A DONE.** Steering / ICL numbers: the paper's data snapshot (paper_materials/coding_styles_data, re-rendered 21:19) is already 53
+families: k0 .296 → k4 .763; identification steering .044 → .600 (k3 ref .758); execution .301 → .560 (k4 ref .763); by direction
+id A(nat) .068/.662/.793, B(alt) .020/.537/.723; exec A .473/.611/.791, B .129/.509/.736; id target detection .051 → .709, judge
+.885 → .822; exec judge .782; exec alt settings b23 α4 .542, b25 α2 .548, b25 α4 .482 (canonical .560). Map refit v11 (split files
+already without js_hungarian; v10 fits still had it): 66/34 R² train-mean .237 ± .030 (was .232 ± .028), pairs 13.6k–14.8k; 80/20
+.222 ± .075. Pods csv4/7/8/9/10 (+csv2, csv11 spares) terminated. `score_code_map_centroids.py`, `sandbox/v11_*`.
+**2A RUNNING:** `read_causal.py --controls` on the 53 pool → artifacts/.../read_causal_v2 (pods csv1/3/5/6, shards 0–3 of 4).
