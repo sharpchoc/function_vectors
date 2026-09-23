@@ -27,7 +27,7 @@ LANG_COLOR = {"Python": "#3572A5", "JavaScript": "#c9a227", "Rust": "#b7410e", "
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="qwen25_code"); ap.add_argument("--cut", type=float, default=0.30); ap.add_argument("--tag", default=None)
+    ap.add_argument("--model", default="qwen25_code"); ap.add_argument("--cut", type=float, default=0.30); ap.add_argument("--tag", default=None); ap.add_argument("--exclude", nargs="*", default=["js_hungarian"], help="families excluded by decision regardless of accuracy (DECISIONS 2026-09-23: js_hungarian — Hungarian prefixes need type inference, no exact alternative twin)")
     args = ap.parse_args()
     MP = model_paths(args.model); R = MP["results"] / args.tag if args.tag else MP["results"]
     rows = list(csv.DictReader(open(R / "summary.csv")))
@@ -39,14 +39,14 @@ def main():
         d = dict(family=f, language=CODE_FAMILY[f].tgt_lang, n=n_at.get((f, "nat", 4), 0),
                  k0_nat=acc.get((f, "nat", 0), float("nan")), k0_alt=acc.get((f, "alt", 0), float("nan")),
                  k4_nat=acc.get((f, "nat", 4), float("nan")), k4_alt=acc.get((f, "alt", 4), float("nan")))
-        d["min_k4"] = min(d["k4_nat"], d["k4_alt"]); d["keep"] = bool(d["min_k4"] >= args.cut); out.append(d)
+        d["min_k4"] = min(d["k4_nat"], d["k4_alt"]); d["keep"] = bool(d["min_k4"] >= args.cut) and d["family"] not in args.exclude; d["excluded_by_decision"] = d["family"] in args.exclude; out.append(d)
     out.sort(key=lambda d: -d["min_k4"])
     with open(R / "cutoff_k4.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(out[0])); w.writeheader()
         for d in out:
             w.writerow({k: (round(v, 3) if isinstance(v, float) else v) for k, v in d.items()})
     pool = [d["family"] for d in out if d["keep"]]; dropped = [d["family"] for d in out if not d["keep"]]
-    json.dump({"rule": f"accuracy at k = 4 >= {args.cut:.2f} on both poles (summary.csv of {args.model})", "cut": args.cut, "date": str(datetime.date.today()),
+    json.dump({"rule": f"accuracy at k = 4 >= {args.cut:.2f} on both poles (summary.csv of {args.model}); excluded by decision: {args.exclude}", "cut": args.cut, "date": str(datetime.date.today()),
                "model": args.model, "pool": pool, "dropped": dropped}, open(R / "code_pool.json", "w"), indent=1)
 
     # figure: two bars per family

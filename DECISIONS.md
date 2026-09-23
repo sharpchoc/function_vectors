@@ -2070,3 +2070,9 @@ mean over them, so per-family results must be read with that in mind.
 - Alternative twins come from exact, validated rules wherever one exists (`code_rule_alt.py` + `code_rules_a/b/c.py`, 37 families); a declining rule
   falls back to the LLM rewrite and is counted. Tasks come from the designed pools (`tasks_designed_<family>.json`); the generic pools are retired for code.
 - Lesson: task reservations across parallel drivers must exclude every accepted-but-unmerged id (regen8 collision bug).
+
+## 2026-09-23 — js_hungarian dropped from the code-style pool (USER DECISION)
+Hungarian-notation prefixes encode a variable's type, so the alternative twin cannot be derived by an exact rule (the only naming family
+where that holds); model rewrites leaked prefixes into string literals and task-pinned parameters stayed unprefixed, so no regeneration passed
+review (0 / 9, then 0 / 20). The family stays in the dataset and the artefacts but is excluded from `code_pool.json` by
+`code_cutoff.py --exclude js_hungarian` (default) and is not reported as a data issue any more. Pool = 53 / 60.

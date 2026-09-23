@@ -10183,3 +10183,7 @@ terminated; the remaining 29 families await the user's go. `results/code_styles/
 **2026-09-23 — write-feature ablation COMPLETE (53 pool families).** Alternative-context headline (USER DECISION): unablated .718 → own zero-proj .405 /
 own mean .406; counterfactual .720 / .741; margin 6.0 → 1.2 vs 5.9; 30/53 families specific (own drop ≥ .20, cf < .10). Natural context: .807 → .647 / .606
 vs cf .799 / .805. Pods c1–c3 terminated. `results/code_styles/write_ablation/` (headline.png = alternative context; supp_natural_context.png).
+
+**2026-09-23 — js_hungarian dropped from the pool (user decision, see DECISIONS).** `code_cutoff.py --exclude` (default js_hungarian) → POOL 53 / 60.
+Pool-dependent analyses rerun; pooled 53: k0 .287 → .297, k4 .723 → .763, write L24 α2 .551 → .564, read L8 α4 .591 → .600, 3-shot ref .716 → .760.
+Map splits (test18 + the ten v10 splits) had js_hungarian removed; v1 map refit on split 35 / 18 (pod map_9, terminated) — numbers in the v1 README.
