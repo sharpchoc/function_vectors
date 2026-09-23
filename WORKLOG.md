@@ -10197,7 +10197,8 @@ feedback), (e) a family review note for sql_keyword_case (several keywords per l
 k4 .763, write L24 α2 .560, read L8 α4 .600, 3-shot .758; prompt_pairs 42,400 / 32,257 correct over the pool; 0 unjudged. Approved docs: 10,594 / 10,600 (99.9 %).
 
 ## 2026-09-23 — Qwen2.5-7B BASE: full read/write-feature line (competence screen → head selection → captures → sweep → map → the five ported studies)
-**Status:** IN PROGRESS. **Owner:** Claude Code bg agent, main tree. Model key `qwen25_base`
+**Status:** PAUSED 2026-09-23 22:05 UTC (user: higher-priority work; all pods terminated). Resumable — see the
+"Resume" note at the end of this entry. **Owner:** Claude Code bg agent, main tree. Model key `qwen25_base`
 (`Qwen/Qwen2.5-7B`, bf16, tokenizer byte-identical to Instruct). Results → `results/qwen25_base_fv/`,
 artifacts → `artifacts/{qwen25_base_fv, qwen25_base_read, sandbox/ext_steerability_qwen25_base*}`,
 prompts → `dataset_files/isolation_prompts_ext_qwen25_base/`, splits `task_splits/qwen25_base_ext_steerable_*.json`.
@@ -10311,6 +10312,20 @@ re-split seed 43 → 74 train / 18 heldout (`qwen25_base_ext_steerable_92_pruned
 scaffold (10 pods, ~2 h): best-over-α **peak L11 = .394**, plateau L8–15 (L8 .388, L12 .390, L14 .380), α=2 best,
 ~0 beyond L20 (Instruct: L12 = .556) → read band **L10–12** (peak ± 1), 6-shot dummy steering run at L11.
 Per-prompt read captures done (98 tasks); per-prompt FVs + ridge wait for the 92-task selection.
+**P3b (done):** refit at λ=.0005 on the 92-task split → `ext_steerability_qwen25_base_92/pooled_sparse/selection.json`
+= **211 heads** (best epoch 17; Instruct 96-pool: 140). Per-prompt FVs captured (92 tasks, `qwen25_base_read/perprompt_fvs`).
+cf pairs (`artifacts/qwen25_base_fv/cf_task_pairs.json`, all 92 tasks tagged from the GPT-J/Instruct runs), grand means
+(cue 6/1-shot, label-token) and the û_A bank (L10–12; ‖u_A‖ 30.8, ‖c‖ 33.2) built. Read-feature ablation (û_A,
+own vs cf, 6/1-shot) COMPLETE for 92 tasks (`artifacts/qwen25_base_fv/bottom_up_ablation/bankA_meanresid_top1/`);
+6-shot dummy steering @L11 COMPLETE (98 tasks, `artifacts/qwen25_base_fv/raw_mean_steering/sixshot_dummy/`).
+**Interrupted mid-run (partial artifacts, resumable per task):** round-2 eval (`evalext2`, 3 shards), FV ablation
+6-shot (`evalA6`, 2 shards) and 1-shot (`evalA1`, 2 shards), read-injection captures (`effectD`, L11), ridge map
+(`ridge_readwrite_generic.py`, was at L2 of 28). Not started: presence capture + gm recapture, all plots except
+`read_feature_layer_selection/` and `round1_98/`.
+**Resume:** create pods (`logs/qwen25_fv/port/pods.py create bN`), then from `logs/qwen25_base_fv/port/`:
+`dispatch.sh <pod> evalext2 i 3`, `evalA6 i 2`, `evalA1 i 2`, `effectD 0 1 11`, `ridge_plot.sh`, then `presence i n`,
+`p3_aggregate2.sh`, plots (`plotA/C/B/D/GM/S` analogues with the base env), README, DECISIONS. Every chain skips
+finished per-task outputs. env_split.sh holds SPLIT1/SPLIT/SEL/LAM/READ_LAYER.
 
 ## 2026-09-23 — Coding-style paper numbers on the 53-family pool (user decision 1A) + identification→execution readout v2 (2A, running)
 **1A DONE.** Steering / ICL numbers: the paper's data snapshot (paper_materials/coding_styles_data, re-rendered 21:19) is already 53
