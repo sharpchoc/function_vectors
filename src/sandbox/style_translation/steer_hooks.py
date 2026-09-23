@@ -122,3 +122,73 @@ def unit_test_positions(model, tok, layer=6):
         assert d[r, others, :].abs().max().item() == 0.0, "other positions must be unchanged"
     assert s.calls == 1
     return True
+
+
+class CueAblate:
+    """Write-feature ablation at the CUE TOKEN (2026-09-23, code-convention families): at layer L, last prompt position of the prefill
+    pass, remove the component of the residual along the unit direction w (mode "zero": h -= (h.w) w) or replace it by a fixed value
+    (mode "mean": h += (m - h.w) w). Decode steps untouched. `proj` collects the pre-ablation projections (h.w) per batch row."""
+    def __init__(self, model, layer, w_unit, mode, mean_value=0.0):
+        A = arch(model)
+        self.block = A["blocks"][layer - 1]
+        w = torch.as_tensor(w_unit, dtype=torch.float32, device=next(model.parameters()).device)
+        self.w = (w / w.norm()).to(A["dtype"]); self.w32 = (w / w.norm())
+        self.mode, self.m = mode, float(mean_value)
+        self.handle = None; self.calls = 0; self.proj = None
+
+    def _hook(self, module, inputs, output):
+        h = output[0] if isinstance(output, tuple) else output
+        if h.shape[1] > 1:
+            h = h.clone()
+            last = h[:, -1, :].float(); p = last @ self.w32                      # [B]
+            self.proj = p.detach().cpu()
+            target = torch.zeros_like(p) if self.mode == "zero" else torch.full_like(p, self.m)
+            h[:, -1, :] = (last + (target - p)[:, None] * self.w32[None, :]).to(h.dtype)
+            self.calls += 1
+            return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
+        return output
+
+    def __enter__(self):
+        self.handle = self.block.register_forward_hook(self._hook); return self
+
+    def __exit__(self, *exc):
+        if self.handle is not None:
+            self.handle.remove()
+
+
+def unit_test_ablate(model, tok, layer=6):
+    """zero mode leaves |h.w| ~ 0 at the last position; mean mode sets h.w = m; other positions untouched."""
+    enc = tok(["Spanish:\nHola mundo.\n\nEnglish:\nHello", "Spanish:\nAdiós.\n\nEnglish:\nGood"], return_tensors="pt", padding=True).to(model.device)
+    w = torch.randn(arch(model)["hidden"], generator=torch.Generator().manual_seed(3)); w = w / w.norm()
+    with torch.no_grad():
+        base = model(**enc, output_hidden_states=True)
+        with CueAblate(model, layer, w, "zero") as a0:
+            z = model(**enc, output_hidden_states=True)
+        with CueAblate(model, layer, w, "mean", 7.0) as a1:
+            m = model(**enc, output_hidden_states=True)
+    wd = w.to(model.device)
+    tol = 0.05 + 3 * torch.finfo(arch(model)["dtype"]).eps * base.hidden_states[layer][:, -1, :].float().abs().max().item()
+    pz = z.hidden_states[layer][:, -1, :].float() @ wd; pm = m.hidden_states[layer][:, -1, :].float() @ wd
+    assert pz.abs().max().item() <= tol, f"zero mode projection {pz}"
+    assert (pm - 7.0).abs().max().item() <= tol, f"mean mode projection {pm}"
+    assert torch.equal(z.hidden_states[layer][:, :-1, :], base.hidden_states[layer][:, :-1, :]), "other positions must be unchanged"
+    assert a0.calls == 1 and a1.calls == 1 and a0.proj is not None
+    return True
+
+
+class MultiCueAblate:
+    """CueAblate at SEVERAL layers at once (2026-09-23, user decision: ablate at every layer at the cue token): one hook per layer, each
+    with that layer's own unit direction w[l-1] and mean value m[l-1]. `proj_at(layer)` = pre-ablation projections at that layer."""
+    def __init__(self, model, layers, w_by_layer, mode, m_by_layer=None):
+        self.hooks = [CueAblate(model, l, w_by_layer[l - 1], mode, 0.0 if m_by_layer is None else float(m_by_layer[l - 1])) for l in layers]
+        self.layers = list(layers)
+
+    def proj_at(self, layer):
+        return self.hooks[self.layers.index(layer)].proj
+
+    def __enter__(self):
+        for h in self.hooks: h.__enter__()
+        return self
+
+    def __exit__(self, *exc):
+        for h in self.hooks: h.__exit__(*exc)

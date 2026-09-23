@@ -10173,3 +10173,9 @@ prompt_pairs 44,800 prompts / 33,388 correct over 56 families; 0 unjudged; all p
 **2026-09-23 — read→write map refit on the regen8 corpus.** Previous v1 → `sandbox/sep_22_runs/`; new `sandbox/v1_pairdiff_unitnorm_clean/`
 (v7 recipe, split_2026-09-23_test18 = 36/18, py_abbrev removed): λ 10, LOFO R² .083; centroid-diff R² .136 / .219 (test / train mean), cos .41
 (previous .186 / .263, .465; original .175 / .248, .44). Pod map_7 terminated. Causal test not re-run (awaits user).
+
+**2026-09-23 — write-feature ablation at the cue (code families), interim 25 families.** All-layer version (USER DECISION after a first L24-only
+run, whose results were deleted): cue token, layers 1..27, each layer's own direction; zero-projection and mean ablation; counterfactual =
+seeded random other family. Pooled 25: natural context .869 → own zero .656 / own mean .615, cf .856 / .866; alternative context .798 → .457 / .440,
+cf .798 / .833. First-token margin 6.9 → 1.2 (own) vs 6.8 (cf). 19–20 of 25 families show own-drop ≥ .20 with cf-drop < .10. Pods b1–b3
+terminated; the remaining 29 families await the user's go. `results/code_styles/write_ablation/`.
