@@ -10278,3 +10278,13 @@ GPT-J (69): unsteered .000, steer .387 (paper .381), + own-FV abl .000 (removes 
 [.177, .296]; own drop > cf drop in 58/69. Qwen (96): .001 → steer .540 (paper .543), + own .018 (97%), + cf .267 (51%); own−cf .249
 [.213, .284]; 93/96.
 **T2.4 (unchanged, now in results CSVs):** GPT-J Δcos own −.112 [−.122, −.101] vs cf −.001, 69/69; Qwen −.047 [−.056, −.039] vs .000, 87/96.
+
+## 2026-09-23 — Execution-side carrier / task-unique split ablation: PILOT (every 4th task) — AWAITING USER
+**Why:** Qwen full-FV MEAN ablation at the cue barely hurts (79.8→73.9; checked: no bug — Qwen FVs are dominated by the shared component, so
+the mean replacement shifts the FV projection only 18% as much as zero ablation vs 47% in GPT-J). User proposed splitting each FV into a
+TRAIN-only carrier c (mean of train FVs) and task-unique u_A = v_A − (v_A·ĉ)ĉ. `exec_split_ablation.py`: real 6-shot prompts, rank-k
+ablation at the query cue, blocks 9–27 inputs, T=1 sampled. Pods esa1–esa5 (esa3 spare, unused), ALL terminated.
+**Pilot (GPT-J 18 / Qwen 24 tasks):** baseline .707 / .810 | task-unique own MEAN .107 / .572, own zero .153 / .508 | task-unique cf mean
+.694 / .799 (cos(own û, cf û) ≈ 0) | carrier mean .695 / .787, carrier zero .116 / .377 | span{c,u} own mean .098 / .564, cf .655 / .800.
+Same tasks, paper full-FV mean ablation .190 / .748. Own-minus-cf drop (task-unique, mean) .587 [.507, .670] 18/18; Qwen .227 [.146, .319] 21/24.
+**Next:** user decides on the full run.
