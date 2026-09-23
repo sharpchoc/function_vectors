@@ -5,7 +5,7 @@ TWO natural-twin candidates in parallel (Opus 5, GEN prompt + the family's real 
 -> the best survivor (most counted occurrences, earliest 5th) -> ONE reviewer, GPT-5 (user decision) -> accepted, else ONE revision with
 the feedback, else the next task (max TASKS_PER_DOC). Accepted -> <suffix>_accepted.jsonl (finalize5.py merges); verdicts -> <suffix>_review.jsonl.
     python tmp/regen8.py --suffix p1 --docs docs.json [--workers 128] [--pilot N]"""
-import argparse, fcntl, json, os, random, sys, threading, time, collections
+import argparse, fcntl, glob, json, os, random, sys, threading, time, collections
 from concurrent.futures import ThreadPoolExecutor, as_completed
 sys.path.insert(0, '/workspace/function_vectors'); sys.path.insert(0, '/root/.claude/jobs/1f45be64/tmp')
 from regen_common import TMP, REVISE, NOPAD, REVIEW_ITEMS, log_lock, review_one, reasons
@@ -14,12 +14,23 @@ from src.sandbox.style_translation.code_build import finish_pair, gen_hint, gen_
 from src.sandbox.style_translation.code_families import CODE_FAMILY
 from src.sandbox.style_translation.code_static_checks import precheck
 from src.sandbox.style_translation.code_free import counted
+from src.sandbox.style_translation import code_sql_alt as SQLA
+
+def sql_uppercase(text):
+    """Upper-case every RESERVED SQL keyword written in lower / mixed case outside strings and comments (natural pole = upper-case keywords)."""
+    out = text
+    for s0, e0, w in reversed(SQLA._words(text)):
+        if not SQLA._is_upper(w) and w.upper() in SQLA.RESERVED: out = out[:s0] + w.upper() + out[e0:]
+    return out
 import design_tasks7 as DT
 GEN_MODEL = 'anthropic/claude-opus-5'; REVIEWER = ('openai/gpt-5', {'effort': 'medium'}, None)
 CB.REFUSAL_FALLBACK = 'google/gemini-3.1-pro-preview'
 TASKS_PER_DOC, N_CAND = 3, 2
+ALT_ITEMS = {1, 2, 4, 10, 14}
 OBJ = json.load(open(f'{TMP}/regen8/objections.json'))
 PY2 = {'py2_print', 'py2_iter', 'py2_except'}
+JOIN_NOTE = '\nJOIN CALLS: every join must be over an explicitly written sequence of a few named parts or literals (e.g. " ".join([first, middle, last]) or "-".join((year, month, day))), never over a computed list, a generator or a loop variable, so that each join can be rewritten exactly as a plain + chain with the separator; the separator must be a plain string literal.'
+SQL_NOTE = '\nSQL DIALECT: plain portable SQL statements only (CREATE TABLE, INSERT, SELECT with JOIN / GROUP BY / ORDER BY, UPDATE, DELETE, CTEs, CASE, window functions are fine): NO procedural code (no CREATE FUNCTION / PROCEDURE, LANGUAGE, RETURN QUERY, BEGIN ... END blocks, DECLARE, plpgsql), no :: casts, no vendor-specific keywords. Write every SQL keyword, clause word, data type and built-in function name in UPPER CASE; identifiers in lower_snake_case.'
 BASH_NOTE = '\nTESTS: write every test so that it is expressible with the POSIX `[ ]` builtin: no `=~` regex tests, no glob patterns, no `&&` / `||` inside a test (use two tests), no unquoted `<` / `>`; quote every variable operand.'
 PY2_NOTE = ('\nCOMPATIBILITY: apart from the construct itself, use only syntax that is valid in BOTH Python 2 and Python 3: no f-strings, no type '
             'hints, no walrus, no `print(a, b)` with several arguments, no `nonlocal`; format strings with % or .format.')
@@ -29,7 +40,7 @@ def gen_prompt(F, task):
     obj = OBJ.get(F.name, [])
     extra = ('\nREJECTED EXAMPLES from this family (a strict reviewer failed earlier solutions for exactly these; never do this):\n' + '\n'.join('- ' + x for x in obj)) if obj else ''
     p = GEN.format(lang=F.tgt_lang, hint=gen_hint(F, True), spec=task['spec'], length=gen_length(F, True))
-    return p.replace('\nLength ', extra + (PY2_NOTE if F.name in PY2 else '') + (BASH_NOTE if F.name == 'bash_test' else '') + '\nLength ', 1)
+    return p.replace('\nLength ', extra + (PY2_NOTE if F.name in PY2 else '') + (BASH_NOTE if F.name == 'bash_test' else '') + (JOIN_NOTE if F.name == 'py_join_concat' else '') + (SQL_NOTE if F.name == 'sql_keyword_case' else '') + '\nLength ', 1)
 
 
 class Claims:
@@ -62,6 +73,10 @@ def main():
     by_fam = collections.defaultdict(list)
     for d in docs: by_fam[d.split('__')[0]].append(d)
     existing = {f: {r['doc_id'].split('__')[1] for r in json.load(open(RAW / f'{f}.json'))} for f in by_fam}   # task ids already used by kept docs
+    for p in glob.glob(f'{TMP}/regen8/*_accepted.jsonl'):                     # ... and by accepted-but-not-yet-merged docs of ANY driver (bug fix 2026-09-23: id collisions)
+        for l in open(p):
+            a = json.loads(l)
+            if a['fam'] in existing: existing[a['fam']].add(a['rec']['doc_id'].split('__')[1])
     reserved = {}
     for f, ds in by_fam.items():                                     # one reserved designed task per doc (not yet used by any existing doc)
         pool = [t for t in json.load(open(RAW / f'tasks_designed_{f}.json')) if t['id'] not in existing[f]]
@@ -70,12 +85,17 @@ def main():
     t_start = time.time(); deadline = t_start + args.deadline_min * 60; stat = collections.Counter(); per_fam = collections.defaultdict(collections.Counter)
 
     def candidate(F, task, seed):
-        nat = _chat(key, gen_prompt(F, task), 0.9, max_tokens=16000, model=GEN_MODEL, reasoning={'effort': 'medium'})
+        try:
+            nat = _chat(key, gen_prompt(F, task), 0.9, max_tokens=16000, model=GEN_MODEL, reasoning={'effort': 'medium'})
+        except Exception as e:                                       # network / provider error: a failed candidate, never a dead driver
+            with CB._USAGE_LOCK: CB.REJECTS['gen error ' + type(e).__name__] += 1
+            return None, ['guard:gen error'], [f'[generation failed] {str(e)[:120]}'], None
         return build(F, task, nat)
 
-    def build(F, task, nat):
+    def build(F, task, nat, rewrite_notes=None):
         try:
-            c = finish_pair(key, F, task, nat, GEN_MODEL, free_occ=True, rule_alt=True)
+            if F.name == 'sql_keyword_case': nat = sql_uppercase(nat)
+            c = finish_pair(key, F, task, nat, GEN_MODEL, free_occ=True, rule_alt=True, rewrite_notes=rewrite_notes)
             rs, fb = reasons(F, c)
             if not rs:
                 sc, sfb = precheck(F, c); rs += sc; fb += sfb
@@ -104,6 +124,15 @@ def main():
             if c is None or rs: return None
         v = review_one(key, REVIEWER[0], REVIEWER[1], REVIEWER[2], F, task, c, task['id'], 1, 'fresh', review_log); stat['review'] += 1
         if v['ok']: log.append([task['id'], 1, 'fresh', []]); return c
+        for k_rew in range(2):                                        # rewrite-repair (alt-side objections only; families without an exact rule)
+            issues = v['issues']
+            if not issues or not all(i['item'] in ALT_ITEMS for i in issues) or F.name in CB.RULE_ALT: break
+            notes = '\n'.join(f"- line `{i['line']}`: {i['problem']}" for i in issues[:20])
+            log.append([task['id'], 1, 'fresh', ['review:' + ','.join(sorted({REVIEW_ITEMS.get(i['item'], 'item0') for i in issues})) + ' -> rewrite-repair']])
+            c2, rs2, fb2, _ = build(F, task, nat, rewrite_notes=notes); stat['gen'] += 1
+            if c2 is None or rs2: break
+            c = c2; v = review_one(key, REVIEWER[0], REVIEWER[1], REVIEWER[2], F, task, c, task['id'], 1, 'rewrite', review_log); stat['review'] += 1
+            if v['ok']: log.append([task['id'], 1, 'rewrite', []]); return c
         log.append([task['id'], 1, 'fresh', ['review:' + ','.join(sorted({REVIEW_ITEMS.get(i['item'], 'item0') for i in v['issues']}))]])
         fb2 = [f"(round 1) [reviewer gpt-5, item {i['item']}] line: `{i['line']}` — {i['problem']}" for i in v['issues']]
         c, rs, fb, nat = revise(F, task, nat, fb2, log, 2)
@@ -116,12 +145,21 @@ def main():
         issues = '\n'.join(f'- {x}' for x in feedback[-30:])
         prompt = REVISE.format(lang=F.tgt_lang, hint=gen_hint(F, True), nopad=NOPAD, length=gen_length(F, True), spec=task['spec'], prev=prev_nat.rstrip(), issues=issues)
         if F.name in PY2: prompt = prompt.replace('\nLength ', PY2_NOTE + '\nLength ', 1)
-        nat = _chat(key, prompt, 0.7, max_tokens=16000, model=GEN_MODEL, reasoning={'effort': 'medium'}); stat['gen'] += 1
+        try:
+            nat = _chat(key, prompt, 0.7, max_tokens=16000, model=GEN_MODEL, reasoning={'effort': 'medium'}); stat['gen'] += 1
+        except Exception as e:
+            return None, ['guard:gen error'], [f'[generation failed] {str(e)[:120]}'], prev_nat
         c, rs, fb, nat = build(F, task, nat)
         if rs: log.append([task['id'], rnd, 'revise', rs])
         return c, rs, fb, nat
 
     def work(d):
+        try:
+            return work_(d)
+        except Exception as e:
+            print(f'{d}: worker error {type(e).__name__}: {str(e)[:120]}', flush=True); return dict(doc=d, fam=d.split('__')[0], ok=False, task=None, log=[['?', 0, 'error', [str(e)[:60]]]], secs=0, first=False)
+
+    def work_(d):
         fam = d.split('__')[0]; F = CODE_FAMILY[fam]; log = []; t0 = time.time(); c = None; task = None; tried = set()
         for k in range(TASKS_PER_DOC):
             if time.time() > deadline: break

@@ -80,6 +80,12 @@ ISSUES (all must be fixed):
 {issues}
 """
 NOPAD = GEN[GEN.index('NO PADDING'):GEN.index('Length {length}')]
+FAMILY_REVIEW_NOTES = {'sql_keyword_case': '''
+
+FAMILY NOTE (sql_keyword_case): SQL clauses naturally put several keywords on one line (SELECT ... AS, FROM ... AS, JOIN ... ON); only the FIRST
+keyword of a line is counted as a decision, so several keywords on a line are NOT a violation of item 5 here. The rewrite rule lower-cases the
+SQL reserved words, clause words, data types and common built-in functions; identifiers, string contents and comments stay. Judge item 4 by
+whether every such keyword that is upper-case in the natural twin is lower-case in the alternative twin.'''}
 REVIEW_ITEMS = {0: 'unparsed', 1: 'meaning_change', 2: 'extra_change', 3: 'invalid', 4: 'inconsistent_convention', 5: 'fake_decision', 6: 'padding', 7: 'meta_comment',
                 8: 'rename_collision', 9: 'family_rule', 10: 'scope_creep', 11: 'wrong_task', 12: 'too_few_or_bunched', 13: 'artefact', 14: 'line_correspondence'}
 log_lock = threading.Lock()
@@ -99,6 +105,7 @@ def parse_verdict(raw):
 def review_one(key, model, reasoning, temp, F, task, rec, tag, rnd, kind, log_path, free_occ=True):
     prompt = REVIEW.format(fam=F.name, lang=F.tgt_lang, nat=F.nat_label, alt=F.alt_label, rewrite=F.rewrite, hint=gen_hint(F, free_occ), spec=task['spec'].strip(),
                            nat_code=rec['text_nat'].rstrip(), alt_code=rec['text_alt'].rstrip())
+    prompt += FAMILY_REVIEW_NOTES.get(F.name, '')
     verdict, raw, err = None, None, None; t0 = time.time()
     for attempt in range(4):
         try:
