@@ -10169,3 +10169,7 @@ artifacts artifacts/qwen25_fv/raw_mean_steering/sixshot_dummy/. **Next:** none. 
 not in any refresh shard); refreshed on pod refresh12_f3 (terminated). POOL 54 / 60 (dropped: css_shorthand, py_ternary, early_return, py_bool_prefix,
 c_braces, py_abbrev). Pooled 54: k0 .288 → .298, k4 .724 → .763, write L24 α2 .549 → .560, read L8 α4 .587 → .595, 3-shot ref .718 → .760.
 prompt_pairs 44,800 prompts / 33,388 correct over 56 families; 0 unjudged; all pool families complete. Tables results/code_styles/regen8/.
+
+**2026-09-23 — read→write map refit on the regen8 corpus.** Previous v1 → `sandbox/sep_22_runs/`; new `sandbox/v1_pairdiff_unitnorm_clean/`
+(v7 recipe, split_2026-09-23_test18 = 36/18, py_abbrev removed): λ 10, LOFO R² .083; centroid-diff R² .136 / .219 (test / train mean), cos .41
+(previous .186 / .263, .465; original .175 / .248, .44). Pod map_7 terminated. Causal test not re-run (awaits user).
