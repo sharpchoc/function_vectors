@@ -10267,3 +10267,14 @@ diff CI [.104, .328]. Qwen (24): steer .545 (matches full-run .543) → own .021
 **Infra:** logs/mediation/med_{chain,launch,dispatch}.sh; GPT-J needs the pinned snapshot 47e1693… (the default glob picks a broken
 f3f4288… snapshot). 8 pods med1–med8 (med3 DOA), ALL terminated, re-listed gone. Artifacts {69_task_run,qwen25_fv}/mediation/.
 **Next:** user decides whether to run full T2.5 (remaining tasks; same out_root, resumable) and how to word the paper.
+
+## 2026-09-23 — Reviewer T2.5 FULL run (steer at labels + FV ablation at the cue) — DONE
+**Status:** DONE; paper NOT edited here (user is adding T2.4 via Codex; review requested afterwards). **Owner:** Claude Code bg agent.
+Remaining tasks after the stride-4 pilot (same out_root, resumable) on pods t25f1–t25f6 (t25f4 DOA, shard moved to t25f5); ALL terminated.
+`src/eval_scripts/summarize_mediation.py` → {69_task_run,qwen25_fv}/read_write_relationship/mediation/{t24,t25}_{per_task,summary}.csv
+(task bootstrap 10k, seed 20260923).
+**T2.5 (all tasks, α2, six dummy slots; own/cf unit FV zero-ablated at the query cue, blocks 9–27):**
+GPT-J (69): unsteered .000, steer .387 (paper .381), + own-FV abl .000 (removes 100% of gain), + cf-FV abl .236 (39%); own−cf drop .235
+[.177, .296]; own drop > cf drop in 58/69. Qwen (96): .001 → steer .540 (paper .543), + own .018 (97%), + cf .267 (51%); own−cf .249
+[.213, .284]; 93/96.
+**T2.4 (unchanged, now in results CSVs):** GPT-J Δcos own −.112 [−.122, −.101] vs cf −.001, 69/69; Qwen −.047 [−.056, −.039] vs .000, 87/96.
