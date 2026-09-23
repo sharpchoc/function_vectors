@@ -189,7 +189,8 @@ def main():
                  "n_selected": len(sel), "fallback_top10": fallback,
                  "selected_heads": heads, "selected_flat": sel,
                  "final_best_epoch": best_epoch,
-                 "split_path": str(args.split_path.relative_to(REPO_ROOT)),
+                 "split_path": (str(args.split_path.resolve().relative_to(REPO_ROOT))
+                       if args.split_path.resolve().is_relative_to(REPO_ROOT) else str(args.split_path)),
                  "n_train_tasks": len(train_tasks),
                  "points_per_task": args.points_per_task}
     torch.save({"c": c_final.cpu(), "history": history}, args.out_root / "pooled_sparse" / "coeffs_final.pt")
