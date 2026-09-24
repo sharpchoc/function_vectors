@@ -10338,3 +10338,9 @@ already without js_hungarian; v10 fits still had it): 66/34 R² train-mean .237 
 **2A DONE (same day):** read_causal v2 on 53 families with controls (pods csv1/3/5/6 terminated). α2 at block-23 output: dircos own .746 vs
 other-family .173 vs random .039; share of the real shift along the execution direction .827 vs .092 vs −.004; alt first token top-1 .674
 vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52/53 families. `results/code_styles/read_causal_v2/`.
+
+### 2026-09-24 — map R² split robustness (paper reviewer point)
+- Status: DONE. `matched_readwrite_maps.py --random_splits 10` (protocol T, training-only carrier, seeds 0-9, canonical split sizes), CPU.
+- Findings: GPT-J held-out pooled R² 0.602 ± 0.060 (range .502–.683; canonical .641); Qwen 0.534 ± 0.070 (.443–.630; canonical .588); training-mean baseline ≤ −0.053 on every split.
+- Files: results/69_task_run/understanding_read_write_linear_map/matched_maps/random_splits.csv, results/qwen25_fv/read_write_map/matched_maps/random_splits.csv; paper main.tex map subsection (+split spread, per-prompt check condensed to one sentence) and Appendix D task-level paragraph; zip refreshed.
+- Lesson: main.tex has \preto\section{\FloatBarrier}; SHORTENING text before Limitations can defer Figure 7 and push Limitations to p10 — always page-check after edits in either direction.

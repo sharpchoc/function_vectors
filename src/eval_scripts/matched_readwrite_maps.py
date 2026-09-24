@@ -185,16 +185,44 @@ def protocol_P(cfg, train, test, acts, fvs):
             "n_train": len(train), "n_test": len(test)}
 
 
+def random_splits(cfg, train, test, acts, fvs, means, n_splits):
+    """Split robustness: protocol T with a training-only carrier on seeds 0..n-1, each a random
+    |train|/|test| partition of the pool (canonical split first, for reference)."""
+    pool = sorted(train + test)
+    rows = [dict(split="canonical", **protocol_T(cfg, train, test, acts, fvs, means, "train"),
+                 heldout_tasks=" ".join(test))]
+    for seed in range(n_splits):
+        te = set(np.random.default_rng(seed).choice(len(pool), len(test), replace=False).tolist())
+        tr_s = [t for i, t in enumerate(pool) if i not in te]; te_s = [t for i, t in enumerate(pool) if i in te]
+        rows.append(dict(split=f"seed{seed}", **protocol_T(cfg, tr_s, te_s, acts, fvs, means, "train"),
+                         heldout_tasks=" ".join(te_s)))
+        print(seed, round(rows[-1]["pooled_r2"], 4), flush=True)
+    r2s = np.array([r["pooled_r2"] for r in rows[1:]])
+    print(f"random splits: pooled R^2 {r2s.mean():.3f} +- {r2s.std(ddof=1):.3f} (sample SD), "
+          f"range {r2s.min():.3f}-{r2s.max():.3f}; canonical {rows[0]['pooled_r2']:.3f}")
+    cfg["out"].mkdir(parents=True, exist_ok=True)
+    with open(cfg["out"] / "random_splits.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader()
+        for r in rows:
+            w.writerow({k: (round(v, 4) if isinstance(v, float) else v) for k, v in r.items()})
+    print("wrote", cfg["out"] / "random_splits.csv")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", choices=sorted(CFG), required=True)
     ap.add_argument("--skip_P", action="store_true")
     ap.add_argument("--out_name", default="matched_maps.csv")
+    ap.add_argument("--random_splits", type=int, default=0,
+                    help="instead: protocol T (training-only carrier) on N random task splits of the canonical sizes")
     a = ap.parse_args()
     cfg = CFG[a.model]
     torch.set_num_threads(4)
     train, test, acts, fvs, means = load(cfg)
     print(f"{a.model}: {len(train)} train / {len(test)} held-out tasks", flush=True)
+    if a.random_splits:
+        random_splits(cfg, train, test, acts, fvs, means, a.random_splits)
+        return
     rows = [protocol_T(cfg, train, test, acts, fvs, means, "all"),
             protocol_T(cfg, train, test, acts, fvs, means, "train")]
     for r in rows:
