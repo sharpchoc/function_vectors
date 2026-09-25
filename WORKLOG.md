@@ -10351,3 +10351,9 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
 - New analyses (CPU): `src/eval_scripts/label_mean_carrier_cossim.py` → pairwise task cosines, mean: GPT-J m_A(L6) .727 / v_A .393 / u_A −.004; Qwen m_A(L12) .496 / v_A .622 / u_A −.008 (Qwen FVs carrier-dominated, so label means are NOT more similar than FVs in Qwen — framed accordingly in App C). Outputs results/69_task_run/understanding_read_write_linear_map/label_mean_cossim/, results/qwen25_fv/read_write_map/label_mean_cossim/.
 - `src/eval_scripts/coding_accuracy_by_k.py` → results/code_styles/accuracy_by_k_pooled.csv: success .296→.763 (k0→k4); k0 no-style-choice .285, wrong .356, judge-rejected .063.
 - Text: block→layer everywhere (layer = zero-indexed transformer block, numbers unchanged; removed wrong "embedding layer = layer 0" sentence); compact g/c/u_A display; dummy-prompt example (App B, labels→'_', blank-line separators, also added to illustrative prompt); links for band B, carrier similarity, steering figures, coding ICL curve; conclusion citations (+park2024linear, wang2023interpretability in bib).
+
+### 2026-09-25 — coding map single-normalisation backup (v12, not in paper)
+- Script `src/eval_scripts/code_map_single_norm.py`; A fits via `read_write_map_code.py` (no --unit_norm), logs logs/code_map_single_norm/.
+- 66/34: v11 ref .237±.030 (exact); v11 map on single-norm centroids .238±.031; B (fit on family centroids) .198±.028, cos .373;
+  A (raw pairs) cos .296, raw R² .087 (normalised-pred R² −.38). Per-pair normalisation is what matters; re-normalising the mean is neutral.
+- Results: results/code_styles/read_write_map/sandbox/v12_README.md + v12_single_norm_summary.csv + v12a_rawpairs_*/.
