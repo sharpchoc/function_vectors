@@ -10357,3 +10357,11 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
 - 66/34: v11 ref .237±.030 (exact); v11 map on single-norm centroids .238±.031; B (fit on family centroids) .198±.028, cos .373;
   A (raw pairs) cos .296, raw R² .087 (normalised-pred R² −.38). Per-pair normalisation is what matters; re-normalising the mean is neutral.
 - Results: results/code_styles/read_write_map/sandbox/v12_README.md + v12_single_norm_summary.csv + v12a_rawpairs_*/.
+
+### 2026-09-26 — coding cue shift re-expressed as cos(Δz_α, −d_f^exec) (paper §5.3 metric)
+- Status: DONE (CPU, stored data only). `PYTHONPATH=. /usr/local/bin/python src/eval_scripts/code_cue_shift_exec_cos.py`.
+- Validation: rebuilt summarize_code_read_causal_v2 exactly (per_family.csv, summary.csv incl. bootstrap CIs; dircos own .746 [.687,.800], other .173, random .039, real-shift cos_w .721, 52/53, 46/53).
+- Definition: the stored `cos_w` already IS cos(h_α − h_0, unit(−v_nat)) at hidden state 24, v_nat = mean_nat − mean_alt = d_f^exec; recomputed from fp16 L24 vectors, max diff 4e-7.
+- Findings (α 2): own .628 [.572,.682], other-family .100 [.068,.133], random −.006 [−.024,.012]; real shift .721 [.684,.755]; own > both controls 52/53; own ≥ .5 42/53 (real 51/53).
+- Files: results/code_styles/read_causal_v2/{exec_feature_cos_summary.csv, exec_feature_cos_per_family.csv, exec_feature_cos_by_alpha.{png,pdf}, README.md}. Paper untouched.
+- Next: user decides whether to swap the paper numbers / Figure 21 left panel.
