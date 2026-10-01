@@ -10409,3 +10409,12 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
 - Findings (α 2): own .628 [.572,.682], other-family .100 [.068,.133], random −.006 [−.024,.012]; real shift .721 [.684,.755]; own > both controls 52/53; own ≥ .5 42/53 (real 51/53).
 - Files: results/code_styles/read_causal_v2/{exec_feature_cos_summary.csv, exec_feature_cos_per_family.csv, exec_feature_cos_by_alpha.{png,pdf}, README.md}. Paper untouched.
 - Next: user decides whether to swap the paper numbers / Figure 21 left panel.
+
+## 2026-10-01 — py_is_none: per-pair cue-token differences, layers 20–28 (dimensionality analysis, step 1)
+- `capture_cue_layers.py` (job `logs/code_styles_cue_layers_job.sh`): for each of the 200 py_is_none documents, the k = 4 natural and alternative
+  prompts (exact twins, same cue token) → cue-token hidden state at layers 20..28; `diff = nat − alt`, one vector per pair per layer.
+  Output `artifacts/style_translation/qwen25_code/cue_pairs_layers/py_is_none_k4.npz` (act_nat, act_alt, diff [200, 9, 3584] fp32; flags heldout
+  (50), correct_nat/correct_alt (123 pairs correct in both poles); no correctness filtering). Layer 28 = hidden_states[28] (final norm applied,
+  repo convention); un-normed last-block output stored as nat/alt_last_prenorm.
+- Checks: L24 activations match prompt_pairs/py_is_none.npz (median rel. err .005, fp16 store); cos(mean diff, stored write vector) .90 (L20) → .99 (L24+);
+  mean per-pair cos to the mean diff .73 (L20) – .89 (L25). Pod ui47t1poi2wilj created and terminated. No analysis yet (awaiting user).
