@@ -5,6 +5,50 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-10-01 — FV-head MEAN ablation at the cue (GPT-J + Qwen2.5-7B-Instruct; user request)
+
+**Owner:** Claude Code background agent, main checkout. **Status:** DONE (6 RTX PRO 4500 pods, ~35 min wall, all terminated).
+
+**Question (user):** on 6-shot prompts, at the FINAL cue token, mean-ablate the FV's attention heads
+(mean taken across all tasks) and measure the accuracy change. Head-level counterpart of Study A
+(which removes the rank-1 FV *direction* from the residual stream).
+**Design (user decisions, same day):** head set = the FV's selected heads (GPT-J 37, Qwen 140); the
+replacement = equal-task-weighted grand mean over ALL pool tasks (evaluated task included) of the
+stored per-task 10-shot cue-token head means (`<selection root>/<task>/means.pt`, i.e. the very
+means that define the FVs); control = 3 fixed-seed random sets of the same size drawn from the
+NON-FV heads, mean-ablated the same way; readout/prompts = the FV_ablation protocol (150 six-shot
+prompts/task, T=1 sampled exact match, crc32 seeds); zero-shot row reused from `FV_ablation/per_task_acc.csv`.
+Mechanics: forward pre-hook on each layer's attention out-projection, prefill only, final position,
+selected head slices of its input <- grand mean (W_O linear => head contribution <- its cross-task mean).
+
+**Script:** `src/sandbox/ext_steerability/ablate_fv_heads_cue6.py` (--model_name/--split_path/
+--means_root/--selection_path/--out_root, --n_random 3, --reverse for a second worker per shard);
+summary `src/eval_scripts/plot_fv_heads_ablation.py`. Orchestration `logs/fv_heads_ablation/` (gitignored).
+GPT-J: `--model_dir` = snapshot 47e169…, `--token_budget 10000 --batch_cap 24` (24000 OOMs on 32 GB:
+fp32 logits upcast); Qwen: 12000/16 as in the port. Artifacts `artifacts/{69_task_run,qwen25_fv}/
+FV_head_mean_ablation/{eval/<task>.json, grand_head_means.pt, random_sets.json}`.
+
+**Findings (mean over tasks; 0-shot | 6-shot | FV heads mean-abl | random same-size non-FV heads):**
+- GPT-J (37 heads, 69 tasks): .002 | .630 | **.284** | .619 (draws .644/.616/.596). FV-abl < random-abl
+  on 69/69 tasks; drop >= .2 on 52/69; train .632→.284, heldout .619→.282.
+- Qwen2.5-7B-Instruct (140 heads, 96 tasks): .009 | .798 | **.450** | .783 (draws .795/.768/.786).
+  FV-abl < random-abl on 93/96; drop >= .2 on 66/96; train .809→.451, heldout .752→.446.
+- Replacing only the FV heads' cue outputs by their task-agnostic mean removes ~55% (GPT-J) / ~44%
+  (Qwen) of the 6-shot accuracy; an equal number of random other heads costs ~.01–.02. Both models
+  keep well above zero-shot, i.e. the head-level mean ablation is weaker than Study A's own-FV ZERO
+  direction ablation (GPT-J .01 / Qwen .06) and, on GPT-J, comparable to Study A's own-FV MEAN
+  direction ablation (.242); on Qwen it is much stronger than the direction mean-ablation (.739).
+- Sanity: Qwen in-run baselines reproduce the stored real_6shot on 96/96 tasks exactly; GPT-J on
+  28/69 (mean diff −.009, max .127) because the smaller batch budget changes the per-batch sampling
+  seeds — the comparison is within-run (baseline recomputed alongside the ablations).
+
+**Files:** `results/69_task_run/FV_ablation/head_mean_ablation/` and `results/qwen25_fv/FV_ablation/
+head_mean_ablation/` — `summary.csv`, `per_task_acc.csv`, `headline_bars.png`, `by_task_dots.png`.
+**Next:** none requested. Possible follow-ups: own-task-mean ablation (keeps the FV, removes
+prompt variation), zero-ablation of the same heads, 1-shot variant.
+
+---
+
 ## 2026-09-09 — Appendix G follow-up: rotation restricted to m planes (user request)
 
 **Owner:** Claude Code background agent, main checkout. CPU only (~8 min). **Status:** DONE.

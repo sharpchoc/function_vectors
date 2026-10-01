@@ -17,7 +17,7 @@ Qwen2.5-7B has 28 blocks, d = 3584, 28 heads. All accuracies are temperature-1 s
 | `read_feature_steering_6shot/` | `bottom_up_read_features/steering_results/sixshot_dummy/` | m_A(L12) injected at all six dummy '_' slots: .000 → .543 (α=2), best-α .555 = 70% of real 6-shot (.798); equals the 1-shot dummy level (.555) |
 | `read_write_map/` | `FV_linear_decodability/`, `understanding_read_write_linear_map/` | per-prompt ridge read → FV per read layer; heldout centroid R² .554 (L22), per-prompt .29 (L20) |
 | `readwrite_msj_transfer/` | — | ICL read→write map applied to the MSJ read feature: no transfer (cos ≈ 0) |
-| `FV_ablation/` | `FV_ablation/` | **Study A** — FV-direction ablation at the final cue token, {own, cf} × {zero, mean} × {L9–27, L0–27}, 6-shot and 1-shot |
+| `FV_ablation/` | `FV_ablation/` | **Study A** — FV-direction ablation at the final cue token, {own, cf} × {zero, mean} × {L9–27, L0–27}, 6-shot and 1-shot; `head_mean_ablation/` (2026-10-01): the 140 FV heads' cue outputs replaced by their cross-task grand mean, random same-size non-FV heads as control |
 | `read_feature_ablation/` | `bottom_up_read_features/ablation/task_unique_meanresid/` | **Study C** — task-unique direction û_A (mean carrier-removed **L11–13** residual) ablated at every demo target token, own vs counterfactual task; `cf_task_pairs.csv` |
 | `read_write_relationship/` | `read_write_relationship/{bottom_up,meanresid}{,_1shot}/` | **Study D** — read-feature injection at the dummy target slots → cos(cue residual, task FV); `bottom_up` = m_A(L12) at L12, `meanresid` = s_A = c + u_A at L0 |
 | `write_feature_and_model_accuracy/` | `write_feature_and_model_accuracy/` | **Study B** — FV presence (cos at the query cue, all 28 layers) vs sampled accuracy, n = 0..6; `baseline_subtracted/`, `per_prompt/` |
@@ -29,6 +29,7 @@ Qwen2.5-7B has 28 blocks, d = 3584, 28 heads. All accuracies are temperature-1 s
 | A. own-FV zero-ablation at the cue, 6-shot (unablated → own → cf-task FV) | .798 → **.056** vs .543 | .639 → **.013** vs .476 |
 | A. own-FV mean-ablation, 6-shot | .798 → .739 vs .797 (nearly harmless) | .639 → .242 vs .616 |
 | A. 1-shot, zero-ablation | .476 → **.014** vs .202 | .211 → .001 vs .107 |
+| A′. FV HEADS mean-ablated at the cue, 6-shot (unablated → FV heads → random same-size non-FV heads) | .798 → **.450** vs .783 (140 heads) | .630 → **.284** vs .619 (37 heads) |
 | C. own û_A mean-ablation at demo targets, 6-shot (unablated → own → cf) | .798 → **.205** vs .754 | .630 → **.132** vs .632 |
 | C. 1-shot | .476 → **.171** vs .452 | .208 → .044 vs .205 |
 | D. cos(cue residual, task FV) after read injection, 6-shot dummy scaffold, α=2 | .388 → **.502** (m_A(L12)@L12), .388 → .475 (s_A@L0); readout L24 | .183 → .365 (m_A(L6)@L6), .183 → .424 (s_A@L0); readout L13 |
