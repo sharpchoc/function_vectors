@@ -10421,3 +10421,10 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
 - 2026-10-02 stable rank / mean pairwise cosine of the 200 pair differences per layer (uncentered): `results/code_styles/py_is_none_cue_diff_rank.csv`.
   Stable rank 1.86 / 1.77 / 1.92 (L20–22), 1.41 (L23–24), 1.24–1.28 (L25–27), 1.43 (L28 normed; 1.28 un-normed); mean pairwise cos .53 / .54 / .50,
   .65 / .66, .80 / .79 / .76, .69. Centered (mean difference removed): stable rank 12 / 10 / 11, 2.9 / 2.6, 4.1 / 5.0 / 5.0, 3.3; pairwise cos ≈ 0.
+
+## 2026-10-02 — py_is_none: subspace-patch steering at the cue token, layers 20–28
+- `CueSubspacePatch` (steer_hooks.py, unit-tested), `write_subspace_patch.py`: top-2 uncentered PCs of the k = 4 pair differences (150 train docs), patch the 0-shot
+  cue token's coordinates to the k = 4 pole means, one layer at a time; arms patch2 / patch1 / add2 / base; 40 held-out docs. Results + README in
+  `results/code_styles/subspace_patch/`. Best layer 25 (patch2 nat .80 / alt .475; unsteered .70 / .075); L20–24 patch ≤ .15 on alt; PC2 adds nothing
+  (same target coordinate for both poles); add 2×mean diff stronger (L25 .85 / .50). **Convention rate only — judge NOT run: OpenRouter key rejected (401
+  "User not found") on 2026-10-02.** Pod ghfjxk5o3hhnob created and terminated.

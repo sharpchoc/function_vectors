@@ -263,3 +263,50 @@ def unit_test_position_ablate(model, tok, layer=6):
         assert torch.equal(hz[r, keep, :], hb[r, keep, :]), "other positions must be unchanged"
     assert a0.calls == 1 and a1.calls == 1 and len(a0.proj) == 2
     return True
+
+
+class CueSubspacePatch:
+    """Patch a low-dimensional subspace at the cue token (last prompt position, prefill pass only) at layer L: the coordinates of the
+    residual stream in the orthonormal rows of V [r, D] are REPLACED by `coords` [r]; the orthogonal complement is untouched.
+    h <- h + (coords - h V^T) V.  `before` keeps the last batch's coordinates before the patch."""
+    def __init__(self, model, layer, V, coords):
+        A = arch(model); dev = next(model.parameters()).device
+        self.block = A["blocks"][layer - 1]
+        self.V = torch.as_tensor(V, dtype=torch.float32, device=dev); self.coords = torch.as_tensor(coords, dtype=torch.float32, device=dev)
+        assert torch.allclose(self.V @ self.V.T, torch.eye(self.V.shape[0], device=dev), atol=1e-4), "rows of V must be orthonormal"
+        self.handle = None; self.before = None
+
+    def _hook(self, module, inputs, output):
+        h = output[0] if isinstance(output, tuple) else output
+        if h.shape[1] > 1:                                  # prefill pass only -> cue token
+            h = h.clone(); x = h[:, -1, :].float(); c = x @ self.V.T; self.before = c.cpu()
+            h[:, -1, :] = (x + (self.coords - c) @ self.V).to(h.dtype)
+            return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
+        return output
+
+    def __enter__(self):
+        self.handle = self.block.register_forward_hook(self._hook)
+        return self
+
+    def __exit__(self, *exc):
+        if self.handle is not None:
+            self.handle.remove()
+
+
+def unit_test_subspace_patch(model, tok, layer=24):
+    """After the patch the cue token's coordinates in V equal `coords`, its orthogonal complement and all other positions are unchanged."""
+    enc = tok(["def f(x):\n    if x", "import os\n\ndef g(path):\n    return path"], return_tensors="pt", padding=True).to(model.device)
+    D = arch(model)["hidden"]; g = torch.Generator().manual_seed(0)
+    V = torch.linalg.qr(torch.randn(D, 2, generator=g))[0].T.contiguous(); coords = torch.tensor([37.0, -12.0])
+    with torch.no_grad():
+        base = model(**enc, output_hidden_states=True)
+        with CueSubspacePatch(model, layer, V, coords) as s:
+            pat = model(**enc, output_hidden_states=True)
+    hb = base.hidden_states[layer].float(); hp = pat.hidden_states[layer].float(); Vd = V.to(hb.device)
+    tol = 0.05 + 3 * torch.finfo(arch(model)["dtype"]).eps * hb[:, -1, :].abs().max().item()
+    assert ((hp[:, -1, :] @ Vd.T - coords.to(hb.device)).abs() <= tol * 8).all(), "patched coordinates must equal the target"
+    comp = lambda h: h - (h @ Vd.T) @ Vd
+    assert (comp(hp[:, -1, :]) - comp(hb[:, -1, :])).abs().max().item() <= tol, "orthogonal complement must be unchanged"
+    assert torch.equal(hp[:, :-1, :], hb[:, :-1, :]), "other positions must be unchanged"
+    assert ((s.before.to(hb.device) - hb[:, -1, :] @ Vd.T).abs() <= tol * 8).all()
+    return True
