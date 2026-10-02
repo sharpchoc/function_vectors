@@ -10418,3 +10418,6 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   repo convention); un-normed last-block output stored as nat/alt_last_prenorm.
 - Checks: L24 activations match prompt_pairs/py_is_none.npz (median rel. err .005, fp16 store); cos(mean diff, stored write vector) .90 (L20) → .99 (L24+);
   mean per-pair cos to the mean diff .73 (L20) – .89 (L25). Pod ui47t1poi2wilj created and terminated. No analysis yet (awaiting user).
+- 2026-10-02 stable rank / mean pairwise cosine of the 200 pair differences per layer (uncentered): `results/code_styles/py_is_none_cue_diff_rank.csv`.
+  Stable rank 1.86 / 1.77 / 1.92 (L20–22), 1.41 (L23–24), 1.24–1.28 (L25–27), 1.43 (L28 normed; 1.28 un-normed); mean pairwise cos .53 / .54 / .50,
+  .65 / .66, .80 / .79 / .76, .69. Centered (mean difference removed): stable rank 12 / 10 / 11, 2.9 / 2.6, 4.1 / 5.0 / 5.0, 3.3; pairwise cos ≈ 0.
