@@ -79,7 +79,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", default="qwen25_code"); ap.add_argument("--families", nargs="*", required=True)
     ap.add_argument("--layers", nargs="*", type=int, default=list(range(20, 29))); ap.add_argument("--k", type=int, default=4)
-    ap.add_argument("--out_dir", type=Path, required=True); ap.add_argument("--batch", type=int, default=20); ap.add_argument("--limit", type=int, default=40)
+    ap.add_argument("--out_dir", type=Path, required=True); ap.add_argument("--targets", nargs="*", default=["nat", "alt"]); ap.add_argument("--batch", type=int, default=20); ap.add_argument("--limit", type=int, default=40)
     args = ap.parse_args()
     MP = model_paths(args.model); SRC = MP["prompt_pairs"].parent / "cue_pairs_layers"; args.out_dir.mkdir(parents=True, exist_ok=True)
     lex_p = MP["prompts"].parent / "scoring_lexicon.json"; lexicon = json.load(open(lex_p))["lexicon"] if lex_p.exists() else {}
@@ -98,7 +98,7 @@ def main():
         recs = run_arm(model, tok, fam, items, texts, lexicon, "base", "base", None, 0, _Null, args.batch)
         for layer in args.layers:
             s = S[layer]
-            for target in ("nat", "alt"):
+            for target in args.targets:
                 c = s[f"c_{target}"]; sign = 1.0 if target == "nat" else -1.0
                 arms = {"patch2": lambda: CueSubspacePatch(model, layer, s["V"], c), "patch1": lambda: CueSubspacePatch(model, layer, s["V"][:1], c[:1]),
                         "add2": lambda: CueSteer(model, layer, sign * s["mean_diff"], 2.0)}

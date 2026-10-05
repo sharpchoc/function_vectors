@@ -38,12 +38,17 @@ def main():
     last = {}
     hook = A["blocks"][-1].register_forward_hook(lambda m, i, o: last.__setitem__("h", (o[0] if isinstance(o, tuple) else o)[:, -1, :].float().cpu().numpy()))
     for fam in args.families:
+        if (OUT / f"{fam}_k{args.k}.npz").exists():
+            print(f"{fam}: exists, skip", flush=True); continue
         recs = json.load(open(MP["rollouts"] / f"{fam}.json"))
         ok = {(r["doc_id"], r["style"]): bool(r["style_ok"]) and bool((r.get("judge") or {}).get("ok")) for r in recs if r["k"] == args.k}
         P = {(p["doc_id"], p["style"]): p for p in json.load(open(MP["prompts"] / f"{fam}.json")) if p["k"] == args.k}
         docs = sorted({d for d, _ in P}); assert all((d, s) in P for d in docs for s in ("nat", "alt"))
-        for d in docs:
-            assert P[(d, "nat")]["cue_tok"] == P[(d, "alt")]["cue_tok"] and P[(d, "nat")]["prompt_ids"][-1] == P[(d, "alt")]["prompt_ids"][-1], d
+        # twins whose k-shot prompts end on different cue tokens (the convention changes the token right before the cue) are not comparable: skipped
+        skip = [d for d in docs if P[(d, "nat")]["cue_tok"] != P[(d, "alt")]["cue_tok"] or P[(d, "nat")]["prompt_ids"][-1] != P[(d, "alt")]["prompt_ids"][-1]]
+        docs = [d for d in docs if d not in set(skip)]
+        if skip:
+            print(f"{fam}: {len(skip)} pairs skipped, cue token differs between conventions: {skip[:5]}{'...' if len(skip) > 5 else ''}", flush=True)
         items = [{"ids": P[(d, s)]["prompt_ids"], "di": i, "pole": s} for i, d in enumerate(docs) for s in ("nat", "alt")]
         act = {s: np.zeros((len(docs), NLy, A["hidden"]), np.float32) for s in ("nat", "alt")}
         pre = {s: np.zeros((len(docs), A["hidden"]), np.float32) for s in ("nat", "alt")}
@@ -62,7 +67,7 @@ def main():
         np.savez_compressed(OUT / f"{fam}_k{args.k}.npz", act_nat=act["nat"], act_alt=act["alt"], diff=act["nat"] - act["alt"],
                             nat_last_prenorm=pre["nat"], alt_last_prenorm=pre["alt"], doc_id=np.array(docs), heldout=np.array([heldout(d) for d in docs]),
                             cue_tok=np.array([P[(d, "nat")]["cue_tok"] for d in docs]), correct_nat=np.array([ok.get((d, "nat"), False) for d in docs]),
-                            correct_alt=np.array([ok.get((d, "alt"), False) for d in docs]), layers=np.array(args.layers), k=args.k)
+                            correct_alt=np.array([ok.get((d, "alt"), False) for d in docs]), layers=np.array(args.layers), k=args.k, skipped=np.array(skip))
         print(f"{fam}: {len(docs)} pairs x layers {args.layers} -> {OUT / f'{fam}_k{args.k}.npz'}", flush=True)
     hook.remove(); print("capture done", flush=True)
 

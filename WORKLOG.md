@@ -10428,3 +10428,9 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   `results/code_styles/subspace_patch/`. Best layer 25 (patch2 nat .80 / alt .475; unsteered .70 / .075); L20–24 patch ≤ .15 on alt; PC2 adds nothing
   (same target coordinate for both poles); add 2×mean diff stronger (L25 .85 / .50). **Convention rate only — judge NOT run: OpenRouter key rejected (401
   "User not found") on 2026-10-02.** Pod ghfjxk5o3hhnob created and terminated.
+
+## 2026-10-05 — subspace-patch steering towards the alternative convention, all 53 families (layers 20–28)
+- capture_cue_layers.py (skip twins with differing cue tokens: py_type_hints 16, py_fstring 1, py_with_open 1) + write_subspace_patch.py --targets alt on 4 pods
+  (sp1–sp4; first sp1/sp2 pods died on the old cue-token assertion, relaunched); judge_rollouts on every family (new OpenRouter key 2026-10-05, 0 fails).
+- results/code_styles/subspace_patch/: pooled alt success unsteered .14, k4 .74; L28 best for all arms: patch2 .43, patch1 .42, add2 .57; L24 .31/.31/.51.
+  patch2 − patch1 = +.006 (PC2 target coordinate ≈ pole-independent); patch − add2 = −.14 (margin 2.9 vs 11.5). All pods terminated.
