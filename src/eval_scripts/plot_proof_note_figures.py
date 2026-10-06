@@ -128,7 +128,7 @@ def table_ov(out):
     rows.append(["$s_A = c + u_A$ through the FV heads"] + [f"{f(m,'s_A_noskip'):.3f} ({f(m,'s_A_noskip_cross'):+.3f})" for m, _, _ in MODELS])
     rows.append(["same, with skip connection (+x): $u_A$ / $s_A$"] + [f"{f(m,'u_A_skip'):.3f} / {f(m,'s_A_skip'):.3f}" for m, _, _ in MODELS])
     rows.append(["input alone, no heads: $u_A$ / $s_A$"] + [f"{f(m,'u_A_input_only'):.3f} / {f(m,'s_A_input_only'):.3f}" for m, _, _ in MODELS])
-    table_png(out, header, rows, [3.6, 1.6, 1.8], shade={(1, 1), (1, 2)})
+    table_png(out, header, rows, [3.6, 1.6, 1.8], shade={(2, 1), (2, 2)})   # strongest own-FV cosines (s_A row)
 
 
 def main():
