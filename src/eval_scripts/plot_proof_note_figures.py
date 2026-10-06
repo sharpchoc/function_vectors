@@ -122,13 +122,13 @@ def table_head_ablation(out):
 def table_ov(out):
     ov = {name: read_ov(root / "read_write_relationship" / "ov_circuit_map" / "summary.csv") for name, root, _ in MODELS}
     f = lambda m, k: float(ov[m][k]["mean_all"])
-    header = ["mean cos with the task's own FV\n(cross-task control in parentheses)", "GPT-J-6B", "Qwen2.5-7B-Instruct"]
+    header = ["mean cosine with the task's own FV", "GPT-J-6B", "Qwen2.5-7B-Instruct"]
     rows = []
-    rows.append(["$u_A$ through the FV heads"] + [f"{f(m,'u_A_noskip'):.3f} ({f(m,'u_A_noskip_cross'):+.3f})" for m, _, _ in MODELS])
-    rows.append(["$s_A = c + u_A$ through the FV heads"] + [f"{f(m,'s_A_noskip'):.3f} ({f(m,'s_A_noskip_cross'):+.3f})" for m, _, _ in MODELS])
+    rows.append(["$u_A$ through the FV heads"] + [f"{f(m,'u_A_noskip'):.3f}" for m, _, _ in MODELS])
+    rows.append(["$s_A = c + u_A$ through the FV heads"] + [f"{f(m,'s_A_noskip'):.3f}" for m, _, _ in MODELS])
     rows.append(["same, with skip connection (+x): $u_A$ / $s_A$"] + [f"{f(m,'u_A_skip'):.3f} / {f(m,'s_A_skip'):.3f}" for m, _, _ in MODELS])
     rows.append(["input alone, no heads: $u_A$ / $s_A$"] + [f"{f(m,'u_A_input_only'):.3f} / {f(m,'s_A_input_only'):.3f}" for m, _, _ in MODELS])
-    table_png(out, header, rows, [3.6, 1.6, 1.8], shade={(2, 1), (2, 2)})   # strongest own-FV cosines (s_A row)
+    table_png(out, header, rows, [3.6, 1.3, 1.8], shade={(2, 1), (2, 2)})   # strongest own-FV cosines (s_A row)
 
 
 def main():
