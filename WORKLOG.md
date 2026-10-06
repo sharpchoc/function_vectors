@@ -5,6 +5,41 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-10-06 — Inject-layer sweep of the sparse head selection + top-50 matched sets (GPT-J and Qwen2.5-7B-Instruct; user request)
+
+**Owner:** Claude Code background agent, main checkout. 10 RTX PRO 4500 pods (~2.5 h wall, all terminated). **Status:** DONE (decision pending with user).
+
+**Question (user):** was the Qwen head selection poor because the sparse objective injected at block 9 (as on GPT-J)?
+Audit first (2026-10-05, no code): no bug found — at matched λ Qwen keeps ~3× more heads with c > .8 (λ=.005: 93 vs 36),
+the λ grids differed (GPT-J stopped at .005 on a rising curve; Qwen went to .0005) and both chose the grid minimum; GPT-J's
+c-solutions are graded (88 heads > .5), Qwen's saturate at 1. Then the sweep (user-approved steps): refit the pooled sparse
+selection at fixed λ=.005 with `--inject_layer` ∈ {9,12,16,20,24}, score each head set with the standard held-out steering
+eval (eval_ext layer sweep), plus a HEAD-COUNT-MATCHED set per layer: the top-50 heads by final c, ties among saturated heads
+broken by the first-order dropout λ = −∂NLL/∂c_h at the solution (`rank_heads_grad.py`; `make_topk_selection.py`).
+Pre-stated rule: best held-out zs_best; ties within .02 → lower cross-task FV cosine → fewer heads.
+
+**Scripts:** `src/sandbox/ext_steerability/{rank_heads_grad.py, make_topk_selection.py}`,
+`src/eval_scripts/summarise_inject_layer_sweep.py`; orchestration `logs/inject_layer_sweep/` (gitignored).
+Fits/evals: `artifacts/sandbox/ext_steerability_layersweep/<model>/L<L>/{pooled_sparse, top50/, <task>/eval_headset.json}`.
+Block-9 λ=.005 refit reproduces the canonical GPT-J 37-head selection exactly (sanity).
+
+**Results — held-out zero-shot steering acc (full λ=.005 set | top-50), heads (full), cross-task FV cos (full | top-50):**
+- GPT-J: L9 .734|.764, 37, .39|.39 — L12 .746|.750, 44, .40|.39 — L16 .771|.750, 58, .36|.36 — L20 .773|.766, 88, .39|.36 —
+  L24 .770|.750, 94, .38|.36. At 50 heads all layers tie (.750–.766). Rule on full sets → L16 (ties L16/L20/L24, lowest cos),
+  but the full-set gain over L9 is head count (block 9's own top-50 .764 > its 37-head set .734).
+- Qwen: L9 .710|.651, 88, .61|.54 — L12 .713|.625, 62, .54|.56 — L16 .672|.635, 58, .44|.44 — L20 .717|.647, 75, .47|.45 —
+  L24 .697|.562, 143, .57|.40. Rule on full sets → L20 (ties L9/L12/L20, L24 at the .02 boundary; lowest cos .47, 75 heads).
+  Canonical L9 λ=.001 140-head set remains the best steerer (.758). At 50 heads Qwen loses .06–.07 at every layer
+  (GPT-J loses nothing) — Qwen genuinely needs more heads; the injection layer is NOT the cause of the large head count.
+- Later injection does make Qwen's FVs more task-specific (cross-task cos .61 at L9 → .47 at L20, .44 at L16) at equal accuracy.
+
+**Files:** `results/69_task_run/FV_train_test_generalisation/inject_layer_sweep/{sweep_summary,per_task}.csv`,
+`results/qwen25_fv/round2_96_prunedfail/inject_layer_sweep/{sweep_summary,per_task}.csv`.
+**Next (USER DECISION):** whether to move Qwen's selection to block 20 (or 16) and rerun the λ CV there; GPT-J unchanged unless
+the user wants the +.04 from more heads. **Blockers:** none.
+
+---
+
 ## 2026-10-06 — Identification feature pushed through the FV heads' OV circuits (user request)
 
 **Owner:** Claude Code background agent, main checkout. CPU only (~3 min per model). **Status:** DONE.

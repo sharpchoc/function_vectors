@@ -13,6 +13,7 @@ Qwen2.5-7B has 28 blocks, d = 3584, 28 heads. All accuracies are temperature-1 s
 | `screen/` | competence screen | 6-shot accuracy of the extended pool (`qwen25_acc6.csv`), threshold ≥ .30 → 104 tasks |
 | `round1_104/` | head selection | 104-task pooled sparse selection, head-count sweep, train/heldout summary |
 | `round2_96_prunedfail/` | `FV_train_test_generalisation/` | steering-prune to 96 tasks, refit (140 heads), zero-shot heldout .058 → .758 |
+| `round2_96_prunedfail/inject_layer_sweep/` | — | 2026-10-06 sparse selection refit at fixed λ=.005 with injection at blocks 9/12/16/20/24 + top-50 matched sets: heldout .710/.713/.672/.717/.697 (top-50 .65/.63/.64/.65/.56); later injection lowers cross-task FV cos (.61 → .47) but not head count; canonical L9 140-head set stays best (.758) |
 | `read_feature_layer_selection/` | `bottom_up_read_features/layer_selection/` | raw label-mean steering layer × α sweep (1-shot dummy scaffold); peak **L12** (.556), shared-mean control ≈ .05 |
 | `read_feature_steering_6shot/` | `bottom_up_read_features/steering_results/sixshot_dummy/` | m_A(L12) injected at all six dummy '_' slots: .000 → .543 (α=2), best-α .555 = 70% of real 6-shot (.798); equals the 1-shot dummy level (.555) |
 | `read_write_map/` | `FV_linear_decodability/`, `understanding_read_write_linear_map/` | per-prompt ridge read → FV per read layer; heldout centroid R² .554 (L22), per-prompt .29 (L20) |

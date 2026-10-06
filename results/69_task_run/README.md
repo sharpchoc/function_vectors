@@ -13,6 +13,7 @@ Reorganised 2026-08-19; WORKLOG entries before that date use the old paths (mapp
 | Folder | Contents |
 |---|---|
 | `FV_train_test_generalisation/` | 37-head pooled sparse FV steers held-out tasks (zs .09→.73); poster visuals. Was `train_test_generalisation/`. |
+| `FV_train_test_generalisation/inject_layer_sweep/` | 2026-10-06 sparse selection refit at λ=.005 with injection at blocks 9/12/16/20/24 (37/44/58/88/94 heads; heldout .734/.746/.771/.773/.770) + top-50 matched sets (all .750–.766): the layer barely matters at equal head count; block-9 refit reproduces the canonical 37 heads. |
 | `FV_dimensionality_analysis/` | PCA / stable rank of task-mean + per-prompt FVs (spectra, n90=24 task-level). |
 | `FV_dimensionality_reduction/train_test_split/` | 46-PC sparse selection on the TRAIN-fit 512-PC basis (+ `debugging/`: span coverage, all-512 oracle probe — heldout drop is basis-fit artifact). Files were in `FV_dimensionality_analysis/` + `FV_dimensionality_reduction/debugging/`. |
 | `FV_dimensionality_reduction/train_test_together_50d/` | Sparse PC selection on the all-69 basis (50 PCs @L9, 48 @L13) — heldout fully recovered. Was `sparse_all69{,_L13}/`. |
