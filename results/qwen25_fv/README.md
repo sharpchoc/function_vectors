@@ -19,7 +19,7 @@ Qwen2.5-7B has 28 blocks, d = 3584, 28 heads. All accuracies are temperature-1 s
 | `readwrite_msj_transfer/` | — | ICL read→write map applied to the MSJ read feature: no transfer (cos ≈ 0) |
 | `FV_ablation/` | `FV_ablation/` | **Study A** — FV-direction ablation at the final cue token, {own, cf} × {zero, mean} × {L9–27, L0–27}, 6-shot and 1-shot; `head_mean_ablation/` (2026-10-01): the 140 FV heads' cue outputs replaced by their cross-task grand mean, random same-size non-FV heads as control |
 | `read_feature_ablation/` | `bottom_up_read_features/ablation/task_unique_meanresid/` | **Study C** — task-unique direction û_A (mean carrier-removed **L11–13** residual) ablated at every demo target token, own vs counterfactual task; `cf_task_pairs.csv` |
-| `read_write_relationship/` | `read_write_relationship/{bottom_up,meanresid}{,_1shot}/` | **Study D** — read-feature injection at the dummy target slots → cos(cue residual, task FV); `bottom_up` = m_A(L12) at L12, `meanresid` = s_A = c + u_A at L0 |
+| `read_write_relationship/` | `read_write_relationship/{bottom_up,meanresid}{,_1shot}/` | **Study D** — read-feature injection at the dummy target slots → cos(cue residual, task FV); `bottom_up` = m_A(L12) at L12, `meanresid` = s_A = c + u_A at L0; `ov_circuit_map/` (2026-10-06): s_A / u_A pushed through the 140 FV heads' OV circuits, cos to own FV .44 / .28 (cross-task .28 / .09; no value bias .34 / .19, cross .17 / −.01) vs GPT-J .72 / .56 |
 | `write_feature_and_model_accuracy/` | `write_feature_and_model_accuracy/` | **Study B** — FV presence (cos at the query cue, all 28 layers) vs sampled accuracy, n = 0..6; `baseline_subtracted/`, `per_prompt/` |
 
 ## Headline numbers, Qwen vs GPT-J (mean over tasks; 96 vs 69)

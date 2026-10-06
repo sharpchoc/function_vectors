@@ -5,6 +5,42 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-10-06 — Identification feature pushed through the FV heads' OV circuits (user request)
+
+**Owner:** Claude Code background agent, main checkout. CPU only (~3 min per model). **Status:** DONE.
+
+**Question (user):** take each task's identification feature (s_A = c + u_A, and u_A alone) and "run it
+through just the FV heads" — fixed attention, every FV head given the same band vector, the head's own
+input norm (LN / RMSNorm with learned weights) → W_V → W_O, summed over the selected heads; with and
+without a skip connection (+x). Compare with the task FV v_A by cosine, mean over tasks. References
+(user choice): input-only cos(x, v_A) and the cross-task control mean_{B≠A} cos(y_A, v_B).
+**Script:** `src/eval_scripts/ov_circuit_readwrite.py --model {gptj,qwen} [--no_vbias]` (weights read
+lazily from the checkpoint safetensors; Qwen GQA: kv head = h // 7, value bias included by default).
+
+**Findings (mean cos over tasks; own FV | cross-task control):**
+- GPT-J (37 heads, 69 tasks): s_A no-skip **.717** | .297; s_A skip .691 | .313; u_A no-skip **.561** | −.008;
+  u_A skip .555 | −.008. Input-only: s_A .167, u_A .050. Train ≈ heldout throughout (.715/.722, .564/.551).
+- Qwen2.5-7B-Instruct (140 heads, 96 tasks): s_A no-skip **.443** | .278; s_A skip .465 | .299; u_A no-skip
+  **.280** | .090; u_A skip .282 | .089. Input-only: s_A .292, u_A .064. Without the value bias (b_V adds a
+  task-independent vector that aligns with every FV): s_A .339 | .165, u_A .185 | −.007.
+- Reading: on GPT-J the FV heads' OV circuits alone turn the label-side task-unique vector u_A into a
+  vector that is .56 aligned with the task's own FV and orthogonal to every other task's FV — a purely
+  weight-based, fit-free read→write map (the fitted ridge/matched maps reached ~.64 held-out cos). The
+  carrier c maps to a generic component shared across FVs (cross-task .30), which is why s_A scores higher
+  on own-FV cos but is less specific than u_A. On Qwen the same circuit is weaker and less specific
+  (own − cross ≈ .17–.19 vs .42–.57 on GPT-J), consistent with Qwen's FVs being more alike across tasks
+  (cf-pair cos .60 vs .38) and its write feature being spread over 140 heads at 27 layers.
+- Skip connection is immaterial (±.03): the mapped vectors (norm 130–430) dwarf the inputs (30–55).
+- Caveat: one-hop, fixed-attention picture (uniform attention to the label tokens, the read band vector fed
+  to heads at every layer); the real cue output also carries input/cue-token contributions.
+
+**Files:** `results/69_task_run/read_write_relationship/ov_circuit_map/{per_task,summary}.csv`,
+`results/qwen25_fv/read_write_relationship/ov_circuit_map/{per_task,summary}{,_no_vbias}.csv`.
+**Next:** none requested. Natural follow-ups: per-layer inputs (label mean at each head's own layer), the
+fitted ridge map on the same footing, random-activation control.
+
+---
+
 ## 2026-10-01 — FV-head MEAN ablation at the cue (GPT-J + Qwen2.5-7B-Instruct; user request)
 
 **Owner:** Claude Code background agent, main checkout. **Status:** DONE (6 RTX PRO 4500 pods, ~35 min wall, all terminated).
