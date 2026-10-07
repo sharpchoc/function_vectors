@@ -7,6 +7,7 @@ write-up:
                                        0-shot | 6-shot | FV heads mean-ablated | random heads
   table_head_mean_ablation.png         the step-1 table as an image
   table_ov_circuit_map.png             the step-3 table (OV-circuit map cosines) as an image
+  formula_linear_map.png               presentation visual of the heads-only linear map (s_A row)
 Output dir: results/qwen25_fv/cross_model/proof_note/ (cross-model material lives in the
 Qwen bucket, whose README already carries the Qwen-vs-GPT-J tables).
 """
@@ -131,6 +132,38 @@ def table_ov(out):
     table_png(out, header, rows, [3.6, 1.3, 1.8], shade={(2, 1), (2, 2)})   # strongest own-FV cosines (s_A row)
 
 
+def formula_png(out):
+    """Presentation visual of the heads-only linear map (s_A row): coloured segments laid out
+    on one baseline with labels underneath, plus the measured cosines."""
+    ID, EX, HD = "#0b7a6e", "#3451b2", "#6b4a1e"
+    fig = plt.figure(figsize=(11.2, 4.1), dpi=220)
+    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 11.2); ax.set_ylim(0, 4.1); ax.axis("off")
+    fig.canvas.draw(); r = fig.canvas.get_renderer()
+    segs = [(r"$\hat{v}_A$", EX), (r"$\;\approx\;$", INK), (r"$\sum_{h\in\mathcal{H}_{\mathrm{FV}}}$", HD),
+            (r"$W_O^{h}\,W_V^{h}\,\mathrm{Norm}_{\ell(h)}\!\left(\right.$", HD), (r"$s_A$", ID), (r"$\left.\right)$", HD)]
+    x, y = 0.55, 2.55
+    spans = []
+    for t, col in segs:
+        txt = ax.text(x, y, t, fontsize=34, color=col, ha="left", va="center")
+        bb = txt.get_window_extent(renderer=r).transformed(ax.transData.inverted())
+        spans.append((bb.x0, bb.x1, col)); x = bb.x1 + 0.08
+    # labels under three segments: execution feature | FV heads only | identification feature
+    def label(x0, x1, text, col, ha="center"):
+        xm = (x0 + x1) / 2
+        ax.plot([x0, x1], [1.78, 1.78], color=col, lw=1.6, solid_capstyle="butt")
+        ax.plot([xm, xm], [1.78, 1.55], color=col, lw=1.2)
+        xt = {"center": xm, "left": x0, "right": x1}[ha]
+        ax.text(xt, 1.45, text, ha=ha, va="top", fontsize=12.5, color=col, linespacing=1.15)
+    label(spans[0][0], spans[0][1], "execution feature\n(function vector of task A)", EX, ha="left")
+    label(spans[2][0], spans[3][1], "the selected FV heads only:\nvalue and output weights,\nsummed over the heads", HD)
+    label(spans[4][0] + 0.25, spans[5][1], "identification feature\n$s_A = c + u_A$\n(label tokens, read band)", ID, ha="left")
+    ax.text(0.55, 3.72, "A linear map from identification to execution, built from the FV heads' weights alone (no fitting)",
+            fontsize=14.5, color=INK, ha="left", va="center", weight="bold")
+    ax.text(0.55, 0.42, r"mean cosine between $\hat{v}_A$ and the real $v_A$ over tasks:  0.72 on GPT-J (37 heads)   |   0.44 on Qwen2.5-7B-Instruct (140 heads)",
+            fontsize=12.5, color=MUTED, ha="left", va="center")
+    fig.savefig(out, bbox_inches="tight", facecolor="white", pad_inches=0.15); plt.close(fig)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out_dir", type=Path, default=QWEN25_FV_DIR / "cross_model" / "proof_note")
@@ -139,6 +172,7 @@ def main():
     bar_chart(a.out_dir / "head_mean_ablation_both_models.png")
     table_head_ablation(a.out_dir / "table_head_mean_ablation.png")
     table_ov(a.out_dir / "table_ov_circuit_map.png")
+    formula_png(a.out_dir / "formula_linear_map.png")
     print(f"wrote {a.out_dir}")
 
 
