@@ -10521,3 +10521,8 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   2026-10-05 OpenRouter key EXPIRED mid-run ("API key expired"), user supplied a new one 2026-10-07; all 53 families judged, 0 fails.
 - L28 pooled: mean1 .42, mean2 .43, own1 .41, own2 .42, own10 .44, full .42 (L27 .43); unsteered .14, k4 .74. Own target = mean target (−.01); full
   replacement raises margin (3.9) but judge-OK drops to .62. A single-layer cue activation from the k = 4 prompt reproduces only ~.42 of the .74 in-context effect.
+
+- 2026-10-07 CORRECTION (user challenge "how can the exact counterpart equal the mean?"): k = 4 prompts end at the 5th construct occurrence, 0-shot at the
+  1st (0/200 docs share the cue position), so the "own counterpart" activation is a different cue instance; full-swap first-token log-probs match the
+  real k = 4 prompt in only 5/53 families. The .42-of-.74 interpretation is withdrawn (README caveat, artifact updated). True counterpart = demos from
+  other documents prepended to the 0-shot prompt; not built yet.

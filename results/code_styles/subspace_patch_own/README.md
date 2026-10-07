@@ -18,6 +18,11 @@ Pooled success at layer 28 (best layer for every arm except full, L27 .43): unst
 - Own counterpart vs training mean: −.012 (rank 1), −.007 (rank 2); 7 families better by ≥ .10, 8 worse. The per-document target adds nothing.
 - Rank ladder with own targets: 1 → 2 → 10 → full = .41 → .42 → .44 → .42. The full replacement raises the first-token margin (3.9 vs 2.9) but
   lowers judge-OK (.62 vs .77), so success does not improve.
-- Reading (interpretation): a single-layer cue-token activation from the k = 4 prompt, even the exact one, reproduces only ~.42 of the .74 that the
-  demonstrations give in context, so the rest of the in-context effect comes from later layers reading the demonstrations directly, not from the
-  cue-token residual at any one layer.
+- **CAVEAT (2026-10-07, after user challenge): the "own counterpart" is NOT the same cue position.** In this corpus the k-shot prompt of a document
+  is the document itself continued: the k = 4 prompt ends at the FIFTH occurrence of the construct (the first four occurrences are the
+  demonstrations), while the 0-shot prompt ends at the FIRST occurrence. So the patched activation comes from a different construct instance with
+  different local content (0 / 200 documents share the cue position between k = 0 and k = 4). Projected on 1–10 convention directions this is
+  harmless and explains why own ≈ mean; the full swap imports the wrong local content, which is why judge-OK drops to .62 and its first-token
+  log-probs match the real k = 4 prompt in only 5 of 53 families (uniform constructs such as py2_except, bash_test, sql_join_style). The
+  earlier reading that "a single-layer cue activation reproduces only .42 of the in-context effect" is therefore NOT supported by this run.
+  A true counterpart would need new prompts: demonstrations from OTHER documents prepended to the 0-shot prompt (same cue position).
