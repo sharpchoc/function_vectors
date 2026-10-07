@@ -10526,3 +10526,10 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   1st (0/200 docs share the cue position), so the "own counterpart" activation is a different cue instance; full-swap first-token log-probs match the
   real k = 4 prompt in only 5/53 families. The .42-of-.74 interpretation is withdrawn (README caveat, artifact updated). True counterpart = demos from
   other documents prepended to the 0-shot prompt; not built yet.
+
+## 2026-10-07 — twin patch at the k = 4 cue (results/code_styles/subspace_patch_k4twin/)
+- User's intended design: natural-context k = 4 prompt patched at the cue with the alternative twin's coordinates (same cue position; twin correct at k = 4).
+  `write_subspace_patch_k4.py` on pods sk1–sk4 (first launch failed: mean-arm lambda with default args was dispatched with the batch index → fixed); 4
+  per-shard judge loops (pkill self-kill twice: never put pkill and a heredoc naming the target in one command). 53 families, 0 unjudged.
+- L28 flip rate: unpatched .03, mean1 .43, mean2 .45, twin PC1 .46, twin PC1+PC2 .52, twin top-10 .56, full swap .64 (= twin's own T=1 sampling rate .77
+  × judge). PC2 now adds +.06 with twin coordinates (23 vs 4 families), +.02 with the mean. Pods terminated.
