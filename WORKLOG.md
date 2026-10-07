@@ -36,7 +36,17 @@ Block-9 λ=.005 refit reproduces the canonical GPT-J 37-head selection exactly (
 **Files:** `results/69_task_run/FV_train_test_generalisation/inject_layer_sweep/{sweep_summary,per_task}.csv`,
 `results/qwen25_fv/round2_96_prunedfail/inject_layer_sweep/{sweep_summary,per_task}.csv`.
 **Next (USER DECISION):** whether to move Qwen's selection to block 20 (or 16) and rerun the λ CV there; GPT-J unchanged unless
-the user wants the +.04 from more heads. **Blockers:** none.
+the user wants the +.04 from more heads. 
+**Follow-up 2026-10-07 — full λ CV at block 20 (Qwen, user request).** 5-fold × 7-λ grid on the 96-task split's 77 train tasks
+(`artifacts/sandbox/ext_steerability_layersweep/qwen/L20_cv/`), same trainer, `--inject_layer 20`. Fold acc / heads>.8 per λ:
+.0005 .606/210, .001 .605/161, .002 .600/112, .005 .584/72, .01 .559/53, .05 .467/28, .2 .266/12 — the same monotone
+curve as block 9 (canonical 104-split CV: .696/216, .697/176, .688/135, .675/93, .652/74, .485/33, .244/7), so block 20
+does NOT reduce the heads Qwen needs; the sweep's 75 was a λ=.005 artefact. CV chose λ=.0005 → final refit 212 heads
+(best epoch 15). Held-out eval (96 tasks): zs .058→.730 (train .806, mix .664, shuf .697, eval-preferred layer median 15)
+vs canonical block-9 140-head set .758 (train .826, mix .717, shuf .710). Cross-task FV cos .50 vs .62.
+**Verdict:** a CV-fair block-20 selection has MORE heads (212 vs 140), −.03 held-out accuracy, and better task specificity.
+Canonical selection kept. Summary CSV `results/qwen25_fv/round2_96_prunedfail/inject_layer_sweep/block20_cv_summary.csv`.
+10 pods ~1.5 h, all terminated. **Blockers:** none.
 
 ---
 
