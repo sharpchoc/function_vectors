@@ -272,7 +272,7 @@ class CueSubspacePatch:
     def __init__(self, model, layer, V, coords):
         A = arch(model); dev = next(model.parameters()).device
         self.block = A["blocks"][layer - 1]
-        self.V = torch.as_tensor(V, dtype=torch.float32, device=dev); self.coords = torch.as_tensor(coords, dtype=torch.float32, device=dev)
+        self.V = torch.as_tensor(V, dtype=torch.float32, device=dev); self.coords = torch.as_tensor(coords, dtype=torch.float32, device=dev)   # [r] shared or [B, r] per row
         assert torch.allclose(self.V @ self.V.T, torch.eye(self.V.shape[0], device=dev), atol=1e-4), "rows of V must be orthonormal"
         self.handle = None; self.before = None
 
@@ -310,3 +310,25 @@ def unit_test_subspace_patch(model, tok, layer=24):
     assert torch.equal(hp[:, :-1, :], hb[:, :-1, :]), "other positions must be unchanged"
     assert ((s.before.to(hb.device) - hb[:, -1, :] @ Vd.T).abs() <= tol * 8).all()
     return True
+
+
+class CueReplace:
+    """Replace the cue token's residual stream at layer L (last prompt position, prefill pass only) by per-row target vectors [B, D]."""
+    def __init__(self, model, layer, targets):
+        A = arch(model); self.block = A["blocks"][layer - 1]
+        self.t = torch.as_tensor(targets, dtype=A["dtype"], device=next(model.parameters()).device); self.handle = None
+
+    def _hook(self, module, inputs, output):
+        h = output[0] if isinstance(output, tuple) else output
+        if h.shape[1] > 1:
+            h = h.clone(); h[:, -1, :] = self.t
+            return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
+        return output
+
+    def __enter__(self):
+        self.handle = self.block.register_forward_hook(self._hook)
+        return self
+
+    def __exit__(self, *exc):
+        if self.handle is not None:
+            self.handle.remove()

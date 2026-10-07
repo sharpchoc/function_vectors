@@ -10515,3 +10515,9 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   (sp1–sp4; first sp1/sp2 pods died on the old cue-token assertion, relaunched); judge_rollouts on every family (new OpenRouter key 2026-10-05, 0 fails).
 - results/code_styles/subspace_patch/: pooled alt success unsteered .14, k4 .74; L28 best for all arms: patch2 .43, patch1 .42, add2 .57; L24 .31/.31/.51.
   patch2 − patch1 = +.006 (PC2 target coordinate ≈ pole-independent); patch − add2 = −.14 (margin 2.9 vs 11.5). All pods terminated.
+
+## 2026-10-07 — own-counterpart cue-token patch, 53 families (results/code_styles/subspace_patch_own/)
+- `CueReplace` hook + per-row coords in `CueSubspacePatch`; `write_subspace_patch_own.py` (own1/own2/own10/full arms) on 4 pods so1–so4 (terminated); judge: the
+  2026-10-05 OpenRouter key EXPIRED mid-run ("API key expired"), user supplied a new one 2026-10-07; all 53 families judged, 0 fails.
+- L28 pooled: mean1 .42, mean2 .43, own1 .41, own2 .42, own10 .44, full .42 (L27 .43); unsteered .14, k4 .74. Own target = mean target (−.01); full
+  replacement raises margin (3.9) but judge-OK drops to .62. A single-layer cue activation from the k = 4 prompt reproduces only ~.42 of the .74 in-context effect.

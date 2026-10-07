@@ -51,7 +51,7 @@ def run_arm(model, tok, fam, items, texts, lexicon, arm, variant, target, layer,
     for bi in range(0, len(items), batch):
         b = items[bi:bi + batch]; ids, att, L = pad(b, tok)
         torch.manual_seed(zlib.crc32(f"{fam}|{layer}|{variant}|{target}|{bi}".encode()))
-        with torch.no_grad(), hook_fn() as hk:
+        with torch.no_grad(), (hook_fn(bi) if _takes_batch(hook_fn) else hook_fn()) as hk:   # factories may take the batch start to pick per-row targets
             lp = torch.log_softmax(model(input_ids=ids, attention_mask=att).logits[:, -1, :].float(), -1); top1 = lp.argmax(-1)
             before = None if getattr(hk, "before", None) is None else hk.before.numpy().copy()
             gen = model.generate(input_ids=ids, attention_mask=att, do_sample=True, temperature=1.0, top_k=0, top_p=1.0,
@@ -68,6 +68,14 @@ def run_arm(model, tok, fam, items, texts, lexicon, arm, variant, target, layer,
                          "top1": "nat" if top1[r].item() == fn else ("alt" if top1[r].item() == fa else None),
                          "coords_before": None if before is None else [float(x) for x in before[r]], "judge": None})
     return recs
+
+
+def _takes_batch(fn):
+    import inspect
+    try:
+        return len(inspect.signature(fn).parameters) >= 1
+    except (TypeError, ValueError):
+        return False
 
 
 class _Null:
