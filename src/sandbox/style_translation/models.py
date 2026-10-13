@@ -11,6 +11,8 @@ MODELS = {
     "qwen25_base": dict(tokenizer="Qwen/Qwen2.5-7B", hub="models--Qwen--Qwen2.5-7B", label="Qwen2.5-7B (base)", dtype="bfloat16"),
     # same weights/tokeniser as qwen25_base; separate artifact root and results root for the coding-convention clean restart (2026-09-17)
     "qwen25_code": dict(tokenizer="Qwen/Qwen2.5-7B", hub="models--Qwen--Qwen2.5-7B", label="Qwen2.5-7B (base)", dtype="bfloat16", results_root=CODE_STYLES_DIR),
+    # same weights; prompts carry a source program in another language before the Python twin (code-translation corpus, 2026-10-14)
+    "qwen25_code_tr": dict(tokenizer="Qwen/Qwen2.5-7B", hub="models--Qwen--Qwen2.5-7B", label="Qwen2.5-7B (base)", dtype="bfloat16", results_root=CODE_STYLES_DIR / "translation_prompts"),
 }
 DEFAULT = "gptj"
 

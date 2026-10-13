@@ -10548,3 +10548,9 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   Awaiting the user's quality check; proposal: tie-break the one-judge rejections with a third judge before assembling prompts.
 - 2026-10-14 finish pass (`code_translate_finish.py`, 17:05–19:19 UTC, 4 × 50 workers): GPT-5 tie-break on one-judge rejections (accept on 2 of 3) + up to 3
   more repair rounds for the rest. Result in results/code_styles/translation/summary.json; see the message to the user for the totals.
+- 2026-10-14 extra rounds on the 205 leftovers (3 more repairs + tie-break, 8 processes): 6,911/7,000 accepted (98.7%), 89 unresolved (py2_except most).
+- 2026-10-14 translation prompts: model key `qwen25_code_tr` (same weights, artifacts/style_translation/qwen25_code_tr/, results/code_styles/translation_prompts/);
+  `build_translation_prompts.py` rewrites each existing prompt's header to "Task / <Lang> solution / Python translation", Python prefix and cue unchanged
+  (checked as a token prefix of the full new document; 0 mismatches). ~1,950 prompts per family, 1,000–2,300 tokens. Rollouts (`rollout.py --model
+  qwen25_code_tr --append`) launched 21:19 UTC on 6 pods (trp1–6) with per-shard judge loops; first family py_tabs: alt k1–4 style_ok .99–1.00, nat .97–1.00,
+  unscorable 0 (vs ~.88 k4 before). The 116 docs accepted after the launch are in the rebuilt prompt files; an --append pass will add their rollouts.

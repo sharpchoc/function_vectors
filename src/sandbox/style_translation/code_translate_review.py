@@ -46,7 +46,7 @@ def code_block(s, marks=None):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--src", type=Path, default=ROOT / "artifacts/style_translation/qwen25_code/translation/v1")
-    ap.add_argument("--html", type=Path, required=True); ap.add_argument("--per_lang", type=int, default=3); ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--html", type=Path, required=True); ap.add_argument("--per_lang", type=int, default=3); ap.add_argument("--seed", type=int, default=0); ap.add_argument("--title", default="Code Translation Corpus")
     args = ap.parse_args(); rng = random.Random(args.seed)
     fams = {r["family"]: r for r in csv.DictReader(open(ROOT / "results/code_styles/explainer/families.csv"))}
     rows = []; unresolved = []; passed = []; attempts = []
@@ -87,16 +87,16 @@ def main():
             fi = fams.get(r["family"], {})
             secs.append(f'<section><h2>{l}: {r["family"]} ({html.escape(fi.get("natural", ""))} versus {html.escape(fi.get("alternative", ""))}), {r["doc_id"]}</h2>'
                         f'<p class="task"><strong>Task.</strong> {html.escape(rec["text_es"])}</p>'
-                        f'<p class="note">Attempts {r["attempts"]}; Python {nat.count(chr(10)) + 1} lines, {l} {r["code"].count(chr(10)) + 1} lines; twins differ on {len(mn)} lines (highlighted).</p>'
+                        f'<p class="note">Accepted by {"both judges" if r.get("passed_by", "both") == "both" else "two of three judges (GPT-5 tie-break)"}; attempts {r["attempts"]}; Python {nat.count(chr(10)) + 1} lines, {l} {r["code"].count(chr(10)) + 1} lines; twins differ on {len(mn)} lines (highlighted).</p>'
                         f'<div class="cols"><div><h3>{l} source program (shared by both twins)</h3>{code_block(r["code"])}</div><div><h3>Python, natural convention</h3>{code_block(nat, mn)}</div><div><h3>Python, alternative convention</h3>{code_block(alt, ma)}</div></div></section>')
     tbl = ''.join(f'<tr><td>{r["family"]}</td><td>{r["n"]}</td><td class="{"low" if r["passed"] / max(r["n"], 1) < .7 else ""}">{r["passed"]}</td>' + ''.join(f'<td>{r[l]}</td>' for l in LANGS) + f'<td>{r["mean_attempts"]}</td></tr>' for r in rows)
     unr = ''.join(f'<tr><td>{u["family"]}</td><td>{u["doc_id"]}</td><td>{u["lang"]}</td><td style="text-align:left">{html.escape(u.get("gemini", "") or "")}</td><td style="text-align:left">{html.escape(u.get("claude", "") or "")}</td></tr>' for u in unresolved)
-    page = ('<title>Code Translation Corpus</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">\n' + STYLE +
+    page = (f'<title>{args.title}</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">\n' + STYLE +
             f'\n<main>\n<header><h1>Code-translation corpus, review</h1><p>Each Python convention document\'s natural twin translated by GPT-5 into one of four languages under a fixed style guide, accepted only when Gemini 2.5 Pro and Claude Sonnet 4.5 both pass it (definitions, logic, runnable, style). {summ["families"]} families, {tot} documents, {ok} passed ({summ["pass_rate"]:.0%}); by language: ' + ', '.join(f'{l} {v}' for l, v in summ["by_language"].items()) + '.</p></header>'
             f'<section><h2>Pass rates by family</h2><div class="tw"><table><thead><tr><th>family</th><th>documents</th><th>passed</th>' + ''.join(f'<th>{l}</th>' for l in LANGS) + '<th>mean attempts</th></tr></thead><tbody>' + tbl + '</tbody></table></div></section>'
             + '\n'.join(secs) +
             f'<section><h2>Unresolved documents ({len(unresolved)})</h2><details><summary>Show the list with the judges\' last notes</summary><div class="tw"><table><thead><tr><th>family</th><th>document</th><th>language</th><th>Gemini</th><th>Claude</th></tr></thead><tbody>{unr}</tbody></table></div></details></section>\n</main>\n')
-    args.html.write_text(page); print(json.dumps(summ))
+    args.html.write_text(page.replace('\ufffd', '&#xFFFD;')); print(json.dumps(summ))
 
 
 if __name__ == "__main__":
