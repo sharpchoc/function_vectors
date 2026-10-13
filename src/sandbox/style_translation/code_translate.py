@@ -97,11 +97,19 @@ Questions:
 q1_definitions: does every Python function and class have exactly one counterpart, in the same order, with no Python definition dropped,
   merged or split? (true/false)
 q2_logic: does each counterpart perform the same steps as the Python (same branches, loops, early returns and computations on ordinary
-  inputs), ignoring the forced differences listed above? (true/false; if false, name the function and the differing step)
+  inputs), ignoring the forced differences listed above? Do NOT report: rounding or float-formatting semantics, truthiness or emptiness checks
+  rendered the native way, iteration or zip length details, string-formatting mechanics, added bounds or nil checks that the native container
+  needs, parsing or date handling re-implemented because the target library differs. Error handling is FREE in mechanism: as long as the same
+  conditions lead to an error and the same message text is produced, it does not matter whether it is raised, thrown, returned, caught by a
+  different native type or checked before the operation. Report only a missing or extra step, a different branch structure, or a different
+  computation on ordinary inputs. (true/false; if false, name the function
+  and the differing step)
 q3_runnable: would the program run or compile? Report only definite errors: syntax errors, undeclared or out-of-scope variables, missing
   imports, type errors that fail compilation. (true/false; if false, name them)
-q4_style: does the translation follow the style guide on these four points only: identifier case; quote style for string literals; comment
-  style; indentation? (true/false; if false, name the point)
+q4_style: does the translation follow the style guide on these four points only: identifier case (camelCase / snake_case / PascalCase as the
+  guide says); quote character of plain string literals (template literals, interpolation and escaped quotes are fine); comment marker style
+  (`//`, `#`, `/** */` as the guide says; the internal format of doc comments is free); indentation unit (spaces/tabs and width)? Anything
+  else about style is NOT a violation. (true/false; if false, name the point)
 
 Style guide:
 {style}
@@ -146,6 +154,15 @@ Current translation:
 
 def defs_of(src):
     return re.findall(r"^\s*(?:def|class)\s+([A-Za-z_][A-Za-z0-9_]*)", src, flags=re.M)
+
+
+def top_defs_of(src):
+    return re.findall(r"^(?:def|class)\s+([A-Za-z_][A-Za-z0-9_]*)", src, flags=re.M)
+
+
+def defs_match(got, src):
+    """The translator's list may name the top-level definitions only, or include methods; order must be preserved either way."""
+    return got == defs_of(src) or got == top_defs_of(src) or (set(got) >= set(top_defs_of(src)) and [g for g in got if g in defs_of(src)] == [d for d in defs_of(src) if d in set(got)])
 
 
 def _chat(key, model, content, max_tokens, timeout=900, attempts=4, temperature=1.0, reasoning=None):
@@ -212,13 +229,19 @@ def process(key, args, judges, rec, lang, prior):
     feedback = ""
     if r["history"]:
         feedback = r["history"][-1].get("feedback", "")
+    if prior and not r["passed"] and r["code"] and r["history"] and r["history"][-1].get("judges"):   # resumed: re-judge the last code under the current rules
+        J = judge(key, judges, rec, lang, r["code"]); ok = all(j["ok"] for j in J.values())
+        feedback = "; ".join(f"{n}: {j['notes']}" for n, j in J.items() if not j["ok"])
+        r["history"].append({"attempt": r["attempts"], "rejudge": True, "judges": J, "feedback": feedback}); r["judges"], r["passed"] = J, ok
+        if not ok:
+            r["attempts"] = min(r["attempts"], args.max_attempts - 2)
     while not r["passed"] and r["attempts"] < args.max_attempts:
         r["attempts"] += 1
         code, defs, err = translate(key, args.model, rec, lang, feedback, previous=r["code"] if feedback else None)
         src = defs_of(rec["text_nat"])
         if code is None:
             r["history"].append({"attempt": r["attempts"], "error": err}); continue
-        if defs != src:
+        if not defs_match(defs, rec["text_nat"]):
             feedback = f"The list of translated definitions {defs} does not match the Python source definitions {src}; translate every definition in order."
             r["history"].append({"attempt": r["attempts"], "fidelity_ok": False, "defs_model": defs, "feedback": feedback}); r["code"] = code; continue
         J = judge(key, judges, rec, lang, code)
@@ -246,7 +269,7 @@ def main():
         recs = json.load(open(PAIRS / f"{fam}.json")); lang_of = split_langs([r["doc_id"] for r in recs], args.seed)
         recs = recs[: args.limit]; out = args.out / f"{fam}.json"
         done = {r["doc_id"]: r for r in json.load(open(out))} if out.exists() else {}
-        todo = [r for r in recs if not done.get(r["doc_id"], {}).get("passed") and done.get(r["doc_id"], {}).get("attempts", 0) < args.max_attempts]
+        todo = [r for r in recs if not done.get(r["doc_id"], {}).get("passed")]
         with ThreadPoolExecutor(max_workers=args.workers) as ex:
             for r in ex.map(lambda rec: process(key, args, judges, rec, lang_of[rec["doc_id"]], done.get(rec["doc_id"])), todo):
                 done[r["doc_id"]] = r

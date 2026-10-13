@@ -10541,3 +10541,8 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   differences declared non-defects), repaired up to 3 times with the judges' notes. Pilot lessons: free-form "major issue" judges never converge (typed
   targets vs Python runtime type checks, message wording, exception types); the questionnaire form passed 6/8 on py_is_none (JS 3/3, Go 2/2).
   Full pass launched 01:49 UTC on 35 families (4 processes, out `artifacts/.../translation/v1/`, logs tmp/tr_run_*.log). Prompt assembly waits for review.
+- 2026-10-14 translation pass COMPLETE (01:49–10:58 UTC, 4 processes × 40 workers; 3 restarts for rule fixes with re-judging): 35 families, 7,000 docs,
+  5,201 passed (74%): JavaScript 1221/1750, Go 1317/1750, Java 1209/1750, Ruby 1454/1750; lowest py2_except 80/200, highest docstring_style 183/200.
+  1,799 unresolved after 4 attempts: 731 rejected by both judges, 1,066 by one judge only (q4_style 1358, q2_logic 1246, q3_runnable 257, q1 111
+  false answers). Tables results/code_styles/translation/{pass_rates,unresolved}.csv + summary.json; review page built by code_translate_review.py.
+  Awaiting the user's quality check; proposal: tie-break the one-judge rejections with a third judge before assembling prompts.
