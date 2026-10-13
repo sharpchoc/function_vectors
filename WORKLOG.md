@@ -10546,3 +10546,5 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   1,799 unresolved after 4 attempts: 731 rejected by both judges, 1,066 by one judge only (q4_style 1358, q2_logic 1246, q3_runnable 257, q1 111
   false answers). Tables results/code_styles/translation/{pass_rates,unresolved}.csv + summary.json; review page built by code_translate_review.py.
   Awaiting the user's quality check; proposal: tie-break the one-judge rejections with a third judge before assembling prompts.
+- 2026-10-14 finish pass (`code_translate_finish.py`, 17:05–19:19 UTC, 4 × 50 workers): GPT-5 tie-break on one-judge rejections (accept on 2 of 3) + up to 3
+  more repair rounds for the rest. Result in results/code_styles/translation/summary.json; see the message to the user for the totals.
