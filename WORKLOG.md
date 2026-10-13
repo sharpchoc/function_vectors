@@ -10554,3 +10554,5 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   (checked as a token prefix of the full new document; 0 mismatches). ~1,950 prompts per family, 1,000–2,300 tokens. Rollouts (`rollout.py --model
   qwen25_code_tr --append`) launched 21:19 UTC on 6 pods (trp1–6) with per-shard judge loops; first family py_tabs: alt k1–4 style_ok .99–1.00, nat .97–1.00,
   unscorable 0 (vs ~.88 k4 before). The 116 docs accepted after the launch are in the rebuilt prompt files; an --append pass will add their rollouts.
+- 2026-10-14 23:00 UTC translation-prompt rollouts COMPLETE (69,110 prompts, 0 missing, all judged; 7 pods created and terminated). Pooled k = 4:
+  alt .85 (orig .73), nat .94 (.78); unscorable .04 (.12), judge-OK .99 (.89); 19 families ≥ .9 alt (3 before). results/code_styles/translation_prompts/.
