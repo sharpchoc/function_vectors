@@ -10533,3 +10533,11 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   per-shard judge loops (pkill self-kill twice: never put pkill and a heredoc naming the target in one command). 53 families, 0 unjudged.
 - L28 flip rate: unpatched .03, mean1 .43, mean2 .45, twin PC1 .46, twin PC1+PC2 .52, twin top-10 .56, full swap .64 (= twin's own T=1 sampling rate .77
   × judge). PC2 now adds +.06 with twin coordinates (23 vs 4 families), +.02 with the mean. Pods terminated.
+
+## 2026-10-13 — code-translation corpus (user design): source program in another language before the Python twins
+- `code_translate.py`: per Python family, the 200 natural-twin programs are split (seeded) 50/50/50/50 into JavaScript / Go / Java / Ruby, translated by
+  GPT-5 (reasoning high) under a FIXED style guide per language, pre-checked for definition fidelity (+ `ruby -c` syntax check), judged by Gemini 2.5 Pro
+  and Claude Sonnet 4.5 (both must accept; fixed yes/no questionnaire on definitions / logic / runnable / 4-point style, with language-forced
+  differences declared non-defects), repaired up to 3 times with the judges' notes. Pilot lessons: free-form "major issue" judges never converge (typed
+  targets vs Python runtime type checks, message wording, exception types); the questionnaire form passed 6/8 on py_is_none (JS 3/3, Go 2/2).
+  Full pass launched 01:49 UTC on 35 families (4 processes, out `artifacts/.../translation/v1/`, logs tmp/tr_run_*.log). Prompt assembly waits for review.
