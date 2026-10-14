@@ -49,6 +49,13 @@ def held_out_k3(MP, fam):
     return items
 
 
+def last_logits(model, ids, att):
+    """Logits at the last position only (full [B, T, vocab] logits of long prompts do not fit next to the model)."""
+    from src.sandbox.style_translation.models import arch
+    h = arch(model)["trunk"](input_ids=ids, attention_mask=att).last_hidden_state[:, -1, :]
+    return model.lm_head(h)
+
+
 def run_arm(model, tok, fam, items, lexicon, arm, ctx, target, layer, alpha, vec, batch):
     """items = prompts whose context style is `ctx`; steer towards `target` (None = unsteered)."""
     recs = []
@@ -57,7 +64,7 @@ def run_arm(model, tok, fam, items, lexicon, arm, ctx, target, layer, alpha, vec
         positions = [[L - len(it["prompt_ids"]) + j for j in it["evidence"]] for it in b]
         torch.manual_seed(zlib.crc32(f"{fam}|read|{layer}|{alpha}|{ctx}|{target}|{bi}".encode()))
         with torch.no_grad(), PositionSteer(model, layer, vec, alpha, positions):
-            lp = torch.log_softmax(model(input_ids=ids, attention_mask=att).logits[:, -1, :].float(), -1); top1 = lp.argmax(-1)
+            lp = torch.log_softmax(last_logits(model, ids, att).float(), -1); top1 = lp.argmax(-1)
             gen = model.generate(input_ids=ids, attention_mask=att, do_sample=True, temperature=1.0, top_k=0, top_p=1.0,
                                  max_new_tokens=MAX_NEW, pad_token_id=tok.eos_token_id)
         for r, it in enumerate(b):
@@ -79,6 +86,7 @@ def main():
     ap.add_argument("--layers", nargs="*", type=int, required=True); ap.add_argument("--alphas", nargs="*", type=float, default=[0.5, 1.0, 2.0, 4.0])
     ap.add_argument("--vec_tag", default="k3_train"); ap.add_argument("--out_dir", type=Path, required=True)
     ap.add_argument("--batch", type=int, default=12); ap.add_argument("--with_base", action="store_true"); ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--token_budget", type=int, default=24000, help="cap batch * max prompt length (long translation prompts)")
     args = ap.parse_args()
     MP = model_paths(args.model); VEC = MP["read_features"] / f"vectors_{args.vec_tag}"; args.out_dir.mkdir(parents=True, exist_ok=True)
     lex_p = MP["prompts"].parent / "scoring_lexicon.json"; lexicon = json.load(open(lex_p))["lexicon"] if lex_p.exists() else {}
@@ -89,6 +97,7 @@ def main():
         if out.exists():
             print(f"{fam}: exists, skip", flush=True); continue
         items = candidates(fam, tok, held_out_k3(MP, fam))
+        batch = max(2, min(args.batch, args.token_budget // max(len(it["prompt_ids"]) for it in items))) if items else args.batch   # adaptive batch for long prompts
         refs = {(it["doc_id"], it["style"]): it["ref_sentence"] for it in items}   # the judge reference follows the TARGET style's own continuation
         for it in items:
             it["ref_ctx"] = it["ref_sentence"]; it["ref_other"] = refs.get((it["doc_id"], "alt" if it["style"] == "nat" else "nat"), it["ref_sentence"])
@@ -97,11 +106,11 @@ def main():
         recs = []
         if args.with_base:
             for ctx in ("nat", "alt"):
-                recs += run_arm(model, tok, fam, by[ctx], lexicon, f"base_{ctx}", ctx, None, 0, 0.0, np.zeros_like(r[0]), args.batch)
+                recs += run_arm(model, tok, fam, by[ctx], lexicon, f"base_{ctx}", ctx, None, 0, 0.0, np.zeros_like(r[0]), batch)
         for layer in args.layers:
             for alpha in args.alphas:
                 for ctx, target, sign in (("alt", "nat", 1.0), ("nat", "alt", -1.0)):
-                    recs += run_arm(model, tok, fam, by[ctx], lexicon, f"{target}_L{layer}_a{alpha:g}", ctx, target, layer, alpha, sign * r[layer - 1], args.batch)
+                    recs += run_arm(model, tok, fam, by[ctx], lexicon, f"{target}_L{layer}_a{alpha:g}", ctx, target, layer, alpha, sign * r[layer - 1], batch)
             print(f"{fam}: layer {layer} done", flush=True)
         json.dump(recs, open(out, "w"), ensure_ascii=False)
         st = [x for x in recs if x["target"]]
