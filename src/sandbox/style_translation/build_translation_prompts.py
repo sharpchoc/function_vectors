@@ -51,7 +51,7 @@ def main():
                 cache[key] = tok(new_h + rec[f"text_{it['style']}"]).input_ids
             if cache[key][: len(ids)] != ids:                      # the cue must stay a clean token boundary in the new tokenisation
                 mismatch += 1; continue
-            new = dict(it); new["prompt_ids"] = ids; new["lang"] = T[d]["lang"]; new["context_tail"] = it["context_tail"]
+            new = dict(it); new["prompt_ids"] = ids; new["lang"] = T[d]["lang"]; new["header"] = new_h; new["context_tail"] = it["context_tail"]
             out.append(new)
         tmp = MT["prompts"] / f"{fam}.json.tmp"; json.dump(out, open(tmp, "w"), ensure_ascii=False); os.replace(tmp, MT["prompts"] / f"{fam}.json")   # atomic: shards read these files
         n_tok = sum(len(x["prompt_ids"]) for x in out) / max(len(out), 1)

@@ -30,8 +30,8 @@ def candidates(fam, tok, items):
     recs = {r["doc_id"]: r for r in json.load(open(PAIRS / f"{fam}.json"))}
     cache = {}
     for it in items:
-        rec = recs[it["doc_id"]]; P = it["style"]; k = it["k"]; header = header_for(rec)
-        key = (it["doc_id"], P)
+        rec = recs[it["doc_id"]]; P = it["style"]; k = it["k"]; header = it.get("header") or header_for(rec)   # translation prompts carry their own header
+        key = (it["doc_id"], P, header)
         if key not in cache:
             cache[key] = tok(header + rec[f"text_{P}"]).input_ids
         ids = cache[key]; n = len(it["prompt_ids"])
