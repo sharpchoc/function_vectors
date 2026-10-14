@@ -98,10 +98,13 @@ def main():
                  f"success = target convention AND judge OK; red box = selected shared setting (layer {Lb}, α = {ab:g})", fontsize=11)
     fig.tight_layout(); fig.savefig(OUT / "sweep_heatmap.png", dpi=150); plt.close(fig)
 
-    fig, axes = plt.subplots(4, 5, figsize=(19, 15))
+    rows_per_target = -(-len(fams) // 5)                      # grid sized for any number of families (5 per row, natural block then alternative block)
+    fig, axes = plt.subplots(2 * rows_per_target, 5, figsize=(19, 3.75 * 2 * rows_per_target), squeeze=False)
+    for ax in axes.flat:
+        ax.set_visible(False)
     for r_, t in enumerate(("nat", "alt")):
         for c_, f in enumerate(fams):
-            ax = axes[r_ * 2 + c_ // 5][c_ % 5]
+            ax = axes[r_ * rows_per_target + c_ // 5][c_ % 5]; ax.set_visible(True)
             M = np.array([[S[(f, t, L, a)]["success"] for a in alphas] for L in layers]); heat(ax, M, f"{f} → {'natural' if t == 'nat' else 'alternative'} (unsteered {base[f][t]:.2f})")
             if c_ % 5 == 0: ax.set_ylabel("layer")
     fig.suptitle("Per-family success (target convention AND judge OK); red box = the selected shared setting", fontsize=12); fig.tight_layout(); fig.savefig(OUT / "sweep_by_family.png", dpi=130); plt.close(fig)

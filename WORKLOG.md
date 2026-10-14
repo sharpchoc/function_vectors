@@ -10556,3 +10556,9 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   unscorable 0 (vs ~.88 k4 before). The 116 docs accepted after the launch are in the rebuilt prompt files; an --append pass will add their rollouts.
 - 2026-10-14 23:00 UTC translation-prompt rollouts COMPLETE (69,110 prompts, 0 missing, all judged; 7 pods created and terminated). Pooled k = 4:
   alt .85 (orig .73), nat .94 (.78); unscorable .04 (.12), judge-OK .99 (.89); 19 families ≥ .9 alt (3 before). results/code_styles/translation_prompts/.
+
+## 2026-10-15 — write-feature sweep on the source-program prompts (results/code_styles/translation_prompts/write_steering/sweep35/)
+- capture_cues (k 3,4 train unpaired) + write_sweep (layers 4..27 × α 1,2,4, all 35 families, 40 held-out 0-shot prompts) on 6 pods (two restarts: full-logits
+  OOM on 2,300-token prompts → last-position logits; attention OOM at batch 20 → adaptive batch; stale JOB FAILED logs made watchers kill fresh pods →
+  always delete shard logs before relaunching). All judged, 0 fails, pods terminated.
+- Best cell L24 α2 again: pooled .75 (alt .69 / nat .80) vs .49 / .57 on the original prompts for the same families; 10 families ≥ .9 alt (1 before).
