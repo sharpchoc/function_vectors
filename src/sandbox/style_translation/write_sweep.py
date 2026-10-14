@@ -20,7 +20,7 @@ _BOOT = Path(__file__).resolve().parents[3]
 for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
-from src.sandbox.style_translation.models import paths as model_paths
+from src.sandbox.style_translation.models import paths as model_paths, arch
 from src.sandbox.style_translation.rollout import load_model, MAX_NEW
 from src.sandbox.style_translation.scoring import cut_code
 from src.sandbox.style_translation.code_scoring import decide_any
@@ -55,13 +55,19 @@ def pad(batch, tok):
     return ids.cuda(), att.cuda(), L
 
 
+def last_logits(model, ids, att):
+    """Logits at the last position only (the full [B, T, vocab] logits tensor of long prompts does not fit next to the model)."""
+    h = arch(model)["trunk"](input_ids=ids, attention_mask=att).last_hidden_state[:, -1, :]
+    return model.lm_head(h)
+
+
 def run_arm(model, tok, fam, items, texts, lexicon, arm, target, layer, alpha, vec, batch):
     recs = []
     for bi in range(0, len(items), batch):
         b = items[bi:bi + batch]; ids, att, L = pad(b, tok)
         torch.manual_seed(zlib.crc32(f"{fam}|{layer}|{alpha}|{target}|{bi}".encode()))
         with torch.no_grad(), CueSteer(model, max(layer, 1), vec, alpha):
-            lp = torch.log_softmax(model(input_ids=ids, attention_mask=att).logits[:, -1, :].float(), -1); top1 = lp.argmax(-1)
+            lp = torch.log_softmax(last_logits(model, ids, att).float(), -1); top1 = lp.argmax(-1)
             gen = model.generate(input_ids=ids, attention_mask=att, do_sample=True, temperature=1.0, top_k=0, top_p=1.0,
                                  max_new_tokens=MAX_NEW, pad_token_id=tok.eos_token_id)
         for r, it in enumerate(b):
@@ -83,6 +89,7 @@ def main():
     ap.add_argument("--layers", nargs="*", type=int, required=True); ap.add_argument("--alphas", nargs="*", type=float, default=[0.5, 1.0, 2.0, 4.0])
     ap.add_argument("--vec_tag", default="k3_train"); ap.add_argument("--out_dir", type=Path, required=True)
     ap.add_argument("--batch", type=int, default=25); ap.add_argument("--with_base", action="store_true"); ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--token_budget", type=int, default=24000, help="cap batch * max prompt length (long translation prompts)")
     args = ap.parse_args()
     MP = model_paths(args.model); VEC = MP["steering"] / f"vectors_{args.vec_tag}"; args.out_dir.mkdir(parents=True, exist_ok=True)
     lex_p = MP["prompts"].parent / "scoring_lexicon.json"; lexicon = json.load(open(lex_p))["lexicon"] if lex_p.exists() else {}
@@ -94,15 +101,16 @@ def main():
             print(f"{fam}: exists, skip", flush=True); continue
         items = candidates(fam, tok, held_out_items(MP["prompts"], fam))[: args.limit]
         texts = {it["doc_id"]: tok.decode(it["prompt_ids"]) for it in items}
+        batch = max(2, min(args.batch, args.token_budget // max(len(it["prompt_ids"]) for it in items)))   # adaptive batch for long prompts
         vecs = np.load(VEC / f"{fam}.npz")["v_nat"]                                # [n_layers, hidden]; layer L -> vecs[L-1]
         recs = []
         if args.with_base:
-            recs += run_arm(model, tok, fam, items, texts, lexicon, "base", None, 0, 0.0, np.zeros_like(vecs[0]), args.batch)
+            recs += run_arm(model, tok, fam, items, texts, lexicon, "base", None, 0, 0.0, np.zeros_like(vecs[0]), batch)
         for layer in args.layers:
             for alpha in args.alphas:
                 for target in ("nat", "alt"):
                     v = vecs[layer - 1] * (1.0 if target == "nat" else -1.0)
-                    recs += run_arm(model, tok, fam, items, texts, lexicon, f"{target}_L{layer}_a{alpha:g}", target, layer, alpha, v, args.batch)
+                    recs += run_arm(model, tok, fam, items, texts, lexicon, f"{target}_L{layer}_a{alpha:g}", target, layer, alpha, v, batch)
             print(f"{fam}: layer {layer} done", flush=True)
         json.dump(recs, open(out, "w"), ensure_ascii=False)
         ok = [r for r in recs if r["target"]]; print(f"{fam}: {len(items)} held-out docs, {len(recs)} records, target-convention rate {np.mean([r['style_ok'] for r in ok]):.2f}", flush=True)
