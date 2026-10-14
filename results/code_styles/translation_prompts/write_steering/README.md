@@ -29,3 +29,7 @@ Pooled success (35 families; unsteered 0-shot: natural .64, alternative .17):
   (first-token margins 14–17 at those cells).
 - Note: with the source program the prompts are 1,000–2,300 tokens; `write_sweep.py` now computes the first-token logits at the last position only
   and uses an adaptive batch (token budget), which was needed to fit 32 GB.
+
+Selection check (2026-10-15): the shared cell is chosen on the same held-out prompts that are reported. Re-selecting on the first 20 held-out docs per
+family and scoring the last 20 picks L24 α2 again: alt .67 / nat .79; family-split folds (18/17) also pick L24 α2: alt .71 / .67, nat .79 / .81
+(`sweep35/bars_summary.json`). Bar chart `sweep35/bars_slide.png`: original prompts vs source program, 0-shot / steered 0-shot / 4-shot.
