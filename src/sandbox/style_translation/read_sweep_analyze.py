@@ -88,9 +88,12 @@ def main():
     axes[0].set_ylabel("layer (output of block L)")
     fig.suptitle(f"Read-feature steering at every evidence token of k = 3 wrong-style prompts, {len(fams)} families, ~{int(np.mean([S[(f,t,Lb,ab)]['n'] for f in fams for t in ('nat','alt')]))} held-out prompts per cell; red box = selected (layer {Lb}, α = {ab:g})", fontsize=11)
     fig.tight_layout(); fig.savefig(OUT / "sweep_heatmap.png", dpi=130); plt.close(fig)
-    fig, axes = plt.subplots(4, 5, figsize=(22, 16))
+    n_rows = -(-(2 * len(fams)) // 5)                        # grid sized for any number of families (5 per row)
+    fig, axes = plt.subplots(n_rows, 5, figsize=(22, 4 * n_rows), squeeze=False)
+    for ax in axes.flat:
+        ax.set_visible(False)
     for i, (f, t) in enumerate([(f, t) for t in ("nat", "alt") for f in fams]):
-        ax = axes.flat[i]; M = np.array([[S[(f, t, L, a)]["success"] for a in alphas] for L in layers]); ax.imshow(M, vmin=0, vmax=1, cmap="viridis", aspect="auto", origin="lower")
+        ax = axes.flat[i]; ax.set_visible(True); M = np.array([[S[(f, t, L, a)]["success"] for a in alphas] for L in layers]); ax.imshow(M, vmin=0, vmax=1, cmap="viridis", aspect="auto", origin="lower")
         for r_ in range(len(layers)):
             for c_ in range(len(alphas)): ax.text(c_, r_, f"{M[r_, c_]:.2f}", ha="center", va="center", fontsize=6.5, color="w" if M[r_, c_] < .55 else "k")
         ax.set_xticks(range(len(alphas))); ax.set_xticklabels([f"{a:g}" for a in alphas], fontsize=7); ax.set_yticks(range(len(layers))); ax.set_yticklabels(layers, fontsize=7)

@@ -10562,3 +10562,9 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   OOM on 2,300-token prompts → last-position logits; attention OOM at batch 20 → adaptive batch; stale JOB FAILED logs made watchers kill fresh pods →
   always delete shard logs before relaunching). All judged, 0 fails, pods terminated.
 - Best cell L24 α2 again: pooled .75 (alt .69 / nat .80) vs .49 / .57 on the original prompts for the same families; 10 families ≥ .9 alt (1 before).
+
+## 2026-10-15 — read-feature sweep on the source-program prompts (results/code_styles/translation_prompts/read_steering/sweep35/)
+- Evidence positions shifted by header length (verified identical tokenisation, 0 mismatches), capture_read + read_sweep (layers 2–24 × α 1,2,4,8, 35
+  families) on 6 pods + 5 helper pods (RTX PRO 4000 24 GB OOMs even at token budget 12000; B200s 3× faster than 4500s); final single judge pass per dir.
+- L8 α4: nat .64 / alt .50 = same as original prompts (.64 / .49) although the k=3 ceiling rose to .94 / .85; best cell L12 α4 .576 (flat L6–14).
+  Read feature does NOT benefit from the source program, unlike the write feature. All pods terminated.
