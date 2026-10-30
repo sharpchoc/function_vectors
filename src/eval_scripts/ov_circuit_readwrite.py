@@ -11,6 +11,8 @@ Readout: cos(y, v_A) with v_A = sum of the selected heads' mean cue outputs (the
 References: input-only cos(x, v_A); cross-task control mean_{B != A} cos(y_A, v_B).
 Weights are read lazily from the checkpoint safetensors (CPU, no model load).
 Outputs: <out_dir>/{per_task.csv, summary.csv}
+--norm_ablation (2026-10-30): s_A only, no skip, the norm/bias pieces removed one at a time
+(see NORM_MODES); writes <out_dir>/norm_ablation.csv instead.
 """
 import argparse
 import csv
@@ -75,6 +77,33 @@ def layer_weights(W, model, l):
                 wo=W.get(p + "self_attn.o_proj.weight"))
 
 
+# norm-ablation variants: (normalise?, use gamma?, use beta (GPT-J LN bias)?, use b_V (Qwen)?)
+NORM_MODES = {
+    "full": (True, True, True, True),
+    "no_gamma": (True, False, True, True),
+    "no_beta": (True, True, False, True),
+    "no_vbias": (True, True, True, False),
+    "no_affine": (True, False, False, True),
+    "raw_x": (False, False, False, True),
+    "raw_x_no_bias": (False, False, False, False),
+    "gamma_only_raw": (False, True, False, False),
+    "bias_only": None,   # input-independent part alone: W_O W_V beta (GPT-J) / W_O b_V (Qwen)
+}
+
+
+def norm_variant(x, lw, cfg, normalise, gamma, beta):
+    if normalise:
+        if cfg["norm"] == "ln":
+            x = (x - x.mean()) / torch.sqrt(x.var(unbiased=False) + cfg["eps"])
+        else:
+            x = x / torch.sqrt((x * x).mean() + cfg["eps"])
+    if gamma:
+        x = x * lw["nw"]
+    if beta and lw["nb"] is not None:
+        x = x + lw["nb"]
+    return x
+
+
 def norm(x, lw, cfg):
     if cfg["norm"] == "ln":
         mu, var = x.mean(), x.var(unbiased=False)
@@ -90,6 +119,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", choices=list(MODELS), required=True)
     ap.add_argument("--no_vbias", action="store_true", help="drop the value bias (Qwen) from the map")
+    ap.add_argument("--norm_ablation", action="store_true", help="s_A only: remove norm/bias pieces one at a time")
     a = ap.parse_args()
     cfg = MODELS[a.model]
     split = json.load(open(cfg["split"]))
@@ -138,6 +168,45 @@ def main():
                     v = v + lw["bv"][g * hd:(g + 1) * hd]
                 y += lw["wo"][:, h * hd:(h + 1) * hd] @ v
         return y
+
+    if a.norm_ablation:
+        def through_heads_mode(x, mode):
+            y = torch.zeros(d_model)
+            for l, hs in by_layer.items():
+                lw = LW[l]
+                if mode is None:   # bias_only
+                    xn = lw["nb"] if lw["nb"] is not None else torch.zeros(d_model)
+                    use_bv = True
+                else:
+                    xn = norm_variant(x, lw, cfg, *mode[:3])
+                    use_bv = mode[3]
+                for h in hs:
+                    g = h // per_kv
+                    v = lw["wv"][g * hd:(g + 1) * hd] @ xn
+                    if lw["bv"] is not None and use_bv:
+                        v = v + lw["bv"][g * hd:(g + 1) * hd]
+                    y += lw["wo"][:, h * hd:(h + 1) * hd] @ v
+            return y
+        ys = {m: {t: through_heads_mode(feats[t]["s_A"], NORM_MODES[m]) for t in tasks} for m in NORM_MODES}
+        out_rows = [["mode", "own_mean", "own_median", "cross_mean", "own_minus_cross", "own_train", "own_heldout",
+                     "mapped_norm_mean"]]
+        for m in NORM_MODES:
+            own = np.array([cos(ys[m][t], fv[t]) for t in tasks])
+            cross = np.array([np.mean([cos(ys[m][t], fv[b]) for b in tasks if b != t]) for t in tasks])
+            g = np.array([group[t] for t in tasks])
+            out_rows.append([m, round(float(own.mean()), 4), round(float(np.median(own)), 4),
+                             round(float(cross.mean()), 4), round(float(own.mean() - cross.mean()), 4),
+                             round(float(own[g == "train"].mean()), 4), round(float(own[g == "heldout"].mean()), 4),
+                             round(float(np.mean([ys[m][t].norm() for t in tasks])), 1)])
+        cfg["out"].mkdir(parents=True, exist_ok=True)
+        with open(cfg["out"] / "norm_ablation.csv", "w", newline="") as f:
+            csv.writer(f).writerows(out_rows)
+        gam = torch.stack([LW[l]["nw"] for l in by_layer])
+        print(f"{cfg['label']}: s_A through {len(sel)} FV heads, no skip; gamma mean {gam.mean():.3f} "
+              f"sd {gam.std():.3f} (over FV-head layers)")
+        for r in out_rows:
+            print("  " + "  ".join(f"{v:>15}" if i == 0 else f"{v:>9}" for i, v in enumerate(r)))
+        return
 
     rows = []
     mapped = {}

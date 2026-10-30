@@ -50,6 +50,25 @@ Canonical selection kept. Summary CSV `results/qwen25_fv/round2_96_prunedfail/in
 
 ---
 
+## 2026-10-30 — OV-circuit map: how much does the input norm matter? (s_A only, user request)
+
+**Owner:** Claude Code background session, main checkout. CPU, ~3 min. **Status:** DONE.
+User: from now on only s_A through the FV heads matters (u_A / skip variants were tests).
+`ov_circuit_readwrite.py --model {gptj,qwen} --norm_ablation` removes the norm/bias pieces one at a
+time (normalisation itself is a scalar per input, so it only matters relative to the additive terms).
+Mean cos(y_A, own FV) | mean cross-task cos, no skip:
+- GPT-J: full .717 | .297; no γ .712; no β .718; raw x (no LN at all) .711 | .291; β-only .044.
+  → LayerNorm is IRRELEVANT on GPT-J (γ ≈ 0.96 ± 0.09); the map is W_O W_V alone.
+- Qwen: full .443 | .278; no γ .646 | .441; raw x .666 | .471; raw x without b_V .546 | .312;
+  no b_V .339 | .165; b_V-only .603 | .603 (task-independent).
+  → RMSNorm γ (0.75 ± 0.53, very uneven) LOWERS the own-FV cos by .20; own − cross gap goes .166 → .205
+  (no γ) → .234 (no γ, no b_V). The value bias inflates own and cross equally (generic FV component).
+- Caveat: γ is tuned for real residuals at each head's own layer (outlier dims); one band vector fed to
+  all layers is off-distribution, so "no γ" is a diagnostic, not the model's actual computation.
+**Files:** `<bucket>/read_write_relationship/ov_circuit_map/norm_ablation.csv` (69_task_run, qwen25_fv).
+
+---
+
 ## 2026-10-06 — Identification feature pushed through the FV heads' OV circuits (user request)
 
 **Owner:** Claude Code background agent, main checkout. CPU only (~3 min per model). **Status:** DONE.
