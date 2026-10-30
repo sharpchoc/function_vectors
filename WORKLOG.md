@@ -50,6 +50,27 @@ Canonical selection kept. Summary CSV `results/qwen25_fv/round2_96_prunedfail/in
 
 ---
 
+## 2026-10-30 — Learned read→write map vs the FV heads' summed OV circuit (user request)
+
+**Owner:** Claude Code background session, main checkout. CPU, ~10 min total. **Status:** DONE.
+`src/eval_scripts/ov_vs_learned_map.py --model {gptj,qwen}` (NEW). Learned map M_L = matched-map protocol T
+(u_A → v_A task-level ridge, training-only carrier; reproduces held-out R² .641 / .588). OV map M_OV =
+Σ_FV W_O·W_V·diag(γ) (and without γ), linear part only (biases drop out on centred inputs). Null: 20 draws of
+random non-FV heads, layer-matched. Measures on held-out tasks unless stated; Q = basis of the training input span.
+| | GPT-J γ | GPT-J no γ | Qwen γ | Qwen no γ |
+|---|---|---|---|---|
+| matrix cos(M_L Q, M_OV Q) | **.631** (null .01±.06, max .14) | .636 | **.234** (null −.03±.01) | .364 (null .00±.03) |
+| cos(M_L x, M_OV x), held-out | .646 (train .732) | .654 | .236 (train .313) | .397 |
+| cos(M_OV x, v_A − mean v) | .727 (ridge .827) | .732 | .309 (ridge .762) | .484 |
+| R², M_OV + 1 fitted scale | .492 (ridge .641, null −.08) | .500 | .060 (ridge .588) | .193 |
+- GPT-J: the summed OV circuit of the 37 FV heads IS largely the learned map — matrix cos .63 on the input span,
+  and with one scale parameter it reaches 77% of the ridge's held-out R² with zero fitted matrix entries.
+  Random heads ≈ 0 on every measure. Output-projected matrix cos (.88) has a wide null (sd .29) → not reported.
+- Qwen: same direction but much weaker (.23 with γ); dropping γ raises it (.36, R² .19) — same γ story as above.
+**Files:** `<bucket>/read_write_relationship/ov_circuit_map/ov_vs_learned_map.csv` (69_task_run, qwen25_fv).
+
+---
+
 ## 2026-10-30 — OV-circuit map: where does the "no γ" gain go on Qwen? (user request)
 
 **Owner:** Claude Code background session, main checkout. CPU, ~3 min. **Status:** DONE.
