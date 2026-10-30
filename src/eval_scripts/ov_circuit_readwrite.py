@@ -13,6 +13,9 @@ Weights are read lazily from the checkpoint safetensors (CPU, no model load).
 Outputs: <out_dir>/{per_task.csv, summary.csv}
 --norm_ablation (2026-10-30): s_A only, no skip, the norm/bias pieces removed one at a time
 (see NORM_MODES); writes <out_dir>/norm_ablation.csv instead.
+--gamma_split (2026-10-30): s_A with vs without the norm gain gamma (no biases) and the full model map;
+cos with the mean FV over tasks, the task's own remainder v_A - mean, and other tasks' remainders;
+plus the largest-gamma dims and how much of gamma*s_A they carry. Writes <out_dir>/gamma_split.csv.
 """
 import argparse
 import csv
@@ -120,6 +123,7 @@ def main():
     ap.add_argument("--model", choices=list(MODELS), required=True)
     ap.add_argument("--no_vbias", action="store_true", help="drop the value bias (Qwen) from the map")
     ap.add_argument("--norm_ablation", action="store_true", help="s_A only: remove norm/bias pieces one at a time")
+    ap.add_argument("--gamma_split", action="store_true", help="s_A only: where the gain from dropping gamma goes")
     a = ap.parse_args()
     cfg = MODELS[a.model]
     split = json.load(open(cfg["split"]))
@@ -169,7 +173,7 @@ def main():
                 y += lw["wo"][:, h * hd:(h + 1) * hd] @ v
         return y
 
-    if a.norm_ablation:
+    if a.norm_ablation or a.gamma_split:
         def through_heads_mode(x, mode):
             y = torch.zeros(d_model)
             for l, hs in by_layer.items():
@@ -187,6 +191,41 @@ def main():
                         v = v + lw["bv"][g * hd:(g + 1) * hd]
                     y += lw["wo"][:, h * hd:(h + 1) * hd] @ v
             return y
+    if a.gamma_split:
+        modes = {"with_gamma_nobias": NORM_MODES["gamma_only_raw"], "no_gamma_nobias": NORM_MODES["raw_x_no_bias"],
+                 "full_model": NORM_MODES["full"]}
+        ys = {m: {t: through_heads_mode(feats[t]["s_A"], modes[m]) for t in tasks} for m in modes}
+        vbar = torch.stack([fv[t] for t in tasks]).mean(0)
+        rem = {t: fv[t] - vbar for t in tasks}
+        print(f"{cfg['label']}: |mean FV| / mean |v_A| = {vbar.norm() / np.mean([fv[t].norm() for t in tasks]):.3f}, "
+              f"mean cos(v_A, mean FV) = {np.mean([cos(fv[t], vbar) for t in tasks]):.3f}")
+        out_rows = [["mode", "cos_own_fv", "cos_mean_fv", "cos_own_remainder", "cos_other_remainders", "remainder_gap"]]
+        for m in modes:
+            own = np.mean([cos(ys[m][t], fv[t]) for t in tasks])
+            cm = np.mean([cos(ys[m][t], vbar) for t in tasks])
+            cr = np.mean([cos(ys[m][t], rem[t]) for t in tasks])
+            co = np.mean([np.mean([cos(ys[m][t], rem[b]) for b in tasks if b != t]) for t in tasks])
+            out_rows.append([m] + [round(float(v), 4) for v in (own, cm, cr, co, cr - co)])
+        cfg["out"].mkdir(parents=True, exist_ok=True)
+        with open(cfg["out"] / "gamma_split.csv", "w", newline="") as f:
+            csv.writer(f).writerows(out_rows)
+        for r in out_rows:
+            print("  " + "  ".join(f"{v:>18}" if i == 0 else f"{v:>20}" for i, v in enumerate(r)))
+        # largest-gamma dims, pooled over the FV-head layers (weighted by heads per layer)
+        gam = torch.stack([LW[l]["nw"] for l in by_layer for _ in by_layer[l]]).mean(0)
+        top = torch.argsort(gam.abs(), descending=True)[:10]
+        S = torch.stack([feats[t]["s_A"] for t in tasks])
+        sh = S / S.norm(dim=1, keepdim=True)
+        share_raw = float((sh[:, top] ** 2).sum(1).mean())
+        gs = sh * gam
+        share_g = float(((gs[:, top] ** 2).sum(1) / (gs ** 2).sum(1)).mean())
+        print(f"  gamma (head-weighted over FV layers): mean {gam.mean():.3f} sd {gam.std():.3f} "
+              f"min {gam.min():.3f} max {gam.max():.3f}")
+        print(f"  top-10 |gamma| dims {top.tolist()} values {[round(float(gam[i]), 2) for i in top]}")
+        print(f"  share of |s_A|^2 in those dims: raw {share_raw:.3f} -> after gamma {share_g:.3f}")
+        return
+
+    if a.norm_ablation:
         ys = {m: {t: through_heads_mode(feats[t]["s_A"], NORM_MODES[m]) for t in tasks} for m in NORM_MODES}
         out_rows = [["mode", "own_mean", "own_median", "cross_mean", "own_minus_cross", "own_train", "own_heldout",
                      "mapped_norm_mean"]]

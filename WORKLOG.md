@@ -50,6 +50,23 @@ Canonical selection kept. Summary CSV `results/qwen25_fv/round2_96_prunedfail/in
 
 ---
 
+## 2026-10-30 — OV-circuit map: where does the "no γ" gain go on Qwen? (user request)
+
+**Owner:** Claude Code background session, main checkout. CPU, ~3 min. **Status:** DONE.
+USER DECISION (same day): canonical map = the heads' full computation (norm + γ [+β] → W_V [+b_V] → W_O,
+summed, no skip) = original 2026-10-06 numbers (GPT-J .717 | .297, Qwen .443 | .278).
+`--gamma_split`: split each FV into the mean FV over tasks v̄ and the remainder r_A = v_A − v̄; cos of the
+mapped s_A with each (no biases unless noted). Qwen FVs are 79% shared (mean cos(v_A, v̄) .79; GPT-J .63).
+- Qwen with γ: own .339, v̄ .211, own remainder .273, other remainders −.006. Without γ: .546, .398, .369, −.008.
+  Full model: .443, .354, .254, −.008. → dropping γ raises BOTH parts (shared ×1.9, task-specific ×1.35);
+  the remainder readout is specific in every variant (other tasks ≈ 0).
+- Largest-γ dims do NOT explain it: top-10 |γ| dims (2.1–2.5) carry .6% of |s_A|² raw, 3.4% after γ — the
+  γ effect is spread over many dims (γ head-weighted .83 ± .32, min .03).
+- GPT-J: γ ≈ .955 ± .031, all variants identical (remainder .52–.53 vs others −.01).
+**Files:** `<bucket>/read_write_relationship/ov_circuit_map/gamma_split.csv` (69_task_run, qwen25_fv).
+
+---
+
 ## 2026-10-30 — OV-circuit map: how much does the input norm matter? (s_A only, user request)
 
 **Owner:** Claude Code background session, main checkout. CPU, ~3 min. **Status:** DONE.
