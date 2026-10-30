@@ -50,6 +50,22 @@ Canonical selection kept. Summary CSV `results/qwen25_fv/round2_96_prunedfail/in
 
 ---
 
+## 2026-10-30 — Paper: OV-circuit map paragraph + table in §4.2.2 (user request)
+
+**Owner:** Claude Code background session. **Status:** DONE (local main.tex; Overleaf edits pending, user applies).
+New `--random_heads 20` in ov_circuit_readwrite.py: s_A = c + u_A through the canonical full map, FV heads vs
+20 layer-matched random non-FV head draws, plus the identity map. own / other / diff:
+GPT-J identity .167/.142/.025, FV .717/.297/.420, random .019/.017/.002 (own sd .074, max .154);
+Qwen identity .293/.245/.047, FV .443/.278/.166, random −.190/−.179/−.012 (own sd .031).
+Paper: new \paragraph{The FV heads' OV circuits implement the map.} + Table tab:ov_map at the end of
+\subsubsection{A shared map…} in paper_materials/uploads/main.tex (only edit; backup in job tmp). Clean
+rebuild OK, 38 pp, main text ends p10 (camera-ready limit 10). FIND/REPLACE list:
+paper_materials/overleaf_edits_ov_map.txt. Caveat in text: input uses the pooled-carrier bank-A c+u_A (paper's
+c is training-only; matched-map check showed <.001 effect) — not stated in the paper.
+**Files:** `<bucket>/read_write_relationship/ov_circuit_map/random_heads.csv`.
+
+---
+
 ## 2026-10-30 — Learned read→write map vs the FV heads' summed OV circuit (user request)
 
 **Owner:** Claude Code background session, main checkout. CPU, ~10 min total. **Status:** DONE.

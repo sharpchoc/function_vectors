@@ -16,6 +16,9 @@ Outputs: <out_dir>/{per_task.csv, summary.csv}
 --gamma_split (2026-10-30): s_A with vs without the norm gain gamma (no biases) and the full model map;
 cos with the mean FV over tasks, the task's own remainder v_A - mean, and other tasks' remainders;
 plus the largest-gamma dims and how much of gamma*s_A they carry. Writes <out_dir>/gamma_split.csv.
+--random_heads N (2026-10-30, paper table): s_A, full computation (canonical), FV heads vs N draws of random
+non-FV heads (layer-matched: same count per layer) and the identity map (x itself); own and cross-task cos.
+Writes <out_dir>/random_heads.csv.
 """
 import argparse
 import csv
@@ -124,6 +127,7 @@ def main():
     ap.add_argument("--no_vbias", action="store_true", help="drop the value bias (Qwen) from the map")
     ap.add_argument("--norm_ablation", action="store_true", help="s_A only: remove norm/bias pieces one at a time")
     ap.add_argument("--gamma_split", action="store_true", help="s_A only: where the gain from dropping gamma goes")
+    ap.add_argument("--random_heads", type=int, default=0, help="s_A full map: FV heads vs N layer-matched random draws")
     a = ap.parse_args()
     cfg = MODELS[a.model]
     split = json.load(open(cfg["split"]))
@@ -173,10 +177,10 @@ def main():
                 y += lw["wo"][:, h * hd:(h + 1) * hd] @ v
         return y
 
-    if a.norm_ablation or a.gamma_split:
-        def through_heads_mode(x, mode):
+    if a.norm_ablation or a.gamma_split or a.random_heads:
+        def through_heads_mode(x, mode, heads=None):
             y = torch.zeros(d_model)
-            for l, hs in by_layer.items():
+            for l, hs in (heads or by_layer).items():
                 lw = LW[l]
                 if mode is None:   # bias_only
                     xn = lw["nb"] if lw["nb"] is not None else torch.zeros(d_model)
@@ -191,6 +195,35 @@ def main():
                         v = v + lw["bv"][g * hd:(g + 1) * hd]
                     y += lw["wo"][:, h * hd:(h + 1) * hd] @ v
             return y
+    if a.random_heads:
+        def own_cross(ys):
+            own = np.array([cos(ys[t], fv[t]) for t in tasks])
+            cross = np.array([np.mean([cos(ys[t], fv[b]) for b in tasks if b != t]) for t in tasks])
+            return float(own.mean()), float(cross.mean())
+        res = {"identity": own_cross({t: feats[t]["s_A"] for t in tasks}),
+               "fv_heads": own_cross({t: through_heads_mode(feats[t]["s_A"], NORM_MODES["full"]) for t in tasks})}
+        rng = np.random.default_rng(0)
+        draws = []
+        for i in range(a.random_heads):
+            rnd = {l: sorted(rng.choice([h for h in range(H) if h not in hs], len(hs), replace=False).tolist())
+                   for l, hs in by_layer.items()}
+            LW.update({l: layer_weights(W, a.model, l) for l in rnd if l not in LW})
+            draws.append(own_cross({t: through_heads_mode(feats[t]["s_A"], NORM_MODES["full"], rnd) for t in tasks}))
+        d = np.array(draws)
+        rows = [["map", "own", "cross", "own_sd", "cross_sd"],
+                ["identity", *[round(v, 4) for v in res["identity"]], "", ""],
+                ["fv_heads", *[round(v, 4) for v in res["fv_heads"]], "", ""],
+                ["random_heads_mean", round(float(d[:, 0].mean()), 4), round(float(d[:, 1].mean()), 4),
+                 round(float(d[:, 0].std()), 4), round(float(d[:, 1].std()), 4)],
+                ["random_heads_max", round(float(d[:, 0].max()), 4), round(float(d[:, 1].max()), 4), "", ""]]
+        cfg["out"].mkdir(parents=True, exist_ok=True)
+        with open(cfg["out"] / "random_heads.csv", "w", newline="") as f:
+            csv.writer(f).writerows(rows)
+        print(f"{cfg['label']}: s_A full map, {len(sel)} FV heads, {a.random_heads} layer-matched random draws")
+        for r in rows:
+            print("  " + "  ".join(str(v).rjust(18) for v in r))
+        return
+
     if a.gamma_split:
         modes = {"with_gamma_nobias": NORM_MODES["gamma_only_raw"], "no_gamma_nobias": NORM_MODES["raw_x_no_bias"],
                  "full_model": NORM_MODES["full"]}
