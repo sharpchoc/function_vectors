@@ -10641,3 +10641,12 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   families) on 6 pods + 5 helper pods (RTX PRO 4000 24 GB OOMs even at token budget 12000; B200s 3× faster than 4500s); final single judge pass per dir.
 - L8 α4: nat .64 / alt .50 = same as original prompts (.64 / .49) although the k=3 ceiling rose to .94 / .85; best cell L12 α4 .576 (flat L6–14).
   Read feature does NOT benefit from the source program, unlike the write feature. All pods terminated.
+
+## 2026-10-30 — Code styles (translation prompts): read steering at the embedding (L0) / L1 / L0 replacement
+- Status: DONE. 35 families, held-out k = 3 wrong-convention prompts (40/context), same protocol as read_steering/sweep35; Gemini 2.5 Flash judge.
+- Code: read_sweep.py layer 0 now uses mean_nat_L0 − mean_alt_L0 (before: r[-1] = L28 silently); `--mode replace` sets evidence-token states to the target pole's mean (steer_hooks.PositionSteer replace=True). Commit 79fbdf2e.
+- Commands: logs/l0read_shard.sh on 5 pods (B200, 2× PRO 6000, 2× PRO 4500; all terminated); judge_rollouts.py --families <explicit> (default list skips code families); read_sweep_analyze.py --sweep sweep_k3_L01 --tag sweep35_L01 / --sweep sweep_k3_rep --tag sweep35_L0rep.
+- Findings (success = target convention AND judge OK; unsteered .07/.01, ceiling .94/.85): L0 add α2 .47/.35 (mean .41), L1 add α2 .49/.34 (.41), L0 replace .43/.31 (.37), vs L2 α4 .41, L8 α4 .64/.50 (.57), L12 α4 .58.
+  L0 α2 is within .10 of L8 (or better) in 17/35 families, better by >.05 in 6 (py_loop_vars +.59, py_is_none +.31, py_builtin_generics, py_paren_if, py_quotes, py_comprehension), worse by >.25 in 12 (line_wrap, py2_except, comment_language, py_literal_ctor, blank_lines, py_fstring, comment_case, num_separators, py_optional, comma_space, py_indent, py_class_naming).
+  Replacement flips the convention most (conv .66/.52) but breaks code (judge-OK .55): evidence tokens often merge indentation/space with the identifier (`\tlevel`), so overwriting them erases the word (py_tabs conv .97, success .19).
+- Next: none queued. Results: results/code_styles/translation_prompts/read_steering/sweep35_L01, sweep35_L0rep.
