@@ -56,14 +56,14 @@ def last_logits(model, ids, att):
     return model.lm_head(h)
 
 
-def run_arm(model, tok, fam, items, lexicon, arm, ctx, target, layer, alpha, vec, batch):
+def run_arm(model, tok, fam, items, lexicon, arm, ctx, target, layer, alpha, vec, batch, replace=False):
     """items = prompts whose context style is `ctx`; steer towards `target` (None = unsteered)."""
     recs = []
     for bi in range(0, len(items), batch):
         b = items[bi:bi + batch]; ids, att, L = pad(b, tok)
         positions = [[L - len(it["prompt_ids"]) + j for j in it["evidence"]] for it in b]
-        torch.manual_seed(zlib.crc32(f"{fam}|read|{layer}|{alpha}|{ctx}|{target}|{bi}".encode()))
-        with torch.no_grad(), PositionSteer(model, layer, vec, alpha, positions):
+        torch.manual_seed(zlib.crc32(f"{fam}|read|{layer}|{alpha}|{ctx}|{target}|{bi}{'|rep' if replace else ''}".encode()))
+        with torch.no_grad(), PositionSteer(model, layer, vec, alpha, positions, replace=replace):
             lp = torch.log_softmax(last_logits(model, ids, att).float(), -1); top1 = lp.argmax(-1)
             gen = model.generate(input_ids=ids, attention_mask=att, do_sample=True, temperature=1.0, top_k=0, top_p=1.0,
                                  max_new_tokens=MAX_NEW, pad_token_id=tok.eos_token_id)
@@ -73,7 +73,7 @@ def run_arm(model, tok, fam, items, lexicon, arm, ctx, target, layer, alpha, vec
             fc, fo = it["first_ctx"], it["first_other"]              # ctx = the prompt's own style
             tgt = target or ("alt" if ctx == "nat" else "nat")       # unsteered arms are scored against the same (wrong-style) target
             t, o = (fo, fc) if tgt != ctx else (fc, fo)
-            recs.append({k: it[k] for k in KEEP} | {"style": tgt, "context_style": ctx, "arm": arm, "target": target, "layer": layer, "alpha": alpha,
+            recs.append({k: it[k] for k in KEEP} | {"style": tgt, "context_style": ctx, "arm": arm, "target": target, "layer": layer, "alpha": alpha, "mode": "replace" if replace else "add",
                          "n_evidence": len(it["evidence"]), "ref_sentence": it["ref_other"] if tgt != ctx else it["ref_ctx"], "tail_raw": raw, "tail": cut, "capped": capped,
                          "decision": d, "style_ok": d == tgt, "lp_ctx": float(lp[r, fc]), "lp_other": float(lp[r, fo]),
                          "margin_target": float(lp[r, t] - lp[r, o]), "top1": "ctx" if top1[r].item() == fc else ("other" if top1[r].item() == fo else None), "judge": None})
@@ -87,6 +87,8 @@ def main():
     ap.add_argument("--vec_tag", default="k3_train"); ap.add_argument("--out_dir", type=Path, required=True)
     ap.add_argument("--batch", type=int, default=12); ap.add_argument("--with_base", action="store_true"); ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--token_budget", type=int, default=24000, help="cap batch * max prompt length (long translation prompts)")
+    ap.add_argument("--mode", choices=("add", "replace"), default="add",
+                    help="add: h += sign*alpha*r_L at the evidence tokens; replace: h := alpha * mean_<target>_L (the target pole's mean evidence state)")
     args = ap.parse_args()
     MP = model_paths(args.model); VEC = MP["read_features"] / f"vectors_{args.vec_tag}"; args.out_dir.mkdir(parents=True, exist_ok=True)
     lex_p = MP["prompts"].parent / "scoring_lexicon.json"; lexicon = json.load(open(lex_p))["lexicon"] if lex_p.exists() else {}
@@ -102,7 +104,11 @@ def main():
         for it in items:
             it["ref_ctx"] = it["ref_sentence"]; it["ref_other"] = refs.get((it["doc_id"], "alt" if it["style"] == "nat" else "nat"), it["ref_sentence"])
         by = {s: [it for it in items if it["style"] == s][: args.limit] for s in ("nat", "alt")}
-        r = np.load(VEC / f"{fam}.npz")["diff"]                                    # [n_layers, D]; layer L -> r[L-1]
+        z = np.load(VEC / f"{fam}.npz")                                            # diff/mean_* [n_layers, D]: layer L -> [L-1]; layer 0 stored separately
+        r = z["diff"]
+        def vec_at(key, L):
+            return z[f"{key}_L0"] if L == 0 else z[key][L - 1]
+        rep = args.mode == "replace"
         recs = []
         if args.with_base:
             for ctx in ("nat", "alt"):
@@ -110,7 +116,8 @@ def main():
         for layer in args.layers:
             for alpha in args.alphas:
                 for ctx, target, sign in (("alt", "nat", 1.0), ("nat", "alt", -1.0)):
-                    recs += run_arm(model, tok, fam, by[ctx], lexicon, f"{target}_L{layer}_a{alpha:g}", ctx, target, layer, alpha, sign * r[layer - 1], batch)
+                    vec = vec_at(f"mean_{target}", layer) if rep else sign * (vec_at("mean_nat", layer) - vec_at("mean_alt", layer))
+                    recs += run_arm(model, tok, fam, by[ctx], lexicon, f"{target}_L{layer}_{'rep' if rep else 'a'}{alpha:g}", ctx, target, layer, alpha, vec, batch, rep)
             print(f"{fam}: layer {layer} done", flush=True)
         json.dump(recs, open(out, "w"), ensure_ascii=False)
         st = [x for x in recs if x["target"]]

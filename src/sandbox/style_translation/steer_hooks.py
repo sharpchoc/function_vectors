@@ -68,9 +68,11 @@ class PositionSteer:
     positions: list (one per batch row) of lists of absolute indices into the left-padded sequence
     (caller offsets the prompt-relative indices by the padding). Decode steps (length 1) untouched.
     """
-    def __init__(self, model, layer, vec, alpha, positions):
+    def __init__(self, model, layer, vec, alpha, positions, replace=False):
         # layer 0 = the embedding output (no positional vector in the residual stream for GPT-J / Qwen2), L >= 1 = output of block L
+        # replace=True: the listed positions are SET to alpha * v instead of shifted by it (2026-10-30, embedding-replacement variant)
         A = arch(model)
+        self.replace = replace
         self.block = A["embed"] if layer == 0 else A["blocks"][layer - 1]
         self.vec = torch.as_tensor(vec, dtype=A["dtype"], device=next(model.parameters()).device)
         self.alpha = float(alpha)
@@ -84,7 +86,7 @@ class PositionSteer:
             h = h.clone()
             for r, pos in enumerate(self.positions):
                 if pos:
-                    h[r, pos, :] = h[r, pos, :] + self.alpha * self.vec
+                    h[r, pos, :] = self.alpha * self.vec if self.replace else h[r, pos, :] + self.alpha * self.vec
             self.calls += 1
             return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
         return output
