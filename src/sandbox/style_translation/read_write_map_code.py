@@ -46,11 +46,12 @@ def main():
     ap.add_argument("--read_layer", type=int, default=8, help="read feature layer; != 8 loads read_L<layer> from prompt_pairs_layers/ (same row order as prompt_pairs)")
     ap.add_argument("--unit_norm", action="store_true", help="scale every prompt's read vector and write vector to unit L2 norm before fitting")
     ap.add_argument("--pair_diff", action="store_true", help="rows = (document, k) pairs: X = read_nat - read_alt, Y = write_nat - write_alt (both prompts must pass --select)")
+    ap.add_argument("--pool_file", type=Path, default=None, help="JSON with a 'pool' family list (default <results>/code_pool.json); e.g. the 35 translation families for a matched original-prompt fit")
     ap.add_argument("--select", choices=["correct", "all"], default="correct", help="prompt_pairs rows to use: correct = convention followed AND judge OK (the fitted map), all = every k = 3, 4 prompt")
     args = ap.parse_args()
     MP = model_paths(args.model); R = MP["results"]; OUT = R / "read_write_map" / ("sandbox/" + args.tag if args.tag else ""); OUT.mkdir(parents=True, exist_ok=True)
     MOD = MP["prompt_pairs"].parent / "read_write_map"; MOD.mkdir(parents=True, exist_ok=True); MODEL_FILE = MOD / (f"ridge_L{args.read_layer}_to_L24_{args.tag.replace('/', '_')}.npz" if args.tag else "ridge_L8_to_L24.npz")
-    pool = json.load(open(R / "code_pool.json"))["pool"]; rng = np.random.default_rng(args.seed)
+    pool = json.load(open(args.pool_file or R / "code_pool.json"))["pool"]; rng = np.random.default_rng(args.seed)
     if args.split_file:
         sf = json.load(open(args.split_file)); train, test = sorted(sf["train"]), sorted(sf["test"]); assert set(train) | set(test) == set(pool) and not set(train) & set(test)
         json.dump(dict(split_file=args.split_file, train=train, test=test), open(OUT / "split.json", "w"), indent=1)

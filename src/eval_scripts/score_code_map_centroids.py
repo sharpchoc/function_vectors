@@ -17,6 +17,9 @@ import pandas as pd
 R = Path(__file__).resolve().parents[2]
 ROOT = R / "results" / "code_styles" / "read_write_map" / "sandbox"
 PP = R / "artifacts" / "style_translation" / "qwen25_code" / "prompt_pairs"
+# --model qwen25_code_tr: the source-program (translation) prompts (2026-10-30)
+TR_ROOT = R / "results" / "code_styles" / "translation_prompts" / "read_write_map" / "sandbox"
+TR_PP = R / "artifacts" / "style_translation" / "qwen25_code_tr" / "prompt_pairs"
 
 
 def centroid(family):
@@ -33,7 +36,11 @@ def centroid(family):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--prefix", default="v11_pairdiff_unitnorm"); a = ap.parse_args()
+    global ROOT, PP
+    ap = argparse.ArgumentParser(); ap.add_argument("--prefix", default="v11_pairdiff_unitnorm")
+    ap.add_argument("--model", choices=["qwen25_code", "qwen25_code_tr"], default="qwen25_code"); a = ap.parse_args()
+    if a.model == "qwen25_code_tr":
+        ROOT, PP = TR_ROOT, TR_PP
     runs = sorted(p for p in ROOT.glob(f"{a.prefix}_split*_s*") if (p / "fit.json").exists())
     fits = {p.name: json.loads((p / "fit.json").read_text()) for p in runs}
     fams = sorted({f for x in fits.values() for f in x["train_families"] + x["test_families"]})

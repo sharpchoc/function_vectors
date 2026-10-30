@@ -10650,3 +10650,10 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
   L0 α2 is within .10 of L8 (or better) in 17/35 families, better by >.05 in 6 (py_loop_vars +.59, py_is_none +.31, py_builtin_generics, py_paren_if, py_quotes, py_comprehension), worse by >.25 in 12 (line_wrap, py2_except, comment_language, py_literal_ctor, blank_lines, py_fstring, comment_case, num_separators, py_optional, comma_space, py_indent, py_class_naming).
   Replacement flips the convention most (conv .66/.52) but breaks code (judge-OK .55): evidence tokens often merge indentation/space with the identifier (`\tlevel`), so overwriting them erases the word (py_tabs conv .97, success .19).
 - Next: none queued. Results: results/code_styles/translation_prompts/read_steering/sweep35_L01, sweep35_L0rep.
+
+## 2026-10-30 — Code styles (translation prompts): read → write map (paper v11 recipe)
+- Status: DONE. Captured per-prompt read L8 / write L24 for all k = 3/4 translation prompts (2 × PRO 4500, terminated); fitted v11 recipe on the
+  ten v10 splits restricted to the 35 families, plus a matched baseline on the original prompts (same families/splits).
+- Code: read_write_map_code.py `--pool_file`; score_code_map_centroids.py `--model qwen25_code_tr`.
+- Findings (66/34, R² train-mean ref / cos): original .144 ± .039 / .307 → translation .154 ± .035 / .346; 80/20 .168 / .335 → .169 / .369.
+  Cos higher on 10/10 splits, R² on 8/10. Small, consistent gain; map stays weak. results/code_styles/translation_prompts/read_write_map/.
