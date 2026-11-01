@@ -10657,3 +10657,13 @@ vs .026 vs .015 (unsteered .016, real alt demos .084). Own > both controls in 52
 - Code: read_write_map_code.py `--pool_file`; score_code_map_centroids.py `--model qwen25_code_tr`.
 - Findings (66/34, R² train-mean ref / cos): original .144 ± .039 / .307 → translation .154 ± .035 / .346; 80/20 .168 / .335 → .169 / .369.
   Cos higher on 10/10 splits, R² on 8/10. Small, consistent gain; map stays weak. results/code_styles/translation_prompts/read_write_map/.
+
+## 2026-11-01 — Code styles: read → write map, identification-site sweep (both prompt sets)
+- Status: DONE. Pods (7 capture + b200a fitting) all terminated.
+- Captured every layer × {evidence mean, last evidence token, cue} per prompt (capture_pair_sites_layers.py → prompt_pairs_sites/); screened 140 X configs,
+  map types and diagnostics on GPU (map_layer_sweep.py, map_methods.py, map_diagnostics.py); confirmed on 10 fresh 66/34 splits with LOFO λ.
+- Findings: evidence-token layer flat (.19–.20 confirmed, original); evidence L8 ⊕ cue L20 → .311 ± .046 (original) / .285 ± .026 (translation), vs
+  paper map .192 / .129 on the same splits; cue L22 .379 (partly identity). Held-out documents .92; cross-family cap = novelty of held-out
+  families' write directions (oracle span .30), learning curve still rising at 45 families.
+- Note: num_separators (translation) 5/780 rows drift at L24 vs stored write (min cos .81), bf16 batch-layout; kept, flagged.
+- Results: results/code_styles/read_write_map/layer_sweep/README.md (+ translation copy). Next: user decision on whether ev⊕cue20 counts as an identification feature.
